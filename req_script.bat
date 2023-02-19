@@ -1,0 +1,1 @@
+venv\Scripts\activate && pip freeze -> req.txt
