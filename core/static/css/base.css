@@ -1,0 +1,13 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+.login-background {
+    padding-top: 5%;
+    background-color: #48c062;
+    background-image: url(https://www.politicaetc.com.br/wp-content/uploads/2017/04/00.jpg);
+    background-size: cover;
+    height: 100%;
+}
