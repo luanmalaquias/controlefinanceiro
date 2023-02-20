@@ -11,3 +11,20 @@ body {
     background-size: cover;
     height: 100%;
 }
+
+.login-card {
+    width: 28rem;
+    height: 40rem;
+    box-shadow: 0 0 40px #00000038;
+    border: 0;
+}
+
+.login-input{
+    border-radius: 0;
+    border: none; border-bottom: 1px solid gray
+}
+
+.login-brn-continuar {
+    width: 20rem;
+    height: 5rem;
+}
