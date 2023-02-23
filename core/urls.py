@@ -20,5 +20,6 @@ from django.views.generic.base import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include("django.contrib.auth.urls")),
-    path('', include('imobiliaria.urls')) # colocar o login aqui
+    path('imobiliaria/', include('imobiliaria.urls'), name="imobilaria"),
+    path('usuario/', include('usuario.urls')),
 ]

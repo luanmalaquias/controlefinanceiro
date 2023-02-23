@@ -1,22 +1,49 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
-  <meta charset="utf-8">
-  <title>{% block title %}Base{% endblock %}</title>
+    <meta charset="utf-8">
+    <title>{% block title %}Base{% endblock %}</title>
 
-  <!-- imports -->
-  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-  <link rel="stylesheet" href="{% static 'fa/css/all.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/login.css' %}">
-  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- imports -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'fa/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
 </head>
 
 <body>
-  {% block content %}
-  {% endblock %}
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light p-4 bg-light">
+            <span class="navbar-brand h1">
+                <a class="nav-link" href="/imobiliaria/">Home</a>
+            </span>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if user.is_staff %}
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'listarimoveis' %}">Imóveis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'listarusuarios' %}">Usuarios</a>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+
+            <span class="navbar-text">
+                <a class="nav-link" href="{% url 'logout' %}">Sair</a>
+            </span>
+        </nav>
+    </div>
+    {% block content %}
+    {% endblock %}
 </body>
 
 </html>

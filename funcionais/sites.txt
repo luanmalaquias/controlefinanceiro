@@ -1,1 +1,2 @@
 learndjango.com
+medium.com (https://medium.com/@gabrielfgularte/custom-user-model-no-django-d9bdf2838bd8)

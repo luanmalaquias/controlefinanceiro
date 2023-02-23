@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Usuários{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row text-white bg-primary mx-auto my-3">
+        <h2 class="ps-5">Usuários</h2>
+    </div>
+
+    <a href="{% url 'cadastrarusuario' %}" class="btn btn-success"><i class="bi bi-person-fill-add"></i> Incluir</a>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">CPF</th>
+                <th scope="col">Telefone</th>
+                <th scope="col">Imovel</th>
+                <th scope="col">Opções</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for perfil in perfis %}
+            <tr>
+                <td>{{perfil.nome_completo}}</td>
+                <td>{{perfil.cpf}}</td>
+                <td>{{perfil.telefone}}</td>
+                <td>{{perfil.imovel}}</td>
+                <!-- TODO -->
+                <td>Option menu</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

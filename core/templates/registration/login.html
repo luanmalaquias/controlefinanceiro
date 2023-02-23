@@ -1,31 +1,51 @@
-{% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Login{% endblock %}
+<!DOCTYPE html>
+<html lang="pt-br">
 
-{% block content %}
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <!-- imports -->
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'fa/css/all.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script src="{% static 'js/jquery.mask.min.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
 
-<div class="login-background">
-  <div class="d-flex align-items-center justify-content-center text-center">
-    <div class="card login-card">
-      <div class="card-body m-5">
-        <h2 class="m-5 text-success"><strong>Login</strong></h2>
-        <form method="post">
-          {% csrf_token %}
-          <div class="input-group mb-3">
-            <input type="text" class="login-input form-control" name="username" autofocus="" autocapitalize="none"
-              autocomplete="username" maxlength="150" required id="id_username" placeholder="Usuário">
-          </div>
-          <div class="input-group mb-5">
-            <input type="password" class="login-input form-control" name="password" autocomplete="current-password" required
-              id="id_username" placeholder="Senha">
-          </div>
-          <button type="submit" class="login-brn-continuar btn btn-success mt-5 mb-4">CONTINUAR</button>
-        </form>
-        <a href="">Esqueceu a senha?</a>
+</head>
+
+<body>
+
+  <div class="login-background">
+    <div class="d-flex align-items-center justify-content-center text-center">
+      <div class="card login-card">
+        <div class="card-body m-5">
+          <h2 class="m-5 text-success"><strong>Login</strong></h2>
+          <form method="post">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+              <input type="text" class="login-input form-control" name="username" autofocus="" autocapitalize="none"
+                autocomplete="username" maxlength="150" required id="id_username" placeholder="Usuário">
+            </div>
+            <div class="input-group mb-5">
+              <input type="password" class="login-input form-control" name="password" autocomplete="current-password"
+                required id="id_username" placeholder="Senha">
+            </div>
+            <button type="submit" class="login-brn-continuar btn btn-success mt-5 mb-4">CONTINUAR</button>
+          </form>
+          <!-- TODO pagina de recuperar senha -->
+          <a href="">Esqueceu a senha?</a>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
+</body>
 
-{% endblock %}
+</html>
