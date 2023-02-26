@@ -76,20 +76,20 @@ def gerarDados(quantidade:int) -> None:
             usuario = User.objects.create_user(username="".join(username), password=generatePassword(0))
 
             imovel = Imovel.objects.create()
-            imovel.nome = f'imovel nome {x}'
+            imovel.nome = f'imovel teste {x}'
             imovel.cep = "".join([str(randint(0, 9)) for i in range(7)])
-            imovel.endereco = f'endereco {x}'
+            imovel.endereco = f'endereco teste {x}'
             imovel.numero = f'{randint(0,100)}'
-            imovel.bairro = f'bairro {x}'
-            imovel.cidade = f'cidade {x}'
-            imovel.uf = f'uf {x}'
+            imovel.bairro = f'bairro teste {x}'
+            imovel.cidade = f'cidade teste {x}'
+            imovel.uf = f'uf teste {x}'
             imovel.mensalidade = f'{randint(500, 1000)}'
             imovel.vencimento = randint(1,29)
             imovel.disponibilidade = False
 
             perfil = Perfil.objects.create(usuario = usuario)
             perfil.cpf = usuario.username
-            perfil.nome_completo = f'usuario nome {x}'
+            perfil.nome_completo = f'usuario teste {x}'
             perfil.telefone = "".join([str(randint(0, 9)) for i in range(11)])
             perfil.imovel = imovel
 

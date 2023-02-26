@@ -24,7 +24,7 @@
         <thead>
             <tr>
                 <th scope="col">Nome / Vila / Condomínio</th>
-                <th>Disponível</th>
+                <th scope="col">Disponível</th>
                 <th scope="col">CEP</th>
                 <th scope="col">Endereço</th>
                 <th scope="col">Numero</th>
@@ -38,9 +38,13 @@
         </thead>
         <tbody>
             {% for imovel in imoveis %}
-            <tr class="{{ imovel.disponibilidade|yesno:',text-warning' }}">
+            <tr>
                 <td>{{imovel.nome}}</td>
-                <td>{{imovel.disponibilidade|yesno:"Sim,N"}}</td>
+                {% if imovel.disponibilidade %}
+                <td><span class="badge bg-success-subtle text-success">Sim</span></td>
+                {% else %}
+                <td><span class="badge bg-danger-subtle text-danger">Não</span></td>
+                {% endif %}
                 <td>{{imovel.cep}}</td>
                 <td>{{imovel.endereco}}</td>
                 <td>{{imovel.numero}}</td>
