@@ -4,26 +4,28 @@ from django.contrib.admin.views.decorators import staff_member_required
 from usuario.models import Perfil
 from .models import Imovel
 from .forms import ImovelForm
+from django.shortcuts import get_object_or_404
+# FIXME remover isso daqui quando for implantar
+from utils.scripts import gerarDados
 
 # Create your views here.
 
 @login_required
 def index_imobiliaria(request):
+    context = {}
+
+    # FIXME remover isso daqui quando for implantar
+    # gerarDados(10)
+
     # TODO levar pra area de cadastro de superusuario se não existir
 
-    # FIXME isso é para quando o usuario tem perfil, e se o usuario não tiver perfil?
+    # quando o usuario nao tiver perfil
     usuario_logado = request.user
-    context = {}
     try:
         perfil = Perfil.objects.get(usuario = usuario_logado)
         context['perfil'] = perfil
     except:
         pass
-
-    # permitir que só possa criar usuario se existir pelo menos 1 imóvel
-    imoveis = Imovel.objects.all()
-    tem_imoveis = True if len(imoveis) > 0 else False
-    context['tem_imoveis'] = tem_imoveis
 
     return render(request, 'index.html', context)
 
@@ -45,12 +47,40 @@ def cadastrar_imovel(request):
 @staff_member_required
 def listar_imoveis(request):
     context = {}
-    imoveis = Imovel.objects.all()
+    imoveis = Imovel.objects.all().order_by('-disponibilidade','nome')
     context['imoveis'] = imoveis
+
+    if request.method == "GET":
+        busca = request.GET.get('busca')
+        if busca != None:
+            imoveis = Imovel.objects.all().filter(nome__contains = busca).order_by('-disponibilidade','nome')
+            context['imoveis'] = imoveis
+            return render(request, 'list.html', context)
+
     return render(request, 'list.html', context)
 
 @login_required
 @staff_member_required
-def alterar_dados_imoveis(request):
-    # TODO alterar_dados_imoveis
-    pass
+def atualizar_dados_imovel(request, id):
+    context = {}
+
+    imovel = get_object_or_404(Imovel, pk=id)
+    formImovel = ImovelForm(instance=imovel)
+
+    context['formImovel'] = formImovel
+    context['imovel'] = imovel
+
+    if request.method == 'POST':
+        formImovel = ImovelForm(request.POST, instance=imovel)
+        if formImovel.is_valid():
+            imovel = formImovel.save()
+            return redirect('listarimoveis')
+    else:
+        return render(request, 'create.html', context)
+
+@login_required
+@staff_member_required
+def deletar_imovel(request, id):
+    imovel = get_object_or_404(Imovel, pk=id)
+    imovel.delete()
+    return redirect('listarimoveis')

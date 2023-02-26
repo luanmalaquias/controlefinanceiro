@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Alterar Perfil{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row text-white bg-success mx-auto my-3">
+        {% if perfil %}
+        <h2 class="ps-5">Editar {{ perfil }}</h2>
+        {% else %}
+        <h2 class="ps-5">Novo imóvel</h2>
+        {% endif %}
+    </div>
+
+    <form method="post" autocomplete="off">
+        {% csrf_token %}
+        {{ formPerfil.as_p }}
+        {% if formPerfil.errors %}
+            <div class="alert alert-danger">
+                {{ formPerfil.errors }}
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-success">Salvar</button>
+    </form>
+</div>
+
+<script>
+    // alterar ordem dos labels
+    $('p label').each(function() {
+        $(this).insertAfter( $(this).next('input') );
+        $(this).insertAfter( $(this).next('select') );
+    });
+    // trocar os elementos P por DIVS
+    $("p").each(function() {
+        $(this).replaceWith("<div class=\"form-floating mb-3\">" + $(this).html() + "</div>");
+    });
+
+    // configurações dos inputs
+    $('input').addClass('form-control')
+    $('input').each(function(){
+        $(this).attr('placeholder', 'placeholder');
+    })
+
+    // configurações dos selects
+    $('select').addClass('form-select')
+
+    // alterar classe das dicas
+    $("span").addClass("text-muted")
+</script>
+
+{% endblock %}

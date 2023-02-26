@@ -5,30 +5,30 @@
 <div class="container">
 
     <div class="row text-white bg-success mx-auto my-3">
-        <h2 class="ps-5">Novo usuário</h2>
+        <h2 class="ps-5">Novo perfil</h2>
     </div>
 
     <form method="post" autocomplete="off">
         {% csrf_token %}
-        <!-- Usuario -->
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" name="username" maxlength="150" required autocapitalize="none" id="id_username" placeholder="Usuário">
-            <label for="id_username">CPF:</label>
-        </div>
+            <!-- Usuario -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="username" maxlength="150" required autocapitalize="none" id="id_username" placeholder="Usuário" value="{{usuario.username}}">
+                <label for="id_username">CPF:</label>
+            </div>
+        
+            <!-- Senha -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="password1" required id="id_password1" placeholder="Senha" value="{{ senhaGerada }}">
+                <label for="id_password1">Senha:</label>
+            </div>
+        
+            <!-- Confirmar senha -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="password2" required id="id_password2" placeholder="Confirmar senha" value="{{ senhaGerada }}">
+                <label for="id_password2">Confirmar senha:</label>
+            </div>
     
-        <!-- Senha -->
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" name="password1" required id="id_password1" placeholder="Senha" value="{{ senhaGerada }}">
-            <label for="id_password1">Senha:</label>
-        </div>
-    
-        <!-- Confirmar senha -->
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" name="password2" required id="id_password2" placeholder="Confirmar senha" value="{{ senhaGerada }}">
-            <label for="id_password2">Confirmar senha:</label>
-        </div>
-    
-        {{ formPerfil.as_p }}  
+        {{ formPerfil.as_p }}
         
         {% if formUsuario.errors %}
             <div class="alert alert-danger">
@@ -44,7 +44,7 @@
         {% if not tem_imoveis %}
         <div class="alert alert-danger">
             <p>Atenção</p>
-            <p>Não existem imóveis cadastrados no banco, por favor cadastre ao menos um imóvel.</p>
+            <p>Não existem imóveis cadastrados, por favor cadastre ao menos um imóvel. <a href="{% url 'cadastrarimovel' %}">Cadastrar imóvel</a></p>
         </div>
         {% endif %}
         <button type="submit" class="btn btn-success {{ tem_imoveis|yesno:'enabled,disabled'}}">Salvar</button>
@@ -73,15 +73,16 @@
     $('select').addClass('form-select')
 
     // alterar os valores da senha
-    $("#id_password1")[0].value = "{{senhaGerada}}"
-    $("#id_password2")[0].value = "{{senhaGerada}}"
     $("#id_password1").attr("type", "text")
     $("#id_password2").attr("type", "text")
+
+    // alterar classe das dicas
+    $("span").addClass("text-muted")
 </script>
 
 <!-- Máscaras -->
 <script type="text/javascript">
-    $('#id_username').mask('000.000.000-00');
+    $('#id_username').mask('00000000000');
     $('#id_telefone').mask('(00) 0 0000-0000');
 </script>
 

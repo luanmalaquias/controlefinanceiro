@@ -7,12 +7,24 @@
         <h2 class="ps-5">Imoveis</h2>
     </div>
 
-    <a href="{% url 'cadastrarimovel' %}" class="btn btn-success"><i class="bi bi-house-add-fill"></i> Incluir</a>
+    <div class="row">
+        <div class="col-6">
+            <a href="{% url 'cadastrarimovel' %}" class="btn btn-success"><i class="bi bi-house-add-fill"></i> Incluir</a>
+        </div>
+        <div class="col-6">
+            <form method="GET" autocomplete="off">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Pesquisa" name="busca">
+                </div>
+            </form>
+        </div>
+    </div>
 
     <table class="table table-hover">
         <thead>
             <tr>
                 <th scope="col">Nome / Vila / Condomínio</th>
+                <th>Disponível</th>
                 <th scope="col">CEP</th>
                 <th scope="col">Endereço</th>
                 <th scope="col">Numero</th>
@@ -26,8 +38,9 @@
         </thead>
         <tbody>
             {% for imovel in imoveis %}
-            <tr>
+            <tr class="{{ imovel.disponibilidade|yesno:',text-warning' }}">
                 <td>{{imovel.nome}}</td>
+                <td>{{imovel.disponibilidade|yesno:"Sim,N"}}</td>
                 <td>{{imovel.cep}}</td>
                 <td>{{imovel.endereco}}</td>
                 <td>{{imovel.numero}}</td>
@@ -36,8 +49,18 @@
                 <td>{{imovel.uf}}</td>
                 <td>{{imovel.mensalidade}}</td>
                 <td>{{imovel.vencimento}}</td>
-                <!-- TODO fazer o option menu-->
-                <td>Option menu</td>
+                <td>
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-gear-fill"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'atualizardadosimovel' imovel.id %}"><i class="bi bi-house-fill-gear"></i> Editar imovel</a></li>
+                            <li><hr class="dropdown-divider"></hr></li>
+                            <li><a class="dropdown-item bg-danger text-white" href="{% url 'deletarimovel' imovel.id %}"><i class="bi bi-trash-fill"></i>Deletar</a></li>
+                        </ul>
+                    </div>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

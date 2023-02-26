@@ -7,7 +7,19 @@
         <h2 class="ps-5">Usuários</h2>
     </div>
 
-    <a href="{% url 'cadastrarusuario' %}" class="btn btn-success"><i class="bi bi-person-fill-add"></i> Incluir</a>
+    <div class="row">
+        <div class="col-6">
+            <a href="{% url 'cadastrarusuario' %}" class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Incluir</a>
+        </div>
+        <div class="col-6">
+            <form method="GET" autocomplete="off">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Pesquisa" name="busca">
+                </div>
+            </form>
+        </div>
+    </div>
+    
 
     <table class="table table-hover">
         <thead>
@@ -16,6 +28,7 @@
                 <th scope="col">CPF</th>
                 <th scope="col">Telefone</th>
                 <th scope="col">Imovel</th>
+                <th scope="col">Data de entrada no imovel</th>
                 <th scope="col">Opções</th>
             </tr>
         </thead>
@@ -25,13 +38,47 @@
                 <td>{{perfil.nome_completo}}</td>
                 <td>{{perfil.cpf}}</td>
                 <td>{{perfil.telefone}}</td>
-                <td>{{perfil.imovel}}</td>
-                <!-- TODO -->
-                <td>Option menu</td>
+                {% if perfil.imovel %}
+                    <td>{{perfil.imovel}}</td>
+                    <td>{{perfil.data_entrada_imovel|date:"d/m/Y"}}</td>
+                {% else %}
+                    <td class="text-danger">Sem imovel</td>
+                    <td class="text-danger">Sem imovel</td>
+                {% endif %}
+                <td>
+                    <div class="dropdown">
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-gear-fill"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'editarperfil' perfil.id %}"><i class="bi bi-person-fill-gear"></i> Editar</a></li>
+                            <li><a class="dropdown-item" href="{% url 'editarusuario' perfil.id %}"><i class="bi bi-key-fill"></i> Alterar senha</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                                </hr>
+                            </li>
+                            <li><a class="dropdown-item bg-danger text-white"
+                                    href="{% url 'deletarusuario' perfil.id %}"><i class="bi bi-trash-fill"></i>
+                                    Deletar</a></li>
+                        </ul>
+                    </div>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<!-- Sistema de busca -->
+<script>
+    function busca(pesquisa){
+        $('tbody tr').each(function(index){
+            var name = this.children[0].textContent;
+            if (!name.includes(pesquisa)){
+                this.remove()
+            }
+        })
+    }    
+</script>
 
 {% endblock %}
