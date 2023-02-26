@@ -21,7 +21,7 @@
     </div>
     
 
-    <table class="table table-hover">
+    <table class="table table-hover text-center">
         <thead>
             <tr>
                 <th scope="col">Nome</th>
@@ -42,8 +42,8 @@
                     <td>{{perfil.imovel}}</td>
                     <td>{{perfil.data_entrada_imovel|date:"d/m/Y"}}</td>
                 {% else %}
-                    <td class="text-danger">Sem imovel</td>
-                    <td class="text-danger">Sem imovel</td>
+                    <td><span class="badge bg-danger-subtle text-danger">Sem imóvel</span></td>
+                    <td><span class="badge bg-danger-subtle text-danger">Sem imóvel</span></td>
                 {% endif %}
                 <td>
                     <div class="dropdown">
