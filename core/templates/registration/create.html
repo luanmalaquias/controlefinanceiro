@@ -10,23 +10,29 @@
 
     <form method="post" autocomplete="off">
         {% csrf_token %}
-            <!-- Usuario -->
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="username" maxlength="150" required autocapitalize="none" id="id_username" placeholder="Usuário" value="{{usuario.username}}">
-                <label for="id_username">CPF:</label>
+        <div class="row">
+            <div class="col-12">
+                <!-- Usuario -->
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" name="username" maxlength="150" required autocapitalize="none" id="id_username" placeholder="Usuário" value="{{usuario.username}}">
+                    <label for="id_username">CPF:</label>
+                </div>
             </div>
-        
-            <!-- Senha -->
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="password1" required id="id_password1" placeholder="Senha" value="{{ senhaGerada }}">
-                <label for="id_password1">Senha:</label>
+            <div class="col-6">
+                <!-- Senha -->
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" name="password1" required id="id_password1" placeholder="Senha" value="{{ senhaGerada }}">
+                    <label for="id_password1">Senha:</label>
+                </div>
             </div>
-        
-            <!-- Confirmar senha -->
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="password2" required id="id_password2" placeholder="Confirmar senha" value="{{ senhaGerada }}">
-                <label for="id_password2">Confirmar senha:</label>
+            <div class="col-6">
+                <!-- Confirmar senha -->
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" name="password2" required id="id_password2" placeholder="Confirmar senha" value="{{ senhaGerada }}">
+                    <label for="id_password2">Confirmar senha:</label>
+                </div>
             </div>
+        </div>
     
         {{ formPerfil.as_p }}
         

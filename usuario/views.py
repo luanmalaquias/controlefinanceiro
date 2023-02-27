@@ -95,8 +95,7 @@ def editar_perfil(request, id):
     tem_imoveis = True if len(imoveis) > 0 else False
 
     perfil = get_object_or_404(Perfil, pk=id,)
-    formPerfil = PerfilForm(perfil, instance=perfil)
-
+    formPerfil = PerfilForm(instance=perfil)
 
     if request.method == 'POST':
         formPerfil = PerfilForm(request.POST, instance=perfil)
@@ -118,7 +117,7 @@ def editar_perfil(request, id):
             return redirect('listarusuarios')
         
     else:
-        formPerfil = PerfilForm(perfil, instance = perfil)
+        formPerfil = PerfilForm(instance = perfil)
 
     context['tem_imoveis'] = tem_imoveis
     context['perfil'] = perfil
