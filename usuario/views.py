@@ -56,6 +56,7 @@ def criar_usuario(request):
     else:
         formUsuario = UserCreationForm()
         formPerfil = PerfilForm()
+        formPerfil.ajustar_escolhas()
 
     context['formUsuario'] = formUsuario
     context['formPerfil'] = formPerfil
@@ -118,6 +119,7 @@ def editar_perfil(request, id):
         
     else:
         formPerfil = PerfilForm(instance = perfil)
+        formPerfil.ajustar_escolhas(perfil)
 
     context['tem_imoveis'] = tem_imoveis
     context['perfil'] = perfil
