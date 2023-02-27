@@ -4,8 +4,7 @@
 
 <div class="container">
     {% if user.is_staff %}
-    <h1>bem vindo {{ perfil.nome_completo }}</h1>
-    <h2>Usuario adm</h2>
+    <h1>bem vindo adm {{ perfil.nome_completo }}</h1>
 
     {% else %}
     <h1>Bem vindo {{ perfil.nome_completo }}</h1>

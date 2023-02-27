@@ -7,6 +7,7 @@ class Perfil(models.Model):
     #id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     cpf = models.CharField(max_length=14, null=True)
     nome_completo = models.CharField(max_length=50, null=True)
+    data_nascimento = models.DateField(max_length=10, null=True, verbose_name="Data de nascimento")
     telefone = models.CharField(max_length=16, null=True)
     data_entrada_imovel = models.DateField(auto_now_add=True, editable=True, verbose_name="Data de entrada no imovel")
     usuario = models.OneToOneField(User, blank=True, on_delete=models.CASCADE)

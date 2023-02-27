@@ -6,7 +6,7 @@ from .models import Imovel
 from .forms import ImovelForm
 from django.shortcuts import get_object_or_404
 # FIXME remover isso daqui quando for implantar
-from utils.scripts import gerarDados
+from utils.scripts import gerarDados, unmask
 
 # Create your views here.
 
@@ -73,7 +73,7 @@ def atualizar_dados_imovel(request, id):
     if request.method == 'POST':
         formImovel = ImovelForm(request.POST, instance=imovel)
         if formImovel.is_valid():
-            imovel = formImovel.save()
+            formImovel.save()
             return redirect('listarimoveis')
     else:
         return render(request, 'create.html', context)

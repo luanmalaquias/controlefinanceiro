@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Imovel
 from usuario.models import Perfil
-from .forms import PerfilForm
-from utils.scripts import generatePassword, unmaskCpf, unmaskPhone
+from .forms import PerfilForm, RecuperarSenhaForm
+from utils.scripts import generatePassword, unmask
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
@@ -36,11 +36,11 @@ def criar_usuario(request):
 
         if formUsuario.is_valid() and formPerfil.is_valid():
             usuario = formUsuario.save(commit=False)
-            usuario.username = unmaskCpf(usuario.username)
+            usuario.username = unmask(usuario.username, '-.,')
             
             # igualar login do usuario com o cpf do perfil
             perfil = formPerfil.save(commit=False)
-            perfil.telefone = unmaskPhone(perfil.telefone)
+            perfil.telefone = unmask(perfil.telefone, ' ()-')
             perfil.cpf = usuario.username
             perfil.usuario = usuario
 
@@ -133,6 +133,7 @@ def editar_usuario(request, id):
 
     perfil = get_object_or_404(Perfil, pk=id)
     usuario = get_object_or_404(User, pk=perfil.usuario.id)
+    senhaGerada = generatePassword(2)
 
     if request.method == 'POST':
         formUsuario = UserCreationForm(request.POST, instance=usuario)
@@ -146,7 +147,7 @@ def editar_usuario(request, id):
     context['formUsuario'] = formUsuario
     context['usuario'] = usuario
     context['perfil'] = perfil
-    
+    context['senhaGerada'] = senhaGerada
     return render(request, 'registration/edituser.html', context)
 
 @login_required
@@ -159,5 +160,40 @@ def deletar_usuario(request, id):
     return redirect('listarusuarios')
 
 def recuperar_senha(request):
-    # TODO recuperar senha da pagina de login
-    pass
+    context = {}
+
+    formPerfil = RecuperarSenhaForm()
+
+    if request.method == "POST":
+        formPerfil = RecuperarSenhaForm(request.POST)
+
+        if formPerfil.is_valid():
+            # get perfil
+            cpf = formPerfil.cleaned_data['cpf']
+            cpf = unmask(cpf, '.-')
+            data_nascimento = formPerfil.cleaned_data['data_de_nascimento']
+            data_nascimento = unmask(data_nascimento, '/')
+
+            usuario = None
+
+            # get usuario
+            try:
+                perfil = Perfil.objects.get(cpf = cpf, data_nascimento = data_nascimento)
+                usuario = User.objects.get(username = perfil.cpf)
+                context['usuario'] = usuario
+            except:
+                context['erro'] = 'Usuario não encontrado!'
+
+            # tentar salvar
+            try:
+                senha1 = request.POST['password1']
+                senha2 = request.POST['password2']
+                if senha1 == senha2:
+                    usuario.set_password(senha1)
+                    usuario.save()
+                    return redirect('login')
+            except:
+                pass
+
+    context['formPerfil'] = formPerfil
+    return render(request, 'registration/recoverpassword.html', context)

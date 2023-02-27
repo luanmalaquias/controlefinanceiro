@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Cadastrar Imovel{% endblock %}
+{% block title %}Imovel{% endblock %}
 {% block content %}
 
 <div class="container">
@@ -115,7 +115,7 @@
 <!-- Máscaras e atributos -->
 <script type="text/javascript">
     $('#id_cep').mask('00000-000');
-    $('#id_mensalidade').mask('#.000,00', {reverse: true})
+    $('#id_mensalidade').mask('#.000', {reverse: true})
     $('#id_vencimento').mask('00')
     $('#id_vencimento').attr('max', 29)
 </script>

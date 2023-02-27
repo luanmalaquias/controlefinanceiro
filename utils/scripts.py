@@ -51,24 +51,22 @@ def verifyPasswordIntergity(password: str, numeric=True, lower=True, upper=True)
 
     return passwordIntergity
 
-def unmaskCpf(cpf: str) -> str:
-    """Retorna a string cpf sem pontos e traços"""
-    cpf = cpf.replace('.', '').replace('-','')
-    return cpf
-    
-def unmaskPhone(phone: str) -> str:
-    """Retorna a string telefone sem espaços, traços e parênteses"""
-    phone = phone.replace(' ','').replace('-','').replace('(','').replace(')','')
-    return phone
-
-def unmaskCep(cep: str) -> str:
-    return cep.replace('-','').replace('.','')
+def unmask(target: any, chars: str) -> str:
+    """Remove todos os caracteres que forem passados no parametro chars"""
+    if type(target) != str:
+        target = str(target)
+    for char in chars:
+        target = target.replace(char, '')
+    return target
 
 def gerarDados(quantidade:int) -> None:
     from django.contrib.auth.models import User
     from usuario.models import Perfil
     from imobiliaria.models import Imovel
     from random import randint
+
+    nomes = ["Miguel","Arthur","Gael","Théo","Heitor","Ravi","Davi","Bernardo","Noah","Gabriel","Helena","Alice","Laura","Maria Alice","Sophia","Manuela","Maitê","Liz","Cecília","Isabella"]
+    sobrenomes = ['Silva','Santos','Oliveira','Sousa','Rodrigues','Ferreira','Alves','Pereira','Lima','Gomes','Costa','Ribeiro','Martins','Carvalho','Almeira','Lopes','Soares','Fernandes','Vieira','Barbosa','Rocha','Dias','Nascimento','Andrade','Moreira','Nunes','Marques','Machado','Mendes','Freitas','Cardoso','Ramos','Gonçalves','Santana','Teixeira']
 
     for x in range(quantidade):
         try:
@@ -84,12 +82,13 @@ def gerarDados(quantidade:int) -> None:
             imovel.cidade = f'cidade teste {x}'
             imovel.uf = f'uf teste {x}'
             imovel.mensalidade = f'{randint(500, 1000)}'
+            print(imovel.mensalidade)
             imovel.vencimento = randint(1,29)
             imovel.disponibilidade = False
 
             perfil = Perfil.objects.create(usuario = usuario)
             perfil.cpf = usuario.username
-            perfil.nome_completo = f'usuario teste {x}'
+            perfil.nome_completo = f'{secrets.choice(nomes)} {secrets.choice(sobrenomes)}'
             perfil.telefone = "".join([str(randint(0, 9)) for i in range(11)])
             perfil.imovel = imovel
 

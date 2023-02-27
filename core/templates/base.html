@@ -27,18 +27,18 @@
             </span>
             <div class="collapse navbar-collapse" id="navbarNav">
                 {% if user.is_staff %}
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'listarimoveis' %}">Imóveis</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'listarusuarios' %}">Usuarios</a>
-                    </li>
-                </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'listarimoveis' %}">Imóveis</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'listarusuarios' %}">Usuarios</a>
+                        </li>
+                    </ul>
                 {% endif %}
             </div>
-
-            <span class="navbar-text">
+            
+            <span class="navbar-text">                
                 <a class="nav-link" href="{% url 'logout' %}">Sair</a>
             </span>
         </nav>

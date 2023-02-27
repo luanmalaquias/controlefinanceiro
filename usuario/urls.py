@@ -6,5 +6,6 @@ urlpatterns = [
     path('listar/', listar_usuarios, name="listarusuarios"),
     path('editarperfil/<int:id>', editar_perfil, name="editarperfil"),
     path('editarusuario/<int:id>', editar_usuario, name="editarusuario"),
-    path('deletar/<int:id>', deletar_usuario, name="deletarusuario")
+    path('deletar/<int:id>', deletar_usuario, name="deletarusuario"),
+    # path('recuperarsenha/', recuperar_senha, name="recuperarsenha"), # FIXME o usuario vai poder recuperar senha?
 ]

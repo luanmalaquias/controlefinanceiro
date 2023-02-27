@@ -2,7 +2,7 @@
 {% block title %}Imoveis{% endblock %}
 {% block content %}
 
-<div class="container">
+<div class="mx-5">
     <div class="row text-white bg-primary mx-auto my-3">
         <h2 class="ps-5">Imoveis</h2>
     </div>
@@ -28,7 +28,7 @@
                 <th scope="col">Disponível</th>
                 <th scope="col">CEP</th>
                 <th scope="col">Endereço</th>
-                <th scope="col">Numero</th>
+                <th scope="col">N°</th>
                 <th scope="col">Bairro</th>
                 <th scope="col">Cidade</th>
                 <th scope="col">UF</th>
@@ -52,7 +52,7 @@
                 <td>{{imovel.bairro}}</td>
                 <td>{{imovel.cidade}}</td>
                 <td>{{imovel.uf}}</td>
-                <td>{{imovel.mensalidade}}</td>
+                <td>R$ {{imovel.mensalidade}}</td>
                 {% if imovel.vencimento > 9 %}
                     <td>{{ imovel.vencimento }}</td>
                 {% else %}

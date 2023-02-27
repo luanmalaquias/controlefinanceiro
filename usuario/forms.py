@@ -6,7 +6,7 @@ class PerfilForm(forms.ModelForm):
 
     class Meta:
         model = Perfil
-        fields = ('nome_completo', 'telefone', 'imovel')
+        fields = ('nome_completo', 'data_nascimento', 'telefone', 'imovel')
 
     def ajustar_escolhas(self, perfil: Perfil = None):
         if perfil:
@@ -16,3 +16,7 @@ class PerfilForm(forms.ModelForm):
             _imoveis_filtrados = Imovel.objects.filter(disponibilidade = True)
             _imovel_initial = None
         self.fields['imovel'] = forms.ModelChoiceField(queryset=_imoveis_filtrados, initial=_imovel_initial)
+
+class RecuperarSenhaForm(forms.Form):
+    cpf = forms.CharField()
+    data_de_nascimento = forms.DateField()
