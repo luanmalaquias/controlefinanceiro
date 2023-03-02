@@ -17,34 +17,58 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <script src="{% static 'js/jquery.mask.min.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-maskmoney/3.0.2/jquery.maskMoney.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js" integrity="sha256-eTyxS0rkjpLEo16uXTS0uVCS4815lc40K2iVpWDvdSY=" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light p-4 bg-light">
-            <span class="navbar-brand h1">
-                <a class="nav-link" href="/imobiliaria/">Home</a>
-            </span>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                {% if user.is_staff %}
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'listarimoveis' %}">Imóveis</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'listarusuarios' %}">Usuarios</a>
-                        </li>
-                    </ul>
-                {% endif %}
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+
+            <!-- Sidebar -->
+            <div class="col-2 bg-light pt-3">
+                <a href="{% url 'indeximobiliaria' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+                    <span class="fs-4 ms-5">Imobiliaria</span>
+                    
+                </a>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li>
+                        <a href="{% url 'listarimoveis' %}" class="nav-link {% if 'imobiliaria' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-houses-fill"></i>
+                            Imóveis
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'listarusuarios' %}" class="nav-link {% if '/usuario/' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-people-fill"></i>
+                            Usuários
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="nav-link {% if 'listar-pagamentos-por-usuarios' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-person-vcard-fill"></i>
+                            Pagamentos por usuarios
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'listar-todos-os-pagamentos' %}" class="nav-link {% if 'o/listar-todos-os-pagamentos/' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-piggy-bank-fill"></i>
+                            Todos os pagamentos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'logout' %}" class="nav-link link-dark">Sair</a>
+                    </li>
+                </ul>
             </div>
-            
-            <span class="navbar-text">                
-                <a class="nav-link" href="{% url 'logout' %}">Sair</a>
-            </span>
-        </nav>
+
+            <!-- Conteúdo -->
+            <div class="col-10 pt-3">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
     </div>
-    {% block content %}
-    {% endblock %}
 </body>
 
 </html>

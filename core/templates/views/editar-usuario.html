@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Alterar Senha{% endblock %}
+{% block content %}
+
+
+<div class="row bg-dark text-light mb-3">
+    <h3 class="ps-5">Alterar senha de {{perfil}}</h3>
+</div>
+
+<div class="row text-center">
+    <div class="col-6 offset-3">
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+            <!-- Usuario -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control text-muted" name="username" id="id_username" placeholder="Usuário" value="{{usuario.username}}" readonly>
+                <label for="id_username">CPF:</label>
+            </div>
+        
+            <!-- Senha -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="password1" required id="id_password1" placeholder="Senha"
+                    value="{{ senhaGerada }}">
+                <label for="id_password1">Nova senha:</label>
+            </div>
+        
+            <!-- Confirmar senha -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="password2" required id="id_password2"
+                    placeholder="Confirmar senha" value="{{ senhaGerada }}">
+                <label for="id_password2">Confirmar nova senha:</label>
+            </div>
+        
+            {% if formUsuario.errors %}
+                <div class="alert alert-danger">
+                    {{ formUsuario.errors }}
+                </div>
+            {% endif %}
+                
+            <a href="{% url 'listarusuarios' %}" class="btn btn-light">Cancelar</a>
+            <button type="submit" class="btn btn-success">Salvar</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

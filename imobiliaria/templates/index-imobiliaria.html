@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Imobiliaria{% endblock %}
+{% block content %}
+
+{% if user.is_staff %}
+<h1>bem vindo adm {{ perfil.nome_completo }}</h1>
+
+{% else %}
+<h1>Bem vindo {{ perfil.nome_completo }}</h1>
+<h2>Usuario padrão</h2>
+{% endif %}    
+
+{% endblock %}

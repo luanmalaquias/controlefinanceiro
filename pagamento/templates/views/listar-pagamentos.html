@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Pagamentos{% endblock %}
+{% block content %}
+
+<div class="row bg-dark text-light mb-3">
+    <h3 class="ps-5">Pagamentos por usuarios</h3>
+</div>
+
+<div class="row">
+    <div class="col-4">
+        <a href="{% url 'adicionarpagamento' %}" class="btn btn-success"><i class="bi bi-plus"></i> Incluir pagamento</a>
+    </div>
+    <div class="col-3">
+        <form method="GET" autocomplete="off">
+            <div class="input-group">
+                <input id="id_data" type="month" class="form-control" name="data" value="{{data_atual|date:'Y-m'}}" onchange="this.form.submit()">
+                <a class="btn btn-primary" href="{% url 'listar-pagamentos-por-usuarios' %}">Hoje</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table table-hover text-center">
+    <thead>
+        <tr>
+            <th scope="col">Perfil</th>
+            <th scope="col">Imovel</th>
+            <th scope="col">Status</th>
+            <th scope="col">Venc.</th>
+            <th scope="col">Mens.</th>
+            <th scope="col">Valor pago</th>
+            <th scope="col">Data Pag.</th>
+            <th scope="col">Mudar status</th>
+            <th scope="col">Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for perfil in perfilComPagamento %}
+        <tr>
+            <td>{{perfil.nomeperfil}}</td>
+            <td>
+                {% if perfil.nomeimovel == "Sem imovel" %}
+                    <span class="badge bg-danger-subtle text-danger">{{perfil.nomeimovel}}</span>
+                {% else %}
+                    {{perfil.nomeimovel}}
+                {% endif %}
+            </td>
+            <td>
+                {% if perfil.pagamento == "P" %}
+                <span class="badge bg-success-subtle text-success">Pago</span>
+                {% elif perfil.pagamento == "A" %}
+                <span class="badge bg-warning-subtle text-dark">Em análise</span>
+                {% else %}
+                <span class="badge bg-danger-subtle text-danger">Aguardando</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if perfil.vencimento > 9 %}
+                    {{ perfil.vencimento }} /{{data_atual.year}}
+                {% else %}
+                    0{{perfil.vencimento}} /{{data_atual.year}}
+                {% endif %}
+            </td>
+            <td>{{perfil.mensalidade}}</td>
+            <td>{{perfil.pagamentoefetuado}}</td>
+            <td>{{perfil.data|date:"d/M/y"}}</td>
+            <td>
+                {% if perfil.pagamento == "P" %}
+                <a onclick="deletar_rapido('{{perfil.pagamentoid}}')" class="btn btn-outline-secondary btn-sm"><i class="bi bi-trash-fill"></i></a>
+                {% else %}
+                <a onclick="pagamento_rapido('{{perfil.id}}')" class="btn btn-success btn-sm"><i class="bi bi-currency-dollar"></i></a>
+                {% endif %}
+            </td>
+            <td>
+                <div class="dropdown">
+                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-gear-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            {% if perfil.pagamentoid %}
+                                <a class="dropdown-item" onclick="criar_pagamento('{{perfil.pagamentoid}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<script>
+    function criar_pagamento(id){
+        data = document.getElementById("id_data").value
+        window.location.href = `/pagamento/editar-pagamento/${id}/listar-todos-os-pagamentos/${data}`
+    }
+    function pagamento_rapido(id){
+        data = document.getElementById("id_data").value
+        window.location.href = `/pagamento/adicionarpagamentorapido/${id}/${data}`
+    }
+    function deletar_rapido(id){
+        data = document.getElementById("id_data").value
+        window.location.href = `/pagamento/deletarpagamentorapido/${id}/${data}`
+    }
+</script>
+
+{% endblock %}

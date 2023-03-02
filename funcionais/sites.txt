@@ -1,2 +1,10 @@
 learndjango.com
 medium.com (https://medium.com/@gabrielfgularte/custom-user-model-no-django-d9bdf2838bd8)
+
+Pagamento
+https://www.youtube.com/watch?v=atNfrqitgIg&ab_channel=RenatoAsse-SemCodar
+https://www.mercadopago.com.br/developers/pt/reference
+https://www.gerarpix.com.br/
+https://geradordepix.com/
+
+https://www.youtube.com/watch?v=z-CDaD8Xn4U&ab_channel=AlexPinheiro

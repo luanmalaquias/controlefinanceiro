@@ -2,21 +2,31 @@
 {% block title %}Imovel{% endblock %}
 {% block content %}
 
-<div class="container">
-    <div class="row text-white bg-success mx-auto my-3">
-        {% if imovel %}
-        <h2 class="ps-5">Editar {{ imovel }}</h2>
-        {% else %}
-        <h2 class="ps-5">Novo imóvel</h2>
-        {% endif %}
-    </div>
-    
-    <form method="post" autocomplete="off">
-        {% csrf_token %}
-        {{formImovel.as_p}}
-        <button type="submit" class="btn btn-success">Salvar</button>
-    </form>
+<div class="row bg-dark text-light mb-3">
+    {% if imovel %}
+    <h3 class="ps-5">Editar {{ imovel }}</h3>
+    {% else %}
+    <h3 class="ps-5">Novo Imóvel</h3>
+    {% endif %}
 </div>
+
+<div class="row text-center">
+    <div class="col-6 offset-3">
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+            {{formImovel.as_p}}
+            {% if formImovel.errors %}
+                <div class="alert alert-danger">
+                    {{ formImovel.errors }}
+                </div>
+            {% endif %}
+            <a href="{% url 'listarimoveis' %}" class="btn btn-light">Cancelar</a>
+            <button type="submit" class="btn btn-success">Salvar</button>
+        </form>
+    </div>
+</div>
+
+
 
 <!-- Busca pelo CEP -->
 <script>

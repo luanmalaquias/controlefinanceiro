@@ -7,5 +7,7 @@ urlpatterns = [
     path('editarperfil/<int:id>', editar_perfil, name="editarperfil"),
     path('editarusuario/<int:id>', editar_usuario, name="editarusuario"),
     path('deletar/<int:id>', deletar_usuario, name="deletarusuario"),
+    path('removerdoimovel/<int:id>', remover_do_imovel, name="removerdoimovel"),
+    path('incluirnoimovel/<int:id>', incluir_no_imovel, name="incluirnoimovel"),
     # path('recuperarsenha/', recuperar_senha, name="recuperarsenha"), # FIXME o usuario vai poder recuperar senha?
 ]

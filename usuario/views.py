@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Imovel
 from usuario.models import Perfil
-from .forms import PerfilForm, RecuperarSenhaForm
+from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm
 from utils.scripts import generatePassword, unmask
 from django.shortcuts import get_object_or_404
 
@@ -61,14 +61,14 @@ def criar_usuario(request):
     context['formUsuario'] = formUsuario
     context['formPerfil'] = formPerfil
 
-    return render(request, 'registration/create.html', context)
+    return render(request, 'views/criar-usuario.html', context)
 
 @login_required
 @staff_member_required
 def listar_usuarios(request):
     context = {}
     
-    perfis = Perfil.objects.all()
+    perfis = Perfil.objects.all().order_by('imovel','-data_entrada_imovel','nome_completo')
     context['perfis'] = perfis
 
     if request.method == "GET":
@@ -76,7 +76,7 @@ def listar_usuarios(request):
         if busca != None:
             perfis = Perfil.objects.all().filter(nome_completo__contains = busca)
             context['perfis'] = perfis
-            return render(request, 'registration/list.html', context)
+            return render(request, 'views/listar-usuarios.html', context)
     
     try:
         Imovel.objects.get()
@@ -85,7 +85,7 @@ def listar_usuarios(request):
         tem_imoveis = False
     context['tem_imoveis'] = tem_imoveis
 
-    return render(request, 'registration/list.html', context)
+    return render(request, 'views/listar-usuarios.html', context)
 
 @login_required
 @staff_member_required
@@ -125,9 +125,10 @@ def editar_perfil(request, id):
     context['perfil'] = perfil
     context['formPerfil'] = formPerfil
     
-    return render(request, 'registration/editprofile.html', context)
+    return render(request, 'views/editar-perfil.html', context)
 
 @login_required
+@staff_member_required
 def editar_usuario(request, id):
     context = {}
 
@@ -148,14 +149,16 @@ def editar_usuario(request, id):
     context['usuario'] = usuario
     context['perfil'] = perfil
     context['senhaGerada'] = senhaGerada
-    return render(request, 'registration/edituser.html', context)
+    return render(request, 'views/editar-usuario.html', context)
 
 @login_required
 @staff_member_required
 def deletar_usuario(request, id):
     perfil = get_object_or_404(Perfil, pk=id)
     usuario = get_object_or_404(User, pk=perfil.usuario.id)
-    perfil.imovel.alterar_disponibilidade(True)
+    try:
+        perfil.imovel.alterar_disponibilidade(True)
+    except: pass
     usuario.delete()
     return redirect('listarusuarios')
 
@@ -197,3 +200,31 @@ def recuperar_senha(request):
 
     context['formPerfil'] = formPerfil
     return render(request, 'registration/recoverpassword.html', context)
+
+def remover_do_imovel(request, id):
+    perfil = get_object_or_404(Perfil, pk=id)
+    perfil.imovel.alterar_disponibilidade(True)
+    perfil.imovel = None
+    perfil.save()
+    return redirect('listarusuarios')
+
+def incluir_no_imovel(request, id):
+    context = {}
+
+    perfil = get_object_or_404(Perfil,pk=id)
+
+    if request.method == 'POST':
+        form = IncluirNoImovelForm(request.POST, instance=perfil)
+        form.ajustar_escolhas()
+        if form.is_valid():
+            perfil.imovel.alterar_disponibilidade(False)
+            form.save()
+            return redirect('listarusuarios')
+    else:
+        form = IncluirNoImovelForm(instance=perfil)
+        form.ajustar_escolhas()
+
+    context['perfil'] = perfil
+    context['form'] = form
+
+    return render(request, 'views/adicionar-imovel-usuario.html', context)

@@ -17,6 +17,18 @@ class PerfilForm(forms.ModelForm):
             _imovel_initial = None
         self.fields['imovel'] = forms.ModelChoiceField(queryset=_imoveis_filtrados, initial=_imovel_initial)
 
+
 class RecuperarSenhaForm(forms.Form):
     cpf = forms.CharField()
     data_de_nascimento = forms.DateField()
+
+
+class IncluirNoImovelForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ('imovel',)
+
+    def ajustar_escolhas(self):
+        _imoveis_filtrados = Imovel.objects.filter(disponibilidade = True)
+        _imovel_initial = None
+        self.fields['imovel'] = forms.ModelChoiceField(queryset=_imoveis_filtrados, initial=_imovel_initial)

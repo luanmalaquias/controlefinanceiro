@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Pagamento{% endblock %}
+{% block content %}
+
+
+<div class="row bg-dark text-light mb-3">
+    {% if pagamento %}
+    <h3 class="ps-5">Editar pagamento</h3>
+    {% else %}
+    <h3 class="ps-5">Adicionar pagamento</h3>
+    {% endif %}
+</div>
+
+<div class="row text-center">
+    <div class="col-6 offset-3">
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+            {{form.as_p}}
+            
+            {% if errop %}
+                <div class="alert alert-danger">
+                    Já existe um pagamento para este mês deste usuário.
+                </div>
+            {% endif %}
+
+            <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="btn btn-light">Cancelar</a>
+            <button type="submit" class="btn btn-success">Salvar</button>
+        </form>
+    </div>
+</div>
+
+
+
+<!-- Bootstrap nos inputs -->
+<script>
+    // alterar ordem dos labels
+    $('p label').each(function() {
+        $(this).insertAfter( $(this).next('input') );
+        $(this).insertAfter( $(this).next('select') );
+    });
+    // trocar os elementos P por DIVS
+    $("p").each(function() {
+        $(this).replaceWith("<div class=\"form-floating mb-3\">" + $(this).html() + "</div>");
+    });
+
+    // configurações dos inputs
+    $('input').addClass('form-control')
+    $('input').each(function(){
+        $(this).attr('placeholder', 'placeholder');
+    })
+
+    // configurações dos selects
+    $('select').addClass('form-select')
+</script>
+
+<!-- Máscaras e atributos -->
+<script type="text/javascript">
+    $('#id_valor_pago').mask('#.000', {reverse: true})
+    $('#id_data').mask('00/00/0000')
+</script>
+
+{% endblock %}

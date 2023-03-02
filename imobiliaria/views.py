@@ -15,7 +15,7 @@ def index_imobiliaria(request):
     context = {}
 
     # FIXME remover isso daqui quando for implantar
-    # gerarDados(10)
+    # gerarDados(5)
 
     # TODO levar pra area de cadastro de superusuario se não existir
 
@@ -27,7 +27,7 @@ def index_imobiliaria(request):
     except:
         pass
 
-    return render(request, 'index.html', context)
+    return render(request, 'index-imobiliaria.html', context)
 
 @login_required
 @staff_member_required
@@ -41,7 +41,7 @@ def cadastrar_imovel(request):
     else:
         formImovel = ImovelForm()
     context['formImovel'] = formImovel
-    return render(request, 'create.html', context)
+    return render(request, 'views/criar-imovel.html', context)
 
 @login_required
 @staff_member_required
@@ -55,9 +55,9 @@ def listar_imoveis(request):
         if busca != None:
             imoveis = Imovel.objects.all().filter(nome__contains = busca).order_by('-disponibilidade','nome')
             context['imoveis'] = imoveis
-            return render(request, 'list.html', context)
+            return render(request, 'views/listar-imoveis.html', context)
 
-    return render(request, 'list.html', context)
+    return render(request, 'views/listar-imoveis.html', context)
 
 @login_required
 @staff_member_required
@@ -67,16 +67,16 @@ def atualizar_dados_imovel(request, id):
     imovel = get_object_or_404(Imovel, pk=id)
     formImovel = ImovelForm(instance=imovel)
 
-    context['formImovel'] = formImovel
-    context['imovel'] = imovel
-
     if request.method == 'POST':
         formImovel = ImovelForm(request.POST, instance=imovel)
         if formImovel.is_valid():
             formImovel.save()
             return redirect('listarimoveis')
-    else:
-        return render(request, 'create.html', context)
+        
+    context['formImovel'] = formImovel
+    context['imovel'] = imovel
+        
+    return render(request, 'views/criar-imovel.html', context)
 
 @login_required
 @staff_member_required

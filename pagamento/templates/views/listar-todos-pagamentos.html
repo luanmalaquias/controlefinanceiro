@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Pagamentos{% endblock %}
+{% block content %}
+
+<div class="row bg-dark text-light mb-3">
+    <h3 class="ps-5">Pagamentos por usuarios</h3>
+</div>
+
+<table class="table table-hover text-center">
+    <thead>
+        <tr>
+            <th scope="col">Perfil</th>
+            <th scope="col">Imovel</th>
+            <th scope="col">Status</th>
+            <th scope="col">Venc.</th>
+            <th scope="col">Mens.</th>
+            <th scope="col">Valor pago</th>
+            <th scope="col">Data Pag.</th>
+            <th scope="col">Opções</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pagamento in pagamentos %}
+        <tr>
+            <td>{{pagamento.perfil}}</td>
+            <td>
+                {% if pagamento.perfil.imovel%}
+                    <span>{{pagamento.perfil.imovel}}</span>
+                {% else %}
+                <span class="badge bg-danger-subtle text-danger">Despejado</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if pagamento.status == "P" %}
+                <span class="badge bg-success-subtle text-success">Pago</span>
+                {% elif pagamento.status == "A" %}
+                <span class="badge bg-warning-subtle text-dark">Em análise</span>
+                {% else %}
+                <span class="badge bg-danger-subtle text-danger">Aguardando</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if pagamento.perfil.imovel.vencimento > 9 %}
+                    {{ pagamento.perfil.imovel.vencimento }}
+                {% else %}
+                    0{{pagamento.perfil.imovel.vencimento}}
+                {% endif %}
+            </td>
+            <td>{{pagamento.perfil.imovel.mensalidade}}</td>
+            <td>{{pagamento.valor_pago}}</td>
+            <td>{{pagamento.data|date:"d/m/y"}}</td>
+            <td>
+                <div class="dropdown">
+                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-gear-fill"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <!-- TODO -->
+                        <li><a class="dropdown-item" onclick="criar_pagamento('{{pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a></li>
+                        <li><a class="dropdown-item bg-danger text-white" href="{% url 'deletar-pagamento' pagamento.id %}"><i class="bi bi-trash-fill"></i> Deletar</a></li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    function criar_pagamento(id){
+        window.location.href = `/pagamento/editar-pagamento/${id}/listar-todos-os-pagamentos/None`
+    }
+</script>
+
+{% endblock %}
