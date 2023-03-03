@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Histórico{% endblock %}
+{% block content %}
+
+<div class="row bg-dark text-light mb-3">
+    <h3 class="ps-5">Histórico de pagamentos</h3>
+</div>
+
+<div class="col-6 offset-3">
+    <table class="table table-borderless text-center mt-5">
+        <thead>
+            <tr>
+                <th scope="col">Referência</th>
+                <th scope="col">Status</th>
+                <th scope="col">Valor pago</th>
+                <th scope="col">Data Pag.</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pagamento in pagamentos %}
+            <tr>
+                <td>{{pagamento.mes_referencia|date:"M/Y"}}</td>
+                <td>
+                    {% if pagamento.status == "P" %}
+                    <span class="badge bg-success-subtle text-success">Pago</span>
+                    {% elif pagamento.status == "A" %}
+                    <span class="badge bg-warning-subtle text-dark">Em análise</span>
+                    {% else %}
+                    <span class="badge bg-danger-subtle text-danger">Aguardando</span>
+                    {% endif %}
+                </td>
+                <td>R$ {{pagamento.valor_pago}}</td>
+                <td>{{pagamento.data_pagamento|date:"d/M/y"}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+{% endblock %}

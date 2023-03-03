@@ -24,12 +24,15 @@
     <div class="container-fluid h-100">
         <div class="row h-100">
 
-            <!-- Sidebar -->
+            <!-- Sidebar staff-->
+            {% if user.is_staff %}
             <div class="col-2 bg-light pt-3">
-                <a href="{% url 'indeximobiliaria' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-                    <span class="fs-4 ms-5">Imobiliaria</span>
-                    
-                </a>
+                <div class="row text-center">
+                    <a href="{% url 'indeximobiliaria' %}" class="link-dark text-decoration-none">
+                        <span class="fs-4">Imobiliaria</span>
+                    </a>
+                    <span>Usuario administrativo</span>
+                </div>
                 <hr>
                 <ul class="nav nav-pills flex-column mb-auto">
                     <li>
@@ -62,11 +65,41 @@
                 </ul>
             </div>
 
-            <!-- Conteúdo -->
+            <!-- Sidebar no staff -->
+            {% else %}
+            <div class="col-2 bg-light pt-3">
+                <div class="row text-center">
+                    <a href="{% url 'indeximobiliaria' %}" class="link-dark text-decoration-none">
+                        <span class="fs-4">Imobiliaria</span>
+                    </a>
+                </div>
+                <hr>
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li>
+                        <a href="{% url 'home-usuario' %}" class="nav-link {% if 'home-usuario' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-house-fill"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'historico-usuario' %}" class="nav-link {% if 'historico-usuario' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-clipboard2-data-fill"></i>
+                            Historico de faturas
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'logout' %}" class="nav-link link-dark">Sair</a>
+                    </li>
+                </ul>
+            </div>
+
+            {% endif %}
+
             <div class="col-10 pt-3">
                 {% block content %}
                 {% endblock %}
             </div>
+
         </div>
     </div>
 </body>

@@ -7,4 +7,6 @@ urlpatterns = [
     path('listar/', listar_imoveis, name="listarimoveis"),
     path('atualizar/<int:id>', atualizar_dados_imovel, name="atualizardadosimovel"),
     path('deletar/<int:id>', deletar_imovel, name="deletarimovel"),
+    path('home-usuario', home_usuario, name="home-usuario"),
+    path('historico-usuario', historico_usuario, name="historico-usuario"),
 ]

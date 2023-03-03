@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<div class="row bg-dark text-light mb-3">
+    <h3 class="ps-5">Fatura atual {{hoje|date:"M Y"}}</h3>
+</div>
+
+
+<div class="col-sm-12 offset-sm-0 offset-lg-3 col-lg-5  text-center">
+
+    {% if pag_mes_atual %}
+
+    <div class="card">
+        <div class="card-header text-success">
+            Fatura paga
+        </div>
+        <div class="card-body">
+            <h4 class="card-title text-success">R$ {{perfil.imovel.mensalidade}}</h4>
+            <span style="font-size: 15px;">vencimento {{perfil.imovel.vencimento}} {{hoje|date:"M"}}</span>
+            <br>
+            <span class="text-secondary" style="font-size: 12px;">{{perfil.imovel}}</span>
+        </div>
+    </div>
+
+    {% else %}
+
+    <div class="card">
+        <div class="card-header text-danger">
+            Fatura aguardando pagamento
+        </div>
+        <div class="card-body">
+            {% if dias_atrasados %}
+                <span class="card-title" style="font-size: 10px;">Juros de {{dias_atrasados}}% por dias atrasados</span>
+            {% endif %}
+            <h3 class="card-title text-primary">R$ {{perfil.imovel.mensalidade}}</h3>
+            <span style="font-size: 15px;">vencimento {{perfil.imovel.vencimento}} {{hoje|date:"M"}}</span>
+            <br>
+            <span class="text-secondary" style="font-size: 12px;">{{perfil.imovel}}</span>
+            <hr>
+            <!-- TODO gerar qrcode com pix -->
+            <a href="#" class="btn btn-outline-primary"><i class="bi bi-x-diamond-fill"></i> Pagar com pix</a>
+        </div>
+    </div>
+
+    {% endif %}
+    
+</div>
+{% endblock %}

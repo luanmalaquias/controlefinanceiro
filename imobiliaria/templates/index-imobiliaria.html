@@ -2,12 +2,23 @@
 {% block title %}Imobiliaria{% endblock %}
 {% block content %}
 
-{% if user.is_staff %}
-<h1>bem vindo adm {{ perfil.nome_completo }}</h1>
+<h1>Administração</h1>
 
-{% else %}
-<h1>Bem vindo {{ perfil.nome_completo }}</h1>
-<h2>Usuario padrão</h2>
-{% endif %}    
+<p>
+    Olá,
+    {%if hoje.hour >= 5 and hoje.hour < 12%} 
+        Bom dia.
+    {%elif hoje.hour >= 12 and hoje.hour < 18%} 
+        Boa tarde.
+    {%else%}
+        Boa noite.
+    {%endif%}
+</p>
+
+<p>Imóveis cadastrados: {{imoveis|length}}</p>
+<p>Usuários cadastrados: {{perfis|length}}</p>
+<p>Usuários sem imóvel: {{perfis_sem_imovel|length}}</p>
+<p>Devedores deste mês: {{devedores_deste_mes}}</p>
+<p>Rendimento de R$ {{rendimento_total}} desde o início.</p> 
 
 {% endblock %}
