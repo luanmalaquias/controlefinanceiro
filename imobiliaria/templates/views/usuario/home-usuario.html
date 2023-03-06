@@ -2,48 +2,82 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 
-<div class="row bg-dark text-light mb-3">
-    <h3 class="ps-5">Fatura atual {{hoje|date:"M Y"}}</h3>
+<div class="row bg-dark text-light">
+    <h3 class="ps-5">Home</h3>
 </div>
 
-
-<div class="col-sm-12 offset-sm-0 offset-lg-3 col-lg-5  text-center">
-
-    {% if pag_mes_atual %}
-
-    <div class="card">
-        <div class="card-header text-success">
-            Fatura paga
-        </div>
-        <div class="card-body">
-            <h4 class="card-title text-success">R$ {{perfil.imovel.mensalidade}}</h4>
-            <span style="font-size: 15px;">vencimento {{perfil.imovel.vencimento}} {{hoje|date:"M"}}</span>
-            <br>
-            <span class="text-secondary" style="font-size: 12px;">{{perfil.imovel}}</span>
-        </div>
-    </div>
-
-    {% else %}
-
-    <div class="card">
-        <div class="card-header text-danger">
-            Fatura aguardando pagamento
-        </div>
-        <div class="card-body">
-            {% if dias_atrasados %}
-                <span class="card-title" style="font-size: 10px;">Juros de {{dias_atrasados}}% por dias atrasados</span>
+<div class="row">
+    <div class="col-12 d-flex justify-content-center text-center">
+        <div class="col-5 mt-3">
+            <h3><i class="bi bi-person-fill"></i> {{perfil.nome_completo}}</h3>
+            {% if perfil.imovel %}
+                <p>{{perfil.imovel}}</p>
+            {% else %}
+                <p>Sem imovel</p>
             {% endif %}
-            <h3 class="card-title text-primary">R$ {{perfil.imovel.mensalidade}}</h3>
-            <span style="font-size: 15px;">vencimento {{perfil.imovel.vencimento}} {{hoje|date:"M"}}</span>
-            <br>
-            <span class="text-secondary" style="font-size: 12px;">{{perfil.imovel}}</span>
-            <hr>
-            <!-- TODO gerar qrcode com pix -->
-            <a href="#" class="btn btn-outline-primary"><i class="bi bi-x-diamond-fill"></i> Pagar com pix</a>
+            
+            {% for d in dividas %}
+                {% if d.pago %}
+                <div class="card mb-4">
+                    <div class="card-header text-success bg-success-subtle">
+                        Fatura paga
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title text-success">R$ {{perfil.imovel.mensalidade}}</h4>
+                        <span style="font-size: 15px;">vencimento {{perfil.imovel.vencimento}} {{hoje|date:"M"}}</span>
+                        <br>
+                        <span class="text-secondary" style="font-size: 12px;">{{perfil.imovel}}</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="card mb-4">
+                    <div class="card-header text-danger bg-danger-subtle">
+                        Fatura aguardando pagamento
+                    </div>
+                    <div class="card-body">
+                        {% if d.dias_atrasados >= 1 %}
+                            <span class="card-title" style="font-size: 10px;">Juros de {{d.dias_atrasados}}% por dias atrasados</span>
+                        {% endif %}
+                        <h3 class="card-title text-primary">R$ {{d.valor_com_juros}}</h3>
+                        <span style="font-size: 15px;">Vencimento {{d.mes_referencia|date:"d M"}}</span>
+                        <br>
+                        <span class="text-secondary" style="font-size: 12px;">{{d.perfil.imovel}}</span>
+                        <hr>
+                        <a class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-x-diamond-fill"></i>Pagar com pix</a>
+        
+                        <!-- Modal precista estar dentro do for -->
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Qrcode</h1>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <img src="{{d.b64qrcode}}" class="card-img-top" alt="qrcode">
+                                                <p class="card-text mt-1">Pix copia e cola</p>
+                                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" readonly>{{d.brcode}}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <!-- TODO on click criar pagamento em análise e atualizar a pagina -->
+                                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
         </div>
     </div>
 
-    {% endif %}
-    
+    <div class="col-3 pt-3 text-center">
+        
+    </div>
 </div>
+
 {% endblock %}

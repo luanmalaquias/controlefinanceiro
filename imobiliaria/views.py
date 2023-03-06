@@ -7,7 +7,8 @@ from .models import Imovel
 from .forms import ImovelForm
 from django.shortcuts import get_object_or_404
 # FIXME remover gerar dadosisso daqui quando for implantar
-from utils.scripts import gerarDados, unmask
+from utils.scripts import gerarDados, unmask, porcentagem
+from utils import pixcodegen
 from datetime import datetime, timedelta, time, date
 from dateutil.relativedelta import relativedelta
 
@@ -131,22 +132,36 @@ def home_usuario(request):
     context = {}
 
     perfil = Perfil.objects.get(usuario=request.user)
+    # Pagamento.objects.filter(perfil = perfil).delete()
+    # p = Pagamento.objects.create()
+    # p.perfil = perfil; p.status = "P"; p.valor_pago = perfil.imovel.mensalidade; p.data = date.today(); p.save()
     pagamentos = Pagamento.objects.filter(perfil=perfil)
     hoje = date(datetime.now().year, datetime.now().month, datetime.now().day)
 
-    pag_mes_atual = False
-    for p in pagamentos:
-        if p.data.month == hoje.month and p.data.year == hoje.year:
-            pag_mes_atual = True
-            data_vencimento = date(hoje.year, hoje.month, int(perfil.imovel.vencimento))
-            dias_atrasados = relativedelta(hoje, data_vencimento).days
-            if dias_atrasados >= 1 and p.status != "P":
-                perfil.imovel.mensalidade = str(int(int(perfil.imovel.mensalidade) + int(perfil.imovel.mensalidade) * 0.01))
-                context['dias_atrasados'] = dias_atrasados
+    # verificar se os meses anteriores foram pagos
+    faturas = []
+    if perfil.imovel:
+        dat_entr_imovel = date(perfil.data_entrada_imovel.year, perfil.data_entrada_imovel.month, perfil.imovel.vencimento)
+        meses_passados = relativedelta(date.today(), dat_entr_imovel).months
+        for _ in range(meses_passados+1):
+            pag_este_mes = False    
+            for p in pagamentos:            
+                if p.data.month == dat_entr_imovel.month and p.data.year == dat_entr_imovel.year:
+                    pag_este_mes = True
+                    
+            dias_atrasados = (hoje-dat_entr_imovel).days
+            valor_com_juros = int(porcentagem(1, valor=perfil.imovel.mensalidade, porcentagem=dias_atrasados))
+            payload = pixcodegen.Payload('Luan dos Santos Sousa', '10421063475', str(valor_com_juros), 'Joao Pessoa', 'IMOBILIARIA')
+
+            if pag_este_mes and dat_entr_imovel.month == hoje.month and dat_entr_imovel.year == hoje.year:
+                faturas.insert(0, {'pago': True, 'dias_atrasados': dias_atrasados, 'valor_com_juros': valor_com_juros, 'mes_referencia': dat_entr_imovel})
+            elif pag_este_mes == False:
+                faturas.insert(0, {'pago': False, 'dias_atrasados': dias_atrasados, 'valor_com_juros': valor_com_juros, 'mes_referencia': dat_entr_imovel, 'brcode': payload.crc16, 'b64qrcode': payload.base64}) 
+            dat_entr_imovel = date(dat_entr_imovel.year, dat_entr_imovel.month + 1, dat_entr_imovel.day)
 
     context['hoje'] = hoje
-    context['pag_mes_atual'] = pag_mes_atual
     context['perfil'] = perfil
+    context['dividas'] = faturas
     return render(request, 'views/usuario/home-usuario.html', context)
 
 
@@ -157,38 +172,36 @@ def historico_usuario(request):
     perfil = Perfil.objects.get(usuario=request.user)
     pagamentos = Pagamento.objects.filter(perfil=perfil)
 
-    data_entrada_imovel = perfil.data_entrada_imovel
-    # data_entrada_imovel = date(2022, 10, 1)
-    hoje = date(datetime.now().year, datetime.now().month, datetime.now().day)
-    meses_passados = relativedelta(hoje, data_entrada_imovel).months
+    if perfil.imovel:
+        data_entrada_imovel = perfil.data_entrada_imovel
+        hoje = date(datetime.now().year, datetime.now().month, datetime.now().day)
+        meses_passados = relativedelta(hoje, data_entrada_imovel).months
 
-    pagamentos_array = []
-    
-    for _ in range(meses_passados+1):
-        pago = False
-        for p in pagamentos:
-            if p.data.month == data_entrada_imovel.month and p.data.year == data_entrada_imovel.year:
-                pagamentos_array.append(
+        pagamentos_array = []
+        
+        for _ in range(meses_passados+1):
+            pago = False
+            for p in pagamentos:
+                if p.data.month == data_entrada_imovel.month and p.data.year == data_entrada_imovel.year:
+                    pagamentos_array.insert(0,
+                        {'mes_referencia': data_entrada_imovel, 
+                        'status': p.status, 
+                        'vencimento': p.perfil.imovel.vencimento, 
+                        'mensalidade': p.perfil.imovel.mensalidade, 
+                        'valor_pago': p.valor_pago, 
+                        'data_pagamento': p.data})
+                    pago = True
+                    continue
+            if not pago:
+                pagamentos_array.insert(0,
                     {'mes_referencia': data_entrada_imovel, 
-                    'status': p.status, 
-                    'vencimento': p.perfil.imovel.vencimento, 
-                    'mensalidade': p.perfil.imovel.mensalidade, 
-                    'valor_pago': p.valor_pago, 
-                    'data_pagamento': p.data})
-                pago = True
-                continue
-        if not pago:
-            pagamentos_array.append(
-                {'mes_referencia': data_entrada_imovel, 
-                'status': 'Aguardando', 
-                'vencimento': perfil.imovel.vencimento, 
-                'mensalidade': perfil.imovel.mensalidade, 
-                'valor_pago': '--', 
-                'data_pagamento': ''})
-        data_entrada_imovel += relativedelta(months=1)
+                    'status': 'Aguardando', 
+                    'vencimento': perfil.imovel.vencimento, 
+                    'mensalidade': perfil.imovel.mensalidade, 
+                    'valor_pago': '--', 
+                    'data_pagamento': ''})
+            data_entrada_imovel += relativedelta(months=1)
 
-    # inverter lista
-    pagamentos_array=pagamentos_array[::-1]    
-    context['pagamentos'] = pagamentos_array
+        context['pagamentos'] = pagamentos_array
     
     return render(request, 'views/usuario/historico-usuario.html', context)

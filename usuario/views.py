@@ -45,11 +45,15 @@ def criar_usuario(request):
             perfil.usuario = usuario
 
             # alterar disponibilidade do imovel
-            imovel = Imovel.objects.get(id = perfil.imovel.id)
-            imovel.alterar_disponibilidade(False)
+            if perfil.imovel:
+                imovel = Imovel.objects.get(id = perfil.imovel.id)
+                imovel.alterar_disponibilidade(False)
 
-            usuario.save()
-            perfil.save()
+            try:
+                usuario.save()
+                perfil.save()
+            except:
+                raise Exception
 
             return redirect('listarusuarios')        
 
@@ -110,9 +114,11 @@ def editar_perfil(request, id):
             except:
                 # usuario sem imovel antes da atualização
                 pass
-            perfil.atualizar_data_entrada_imovel()
-            imovel = Imovel.objects.get(id = perfil.imovel.id)
-            imovel.alterar_disponibilidade(False)
+
+            if perfil.imovel:
+                perfil.atualizar_data_entrada_imovel()
+                imovel = Imovel.objects.get(id = perfil.imovel.id)
+                imovel.alterar_disponibilidade(False)
 
             perfil = formPerfil.save()
             return redirect('listarusuarios')

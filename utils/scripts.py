@@ -97,7 +97,7 @@ def gerarDados(quantidade:int) -> None:
         perfil.imovel = imovel
 
         pagamento = Pagamento.objects.create(perfil = perfil)
-        pagamento.status = "Concluido"
+        pagamento.status = "P"
         pagamento.valor_pago = imovel.mensalidade
         pagamento.data = datetime.now()
 
@@ -105,3 +105,14 @@ def gerarDados(quantidade:int) -> None:
         imovel.save()
         perfil.save()
         pagamento.save()
+
+def porcentagem(opcao: int, valor: float|int, porcentagem: float|int) -> float:
+    """Calculo de porcentagem
+    1: aumentar porcentagem em cima de um valor
+    """
+    if type(valor) != float or type(valor) != int:
+        valor = float(valor)
+
+    if opcao == 1:
+        valor += valor*(porcentagem/100)
+        return valor

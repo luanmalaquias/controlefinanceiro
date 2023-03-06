@@ -55,7 +55,6 @@
                         <i class="bi bi-gear-fill"></i>
                     </button>
                     <ul class="dropdown-menu">
-                        <!-- TODO foi finalizado ja ? -->
                         <li><a class="dropdown-item" onclick="criar_pagamento('{{pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a></li>
                         <li><a class="dropdown-item bg-danger text-white" href="{% url 'deletar-pagamento' pagamento.id %}"><i class="bi bi-trash-fill"></i> Deletar</a></li>
                     </ul>
