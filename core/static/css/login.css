@@ -4,6 +4,7 @@ body {
     margin: 0;
 }
 
+/* No necessary */
 .login-background {
     padding-top: 5%;
     background-color: #48c062;
@@ -12,19 +13,29 @@ body {
     height: 100%;
 }
 
-.login-card {
-    width: 28rem;
-    height: 40rem;
-    box-shadow: 0 0 40px #00000038;
-    border: 0;
+.quadrado {
+    position: relative;
+    animation-name: slidein;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
 }
 
-.login-input{
-    border-radius: 0;
-    border: none; border-bottom: 1px solid gray
+@keyframes slidein {
+    0% {
+        background-color: red;
+        transform: translateX(-25%)
+        scaleX(1.4);
+    }
+
+    100% {
+        background-color: red;
+        transform: translateX(0%)
+        scaleX(1);
+    }
 }
 
-.login-brn-continuar {
-    width: 20rem;
-    height: 5rem;
+@media screen and (max-width: 1000px) {
+    html{
+        font-size: 2.3em;
+    }
 }

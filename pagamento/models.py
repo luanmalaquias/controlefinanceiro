@@ -4,6 +4,7 @@ from usuario.models import Perfil
 STATUS_CHOICES = (
     ("P", "Pago"),
     ("A", "Em Análise"),
+    ("N", "Não pago"),
 )
 
 class Pagamento(models.Model):

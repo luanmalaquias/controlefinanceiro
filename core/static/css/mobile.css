@@ -1,0 +1,13 @@
+#row-conteudo-principal{
+    height: 100%;
+}
+
+@media screen and (max-width: 1000px) {
+    html{
+        font-size: 2.3em;
+    }
+
+    #row-conteudo-principal{
+        height: auto;
+    }
+}

@@ -2,23 +2,94 @@
 {% block title %}Imobiliaria{% endblock %}
 {% block content %}
 
-<h1>Administração</h1>
+<div class="col-sm-12 col-lg-6 offset-lg-3">
+    <div class="row mt-4">
 
-<p>
-    Olá,
-    {%if hoje.hour >= 5 and hoje.hour < 12%} 
-        Bom dia.
-    {%elif hoje.hour >= 12 and hoje.hour < 18%} 
-        Boa tarde.
-    {%else%}
-        Boa noite.
-    {%endif%}
-</p>
+        <!-- Imóveis cadastrados -->
+        <div class="col-sm-6 col-lg-4 d-flex flex-column justify-content-center text-center align-items-center mb-5">
+            <a href="{% url 'listarimoveis' %}" class="btn btn-primary position-relative w-50 ">
+                <i class="bi bi-houses-fill fs-1"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-subtle text-primary fs-6">
+                    {{imoveis|length}}
+                </span>
+            </a>
+            <span class="text-muted fs-6">Imóveis <br> cadastrados</span>
+        </div>
+    
+        <!-- Usuários cadastrados -->
+        <div class="col-sm-6 col-lg-4 d-flex flex-column justify-content-center text-center align-items-center mb-5">
+            <a href="{% url 'listarusuarios' %}" class="btn btn-primary position-relative w-50 ">
+                <i class="bi bi-people-fill fs-1"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary-subtle text-primary fs-6">
+                    {{perfis|length}}
+                </span>
+            </a>
+            <span class="text-muted fs-6">Usuários <br> cadastrados</span>
+        </div>
+    
+        <!-- Imóveis disponíveis -->
+        <div class="col-sm-6 col-lg-4 d-flex flex-column justify-content-center text-center align-items-center mb-5">
+            <a href="{% url 'listarusuarios' %}" class="btn bg-primary-subtle text-primary position-relative w-50 ">
+                <i class="bi bi-house fs-1"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light fs-6">
+                    {{imoveis_disponiveis|length}}
+                </span>
+            </a>
+            <span class="text-muted fs-6">Imóveis <br> disponíveis</span>
+        </div>
+    
+        <!-- Usuários sem imóveis -->
+        <div class="col-sm-6 col-lg-4 d-flex flex-column justify-content-center text-center align-items-center mb-5">
+            <a href="{% url 'listarusuarios' %}" class="btn bg-primary-subtle text-primary position-relative w-50 ">
+                <i class="bi bi-circle fs-1"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light fs-6">
+                    {{perfis_sem_imovel|length}}
+                </span>
+            </a>
+            <span class="text-muted fs-6">Usuários sem <br> imóvel</span>
+        </div>
+    
+        <!-- Rendimento total -->
+        <div class="col-sm-6 col-lg-4 d-flex flex-column justify-content-center text-center align-items-center mb-5">
+            <a class="btn bg-primary-subtle text-primary position-relative w-50 ">
+                <i class="bi bi-wallet fs-1"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light fs-6">
+                    R$ {{rendimento_total}}
+                </span>
+            </a>
+            <span class="text-muted fs-6">Rendimento <br> total</span>
+        </div>
 
-<p>Imóveis cadastrados: {{imoveis|length}}</p>
-<p>Usuários cadastrados: {{perfis|length}}</p>
-<p>Usuários sem imóvel: {{perfis_sem_imovel|length}}</p>
-<p>Devedores deste mês: {{devedores_deste_mes}}</p>
-<p>Rendimento de R$ {{rendimento_total}} desde o início.</p> 
+        <!-- Rendimento total -->
+        <div class="col-sm-6 col-lg-4 d-flex flex-column justify-content-center text-center align-items-center mb-5">
+            <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="btn bg-primary-subtle text-primary position-relative w-50 ">
+                <i class="bi bi-calendar3 fs-1"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light fs-6">
+                    R$ {{rendimentoMensal}}
+                </span>
+            </a>
+            <span class="text-muted fs-6">Rendimento médio <br>mensal</span>
+        </div>
+    </div>
+    
+    <div class="row pb-4 bg-primary text-white rounded-5 rounded-bottom-0">
+    
+        <div class="col-12 my-3 text-center">
+            <h3>Devedores deste mês</h3>
+        </div>
+    
+        <div class="col-12">
+            <ul class="list-group">
+                {% for d in devedores_deste_mes %}
+                    <li class="list-group-item bg-primary text-white d-flex justify-content-between">
+                        <span>{{d}}, Vence: {{d.imovel.vencimento}}</span>
+                        <span>R$ {{d.imovel.mensalidade}}</span>
+                    </li>
+                {% endfor %}
+              </ul>
+        </div>
+    </div>
+</div>
+
 
 {% endblock %}

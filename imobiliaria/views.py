@@ -28,7 +28,7 @@ def index_imobiliaria(request):
     imoveis_disponiveis = Imovel.objects.filter(disponibilidade=True)
     perfis_sem_imovel = Perfil.objects.filter(imovel=None)
     
-    devedores_deste_mes = 0
+    devedores_deste_mes = []
     hoje = datetime.now()
     for perfil in perfis:
         pagou = False
@@ -39,11 +39,16 @@ def index_imobiliaria(request):
                     break
         else: continue
         if pagou == False:
-            devedores_deste_mes += 1
+            devedores_deste_mes.append(perfil)
 
     rendimento_total = 0
     for pagamento in pagamentos:
         rendimento_total += int(unmask(pagamento.valor_pago, '.'))
+    
+    rendimentoMensal = 0
+    for imovel in imoveis:
+        if imovel.disponibilidade == False:
+            rendimentoMensal += int(imovel.mensalidade)
 
     # FIXME remover gerar dados isso daqui quando for implantar
     # gerarDados(5)
@@ -52,11 +57,9 @@ def index_imobiliaria(request):
 
     # quando o usuario nao tiver perfil
     usuario_logado = request.user
-    try:
+    if request.user.is_staff == False:
         perfil = Perfil.objects.get(usuario = usuario_logado)
         context['perfil'] = perfil
-    except:
-        pass
 
     context['imoveis'] = imoveis
     context['perfis'] = perfis
@@ -65,6 +68,7 @@ def index_imobiliaria(request):
     context['perfis_sem_imovel'] = perfis_sem_imovel
     context['devedores_deste_mes'] = devedores_deste_mes
     context['rendimento_total'] = rendimento_total
+    context['rendimentoMensal'] = rendimentoMensal
     context['hoje'] = hoje
 
     return render(request, 'index-imobiliaria.html', context)
@@ -138,30 +142,56 @@ def home_usuario(request):
     pagamentos = Pagamento.objects.filter(perfil=perfil)
     hoje = date(datetime.now().year, datetime.now().month, datetime.now().day)
 
-    # verificar se os meses anteriores foram pagos
     faturas = []
     if perfil.imovel:
-        dat_entr_imovel = date(perfil.data_entrada_imovel.year, perfil.data_entrada_imovel.month, perfil.imovel.vencimento)
-        meses_passados = relativedelta(date.today(), dat_entr_imovel).months
-        for _ in range(meses_passados+1):
-            pag_este_mes = False    
-            for p in pagamentos:            
-                if p.data.month == dat_entr_imovel.month and p.data.year == dat_entr_imovel.year:
-                    pag_este_mes = True
-                    
-            dias_atrasados = (hoje-dat_entr_imovel).days
-            valor_com_juros = int(porcentagem(1, valor=perfil.imovel.mensalidade, porcentagem=dias_atrasados))
-            payload = pixcodegen.Payload('Luan dos Santos Sousa', '10421063475', str(valor_com_juros), 'Joao Pessoa', 'IMOBILIARIA')
+        dataEntradaImovel = date(perfil.data_entrada_imovel.year, perfil.data_entrada_imovel.month, perfil.imovel.vencimento)
+        mesesPassados = relativedelta(date.today(), dataEntradaImovel).months
+        mesReferencia = dataEntradaImovel
 
-            if pag_este_mes and dat_entr_imovel.month == hoje.month and dat_entr_imovel.year == hoje.year:
-                faturas.insert(0, {'pago': True, 'dias_atrasados': dias_atrasados, 'valor_com_juros': valor_com_juros, 'mes_referencia': dat_entr_imovel})
-            elif pag_este_mes == False:
-                faturas.insert(0, {'pago': False, 'dias_atrasados': dias_atrasados, 'valor_com_juros': valor_com_juros, 'mes_referencia': dat_entr_imovel, 'brcode': payload.crc16, 'b64qrcode': payload.base64}) 
-            dat_entr_imovel = date(dat_entr_imovel.year, dat_entr_imovel.month + 1, dat_entr_imovel.day)
+        for _ in range(mesesPassados+1):
+            pagoMesAtual = False
+            for p in pagamentos:
+                if (p.status == "P" or p.status == "A") and (p.data.month == mesReferencia.month and p.data.year == mesReferencia.year):
+                    pagoMesAtual = True
+                    break
+
+            if pagoMesAtual:
+                faturas.append({"pagamento": p})
+            else:
+                pagamento = Pagamento(perfil=perfil)
+                pagamento.status = "N"
+                # aplicar juros
+                diasAtrasados = (hoje-mesReferencia).days
+                valorComJuros = int(porcentagem(1, valor=perfil.imovel.mensalidade, porcentagem=diasAtrasados))
+                pagamento.valor_pago = valorComJuros
+                pagamento.data = mesReferencia
+                payload = pixcodegen.Payload('Luan dos Santos Sousa', '10421063475', str(valorComJuros), 'Joao Pessoa', 'IMOBILIARIA')
+                faturas.append({"pagamento": pagamento, "diasAtrasados": diasAtrasados, 'brcode': payload.crc16, 'b64qrcode': payload.base64})
+            mesReferencia = date(mesReferencia.year, mesReferencia.month + 1, mesReferencia.day)
+    faturas = faturas[::-1]
+
+    if request.method == 'POST':
+        dadosPagamento = request.POST.get('dadosPagamento')
+        dadosPagamento = dadosPagamento.split(':')
+        dataRefPagamentoYMD = dadosPagamento[0].split('-')
+        valorPagamento = dadosPagamento[1]
+
+        pagamento = Pagamento(perfil = perfil)
+        pagamento.valor_pago = valorPagamento
+        pagamento.data = datetime(year=int(dataRefPagamentoYMD[0]), month=int(dataRefPagamentoYMD[1]), day=int(dataRefPagamentoYMD[2]))
+
+        try:
+            pagamento = Pagamento.objects.get(perfil=perfil, data=pagamento.data)
+            pagamento.status = "A"
+            pagamento.save()
+        except:
+            pagamento.save()
+
+        return redirect('home-usuario')
 
     context['hoje'] = hoje
     context['perfil'] = perfil
-    context['dividas'] = faturas
+    context['faturas'] = faturas
     return render(request, 'views/usuario/home-usuario.html', context)
 
 

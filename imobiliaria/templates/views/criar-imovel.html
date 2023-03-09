@@ -2,7 +2,7 @@
 {% block title %}Imovel{% endblock %}
 {% block content %}
 
-<div class="row bg-dark text-light mb-3">
+<div class="row d-lg-block d-sm-none bg-dark text-light mb-3">
     {% if imovel %}
     <h3 class="ps-5">Editar {{ imovel }}</h3>
     {% else %}
@@ -11,7 +11,7 @@
 </div>
 
 <div class="row text-center">
-    <div class="col-6 offset-3">
+    <div class="col-sm-12 col-lg-6 offset-lg-3">
         <form method="post" autocomplete="off">
             {% csrf_token %}
             {{formImovel.as_p}}
