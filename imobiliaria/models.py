@@ -18,7 +18,7 @@ class Imovel(models.Model):
 
     disponibilidade = models.BooleanField(default=True, verbose_name="Disponibilidade")
 
-    # Colocar características do imovel tais como tamanho e quantidade de quartos e imoveis?
+    # TODO Colocar características do imovel tais como tamanho e quantidade de quartos e imoveis?
 
     def alterar_disponibilidade(self, disponibilidade: bool) -> None:
         self.disponibilidade = disponibilidade

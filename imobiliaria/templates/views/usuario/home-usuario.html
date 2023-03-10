@@ -51,9 +51,10 @@
                 </div>
             {% elif fatura.pagamento.status == "N" %}
                 <!-- Card -->
-                <div class="card mb-5 bg-danger text-light shadow rounded-4">
+                <div class="card mb-5 {% if fatura.diasAtrasados <= 0 %} bg-primary {% else %} bg-danger {% endif %} text-light shadow rounded-4">
                     <div class="card-body">
                         <p><strong>Fatura aguardando pagamento</strong></p>
+                        {% if fatura.diasAtrasados > 0 %} <span><strong>Atrasado</strong></span> {% endif %}
                         {% if fatura.diasAtrasados >= 1 %}
                             <span class="card-title"><em>Juros de {{fatura.diasAtrasados}}% por dias atrasados</em></span>
                         {% endif %}
