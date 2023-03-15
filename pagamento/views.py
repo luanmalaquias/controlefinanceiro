@@ -13,7 +13,7 @@ from .models import Pagamento
 
 @login_required
 @staff_member_required
-def listar_pagamentos_por_usuarios(request, dataParam=None):
+def listarPagamentosPorUsuarios(request, dataParam=None):
     context = {}
 
     # get objects
@@ -79,7 +79,18 @@ def listar_pagamentos_por_usuarios(request, dataParam=None):
 def listar_pagamentos(request):
     context = {}
 
-    pagamentos = Pagamento.objects.all().order_by('-data')
+    pagamentos = Pagamento.objects.all().order_by('-data').order_by('-status', '-data')
+
+    if request.method == "GET":
+        busca = request.GET.get('busca')
+        if busca != None and busca != '':
+            perfis = Perfil.objects.filter(nome_completo__contains = busca)
+            if len(perfis)>0:
+                pagamentos = Pagamento.objects.filter(perfil=perfis[0])
+            else:
+                pagamentos = []
+
+
     context['pagamentos'] = pagamentos
 
     return render(request, 'views/listar-todos-pagamentos.html', context)
@@ -89,8 +100,6 @@ def listar_pagamentos(request):
 def criar_pagamento(request):
     context = {}
     form = PagamentoForm()
-
-    hoje = datetime.now()
 
     if request.method == 'POST':
         form = PagamentoForm(request.POST)
@@ -125,7 +134,8 @@ def criar_pagamento(request):
 def criar_pagamento_rapido(request, id, data):
     context = {}
     newdata = data.split('-')
-    newdata = datetime(day=datetime.now().day, month=int(newdata[1]), year=int(newdata[0]))
+    agora = datetime.now()
+    newdata = datetime(day=agora.day, month=int(newdata[1]), year=int(newdata[0]), hour=agora.hour, minute=agora.minute)
 
     perfil = get_object_or_404(Perfil, pk=id)
 

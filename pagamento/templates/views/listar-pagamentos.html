@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}Pagamentos{% endblock %}
 {% block content %}
+{% load static %}
 
 <div class="row d-sm-none d-lg-block bg-dark text-light mb-3">
     <h3 class="ps-5">Pagamentos por usuarios</h3>
 </div>
 
 <div class="row">
-    <div class="col-sm-12 mb-sm-3 col-lg-3">
-        <a href="{% url 'adicionarpagamento' %}" class="btn btn-success w-100"><i class="bi bi-plus"></i> Incluir pagamento</a>
-    </div>
-    <div class="col-sm-12 mb-sm-3 col-lg-4 offset-lg-5">
+    <div class="col-12 d-flex justify-content-center mb-3">        
         <form method="GET" autocomplete="off">
             <div class="input-group">
                 <input id="id_data" type="month" class="form-control" name="data" value="{{data_atual|date:'Y-m'}}" onchange="this.form.submit()">
@@ -24,7 +22,7 @@
     <table class="table table-hover text-center">
         <thead>
             <tr>
-                <th scope="col">Perfil</th>
+                <th scope="col">Inquilino</th>
                 <th scope="col">Imovel</th>
                 <th scope="col">Status</th>
                 <th scope="col">Venc.</th>
@@ -57,14 +55,14 @@
                 </td>
                 <td>
                     {% if perfil.vencimento > 9 %}
-                        {{ perfil.vencimento }} /{{data_atual.year}}
+                        {{ perfil.vencimento }}/{{data_atual|date:"M"}}
                     {% else %}
-                        0{{perfil.vencimento}} /{{data_atual.year}}
+                        0{{perfil.vencimento}}/{{data_atual|date:"M"}}
                     {% endif %}
                 </td>
                 <td>{{perfil.mensalidade}}</td>
                 <td>{{perfil.pagamentoefetuado}}</td>
-                <td>{{perfil.data|date:"d/M/y"}}</td>
+                <td>{{perfil.data|date:"d/M/y H:i"}}</td>
                 <td>
                     {% if perfil.pagamento == "P" %}
                     <a onclick="deletar_rapido('{{perfil.pagamentoid}}')" class="btn btn-outline-secondary btn-sm"><i class="bi bi-trash-fill"></i></a>
@@ -92,20 +90,6 @@
     </table>
 </div>
 
-
-<script>
-    function criar_pagamento(id){
-        data = document.getElementById("id_data").value
-        window.location.href = `/pagamento/editar-pagamento/${id}/listar-todos-os-pagamentos/${data}`
-    }
-    function pagamento_rapido(id){
-        data = document.getElementById("id_data").value
-        window.location.href = `/pagamento/adicionarpagamentorapido/${id}/${data}`
-    }
-    function deletar_rapido(id){
-        data = document.getElementById("id_data").value
-        window.location.href = `/pagamento/deletarpagamentorapido/${id}/${data}`
-    }
-</script>
+<script src="{% static 'js/listar-pagamentos.js' %}"></script>
 
 {% endblock %}

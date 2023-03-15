@@ -33,7 +33,7 @@
     <hr class="mt-3">
     <div class="col-sm-10 offset-sm-1 col-lg-4 offset-lg-4">
         {% for fatura in faturas %}
-            {% if fatura.pagamento.status == "P" and fatura.pagamento.data.month == hoje.month and fatura.pagamento.data.year == hoje.year %}
+            {% if fatura.pagamento.status == "P" and fatura.pagamento.data.month == hojeDate.month and fatura.pagamento.data.year == hojeDate.year %}
                 <div class="card mb-4 bg-success text-light shadow rounded-4">
                     <div class="card-body">
                         <p><strong>Fatura paga</strong></p>
@@ -43,7 +43,7 @@
                 </div>
             {% elif fatura.pagamento.status == "A" %}
                 <div class="card mb-4 bg-warning shadow rounded-4">
-                    <div class="card-body">
+                    <div class="card-body">     
                         <p><strong>Fatura em análise</strong></p>
                         <p class="card-title h1">R$ {{fatura.pagamento.valor_pago}}</p>
                         <span><em>{{fatura.pagamento.data|date:"F Y"}}</em></span>
@@ -89,7 +89,7 @@
                                         <div class="modal-footer">
                                             {% csrf_token %}
                                             <button type="submit" name="dadosPagamento" value="{{fatura.pagamento.data|date:'Y-m-d'}}:{{fatura.pagamento.valor_pago}}" class="btn btn-primary" data-bs-dismiss="modal" onclick="abrirPicPay()">
-                                                <strong>Clique para copiar o código e abrir o PicPay</strong>
+                                                <strong>Clique aqui para copiar o código <br> e abrir o applicativo PicPay</strong>
                                             </button>
                                         </div>
                                     </form>
@@ -103,18 +103,6 @@
     </div>
 </div>
 
-<script>
-    function copy(alerta) {
-        let textarea = document.getElementById("copia-e-cola");
-        textarea.select();
-        document.execCommand("copy");          
-        window.alert("Código copiado");
-    }
-
-    function abrirPicPay(){
-        copy();
-        window.location.assign('picpay://');
-    }
-</script>
+<script src="{% static 'js/home-usuario.js' %}"></script>
 
 {% endblock %}

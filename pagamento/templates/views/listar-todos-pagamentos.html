@@ -1,16 +1,29 @@
 {% extends 'base.html' %}
 {% block title %}Pagamentos{% endblock %}
 {% block content %}
+{% load static %}
 
 <div class="row d-sm-none d-lg-block bg-dark text-light mb-3">
     <h3 class="ps-5">Pagamentos por usuarios</h3>
+</div>
+
+<div class="row">
+    <div class="col-12 d-flex justify-content-between mb-3">
+        <a href="{% url 'adicionarpagamento' %}" class="btn btn-success"><i class="bi bi-plus"></i> Incluir</a>
+        <form method="GET" autocomplete="off">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Pesquisa" name="busca">
+                <button class="btn btn-primary"><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="table-responsive-xxl">
     <table class="table table-hover text-center">
         <thead>
             <tr>
-                <th scope="col">Perfil</th>
+                <th scope="col">Inquilino</th>
                 <th scope="col">Imovel</th>
                 <th scope="col">Status</th>
                 <th scope="col">Venc.</th>
@@ -28,28 +41,30 @@
                     {% if pagamento.perfil.imovel%}
                         <span>{{pagamento.perfil.imovel}}</span>
                     {% else %}
-                    <span class="badge bg-danger-subtle text-danger">Despejado</span>
+                        <span class="badge bg-danger-subtle text-danger">Despejado</span>
                     {% endif %}
                 </td>
                 <td>
                     {% if pagamento.status == "P" %}
-                    <span class="badge bg-success-subtle text-success">Pago</span>
+                        <span class="badge bg-success-subtle text-success">Pago</span>
                     {% elif pagamento.status == "A" %}
-                    <span class="badge bg-warning-subtle text-dark">Em análise</span>
+                        <span class="badge bg-warning-subtle text-dark">Em análise</span>
                     {% else %}
-                    <span class="badge bg-danger-subtle text-danger">Aguardando</span>
+                        <span class="badge bg-danger-subtle text-danger">Aguardando</span>
                     {% endif %}
                 </td>
                 <td>
-                    {% if pagamento.perfil.imovel.vencimento > 9 %}
-                        {{ pagamento.perfil.imovel.vencimento }}
-                    {% else %}
-                        0{{pagamento.perfil.imovel.vencimento}}
+                    {% if pagamento.perfil.imovel %}
+                        {% if pagamento.perfil.imovel.vencimento > 9 %}
+                            {{ pagamento.perfil.imovel.vencimento }}
+                        {% else %}
+                            0{{pagamento.perfil.imovel.vencimento}}
+                        {% endif %}                        
                     {% endif %}
                 </td>
                 <td>{{pagamento.perfil.imovel.mensalidade}}</td>
                 <td>{{pagamento.valor_pago}}</td>
-                <td>{{pagamento.data|date:"d/m/y"}}</td>
+                <td>{{pagamento.data|date:"d/m/y H:i"}}</td>
                 <td>
                     <div class="dropdown">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
@@ -67,10 +82,6 @@
     </table>
 </div>
 
-<script>
-    function criar_pagamento(id){
-        window.location.href = `/pagamento/editar-pagamento/${id}/listar-todos-os-pagamentos/None`
-    }
-</script>
+<script src="{% static 'js/listar-todos-pagamentos.js' %}"></script>
 
 {% endblock %}

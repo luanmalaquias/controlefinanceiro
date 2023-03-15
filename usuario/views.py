@@ -9,7 +9,6 @@ from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm
 from utils.scripts import generatePassword, unmask
 from django.shortcuts import get_object_or_404
 
-# Create your views here.
 
 def criar_superusuario(request):
     # TODO criar super usuario
@@ -47,7 +46,7 @@ def criar_usuario(request):
             # alterar disponibilidade do imovel
             if perfil.imovel:
                 imovel = Imovel.objects.get(id = perfil.imovel.id)
-                imovel.alterar_disponibilidade(False)
+                imovel.alterarDisponibilidade(False)
 
             try:
                 usuario.save()
@@ -110,7 +109,7 @@ def editar_perfil(request, id):
             try:
                 perfil_antes = Perfil.objects.get(id = id)
                 imovel_antes = Imovel.objects.get(id = perfil_antes.imovel.id)
-                imovel_antes.alterar_disponibilidade(True)
+                imovel_antes.alterarDisponibilidade(True)
             except:
                 # usuario sem imovel antes da atualização
                 pass
@@ -118,7 +117,7 @@ def editar_perfil(request, id):
             if perfil.imovel:
                 perfil.atualizar_data_entrada_imovel()
                 imovel = Imovel.objects.get(id = perfil.imovel.id)
-                imovel.alterar_disponibilidade(False)
+                imovel.alterarDisponibilidade(False)
 
             perfil = formPerfil.save()
             return redirect('listarusuarios')
@@ -163,7 +162,7 @@ def deletar_usuario(request, id):
     perfil = get_object_or_404(Perfil, pk=id)
     usuario = get_object_or_404(User, pk=perfil.usuario.id)
     try:
-        perfil.imovel.alterar_disponibilidade(True)
+        perfil.imovel.alterarDisponibilidade(True)
     except: pass
     usuario.delete()
     return redirect('listarusuarios')
@@ -209,7 +208,7 @@ def recuperar_senha(request):
 
 def remover_do_imovel(request, id):
     perfil = get_object_or_404(Perfil, pk=id)
-    perfil.imovel.alterar_disponibilidade(True)
+    perfil.imovel.alterarDisponibilidade(True)
     perfil.imovel = None
     perfil.save()
     return redirect('listarusuarios')
@@ -223,7 +222,7 @@ def incluir_no_imovel(request, id):
         form = IncluirNoImovelForm(request.POST, instance=perfil)
         form.ajustar_escolhas()
         if form.is_valid():
-            perfil.imovel.alterar_disponibilidade(False)
+            perfil.imovel.alterarDisponibilidade(False)
             form.save()
             return redirect('listarusuarios')
     else:

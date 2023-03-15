@@ -8,10 +8,8 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-12 mb-sm-3 col-lg-2">
-        <a href="{% url 'cadastrarusuario' %}" class="btn btn-success w-100"><i class="bi bi-person-plus-fill"></i> Incluir</a>
-    </div>
-    <div class="col-sm-12 mb-sm-3 col-lg-5 offset-lg-5">
+    <div class="col-12 d-flex justify-content-between mb-3">
+        <a href="{% url 'cadastrarusuario' %}" class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Incluir</a>
         <form method="GET" autocomplete="off">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Pesquisa" name="busca">
@@ -86,6 +84,8 @@
                         </div>
                         <div class="modal-body">
                             Deseja deletar o usuario "{{perfil}}" ?
+                            <div class="p">Não é possível reverter este processo.</div>
+                            <div class="p text-danger">Apagar este usuário também apagará seus pagamentos.</div>
                         </div>
                         <div class="modal-footer">
                             <a type="button" class="btn btn-danger" href="{% url 'deletarusuario' perfil.id %}">Deletar</a>

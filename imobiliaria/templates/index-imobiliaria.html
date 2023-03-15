@@ -32,7 +32,7 @@
             <a href="{% url 'listarusuarios' %}" class="btn bg-primary-subtle text-primary position-relative w-50 ">
                 <i class="bi bi-house fs-1"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light fs-6">
-                    {{imoveis_disponiveis|length}}
+                    {{imoveisDisponiveis|length}}
                 </span>
             </a>
             <span class="text-muted fs-6">Imóveis <br> disponíveis</span>
@@ -43,7 +43,7 @@
             <a href="{% url 'listarusuarios' %}" class="btn bg-primary-subtle text-primary position-relative w-50 ">
                 <i class="bi bi-circle fs-1"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light fs-6">
-                    {{perfis_sem_imovel|length}}
+                    {{perfisSemImovel|length}}
                 </span>
             </a>
             <span class="text-muted fs-6">Usuários sem <br> imóvel</span>
@@ -54,7 +54,7 @@
             <a class="btn bg-primary-subtle text-primary position-relative w-50 ">
                 <i class="bi bi-wallet fs-1"></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light fs-6">
-                    R$ {{rendimento_total}}
+                    R$ {{rendimentoTotal}}
                 </span>
             </a>
             <span class="text-muted fs-6">Rendimento <br> total</span>
@@ -80,7 +80,7 @@
     
         <div class="col-12">
             <ul class="list-group">
-                {% for d in devedores_deste_mes %}
+                {% for d in devedoresDesteMes %}
                     <li class="list-group-item bg-primary text-white d-flex justify-content-between">
                         <span>{{d}}, Vence: {{d.imovel.vencimento}}</span>
                         <span>R$ {{d.imovel.mensalidade}}</span>

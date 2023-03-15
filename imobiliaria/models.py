@@ -4,7 +4,6 @@ import uuid
 # Create your models here.
 
 class Imovel(models.Model):
-    #id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     nome = models.CharField(max_length=50, blank=True, verbose_name='Nome do imóvel / vila / condominio')
     cep = models.CharField(max_length=9, blank=True, verbose_name= 'CEP')
     endereco = models.CharField(max_length=100, blank=True, verbose_name= 'Endereço')
@@ -13,6 +12,7 @@ class Imovel(models.Model):
     cidade = models.CharField(max_length=100, blank=True, verbose_name= 'Cidade')
     uf = models.CharField(max_length=2, blank=True, verbose_name= 'UF')
 
+    # TODO tipo inteiro
     mensalidade = models.CharField(max_length=10, blank=True, verbose_name='Mensalidade R$')
     vencimento = models.IntegerField(default=10, verbose_name="Dia do vencimento da mensalidade")
 
@@ -20,7 +20,7 @@ class Imovel(models.Model):
 
     # TODO Colocar características do imovel tais como tamanho e quantidade de quartos e imoveis?
 
-    def alterar_disponibilidade(self, disponibilidade: bool) -> None:
+    def alterarDisponibilidade(self, disponibilidade: bool) -> None:
         self.disponibilidade = disponibilidade
         self.save()
 

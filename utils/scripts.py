@@ -76,7 +76,7 @@ def gerarDados(quantidade:int) -> None:
 
     for x in range(quantidade):
         username = [str(randint(0, 9)) for i in range(11)]
-        usuario = User.objects.create_user(username="".join(username), password=generatePassword(0))
+        usuario = User.objects.create_user(username="".join(username), password="senhausuario!@")
 
         imovel = Imovel.objects.create()
         imovel.nome = f'imovel teste {x}'
@@ -116,3 +116,53 @@ def porcentagem(opcao: int, valor: float|int, porcentagem: float|int) -> float:
     if opcao == 1:
         valor += valor*(porcentagem/100)
         return valor
+
+def cpfIsValid(cpf: str|int) -> bool:
+    """Verifica se o CPF é valido"""
+    if type(cpf) == int:
+        cpf = str(cpf)
+
+    cpf = unmask(cpf, '.-')
+
+    if len(cpf) != 11:
+        return False
+    
+    primeiros9 = cpf[:9]
+    verificadores = cpf[9:]
+    
+    def _calcPrimeiroDigito(primeiros9):
+        result = 0
+        primeiros9Invert = primeiros9[::-1]
+        for index,number in enumerate(primeiros9Invert):
+            result += (index+2) * int(number)
+    
+        resto = result % 11
+        if resto < 2:
+            primeiroDigito = 0
+        else:
+            primeiroDigito = 11 - resto
+        
+        return primeiroDigito
+    
+    def _calcSegundoDigito(primeiros9, primeiroDigito):
+        result = 0
+        primeiros9 = primeiros9 + str(primeiroDigito)
+        primeiros9Invert = primeiros9[::-1]
+        for index,number in enumerate(primeiros9Invert):
+            result += (index+2) * int(number)
+        
+        resto = result % 11
+        if resto < 2:
+            segundoDigito = 0
+        else:
+            segundoDigito = 11 - resto
+        
+        return segundoDigito
+
+    primeiroDigito = _calcPrimeiroDigito(primeiros9)
+    segundoDigito = _calcSegundoDigito(primeiros9, primeiroDigito)
+    
+    if primeiroDigito == int(verificadores[0]) and segundoDigito == int(verificadores[1]):
+        return True
+    
+    return False

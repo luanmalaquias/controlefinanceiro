@@ -15,7 +15,7 @@ from dateutil.relativedelta import relativedelta
 # Create your views here.
 
 @login_required
-def index_imobiliaria(request):
+def indexImobiliaria(request):
     if not request.user.is_staff:
         return redirect('home-usuario')
 
@@ -25,10 +25,10 @@ def index_imobiliaria(request):
     perfis = Perfil.objects.all()
     pagamentos = Pagamento.objects.all()
 
-    imoveis_disponiveis = Imovel.objects.filter(disponibilidade=True)
-    perfis_sem_imovel = Perfil.objects.filter(imovel=None)
+    imoveisDisponiveis = Imovel.objects.filter(disponibilidade=True)
+    perfisSemImovel = Perfil.objects.filter(imovel=None)
     
-    devedores_deste_mes = []
+    devedoresDesteMes = []
     hoje = datetime.now()
     for perfil in perfis:
         pagou = False
@@ -39,11 +39,11 @@ def index_imobiliaria(request):
                     break
         else: continue
         if pagou == False:
-            devedores_deste_mes.append(perfil)
+            devedoresDesteMes.append(perfil)
 
-    rendimento_total = 0
+    rendimentoTotal = 0
     for pagamento in pagamentos:
-        rendimento_total += int(unmask(pagamento.valor_pago, '.'))
+        rendimentoTotal += int(unmask(pagamento.valor_pago, '.'))
     
     rendimentoMensal = 0
     for imovel in imoveis:
@@ -51,23 +51,23 @@ def index_imobiliaria(request):
             rendimentoMensal += int(imovel.mensalidade)
 
     # FIXME remover gerar dados isso daqui quando for implantar
-    # gerarDados(5)
+    # gerarDados(2)
 
     # TODO levar pra area de cadastro de superusuario se não existir
 
     # quando o usuario nao tiver perfil
-    usuario_logado = request.user
+    usuarioLogado = request.user
     if request.user.is_staff == False:
-        perfil = Perfil.objects.get(usuario = usuario_logado)
+        perfil = Perfil.objects.get(usuario = usuarioLogado)
         context['perfil'] = perfil
 
     context['imoveis'] = imoveis
     context['perfis'] = perfis
     context['pagamentos'] = pagamentos
-    context['imoveis_disponiveis'] = imoveis_disponiveis
-    context['perfis_sem_imovel'] = perfis_sem_imovel
-    context['devedores_deste_mes'] = devedores_deste_mes
-    context['rendimento_total'] = rendimento_total
+    context['imoveisDisponiveis'] = imoveisDisponiveis
+    context['perfisSemImovel'] = perfisSemImovel
+    context['devedoresDesteMes'] = devedoresDesteMes
+    context['rendimentoTotal'] = rendimentoTotal
     context['rendimentoMensal'] = rendimentoMensal
     context['hoje'] = hoje
 
@@ -75,12 +75,14 @@ def index_imobiliaria(request):
 
 @login_required
 @staff_member_required
-def cadastrar_imovel(request):
+def cadastrarImovel(request):
     context = {}
     if request.method == 'POST':
         formImovel = ImovelForm(request.POST)
         if formImovel.is_valid():
-            formImovel.save()
+            imovel = formImovel.save(commit=False)
+            imovel.mensalidade = unmask(imovel.mensalidade, '.,')
+            imovel.save()
             return redirect('listarimoveis')
     else:
         formImovel = ImovelForm()
@@ -89,7 +91,7 @@ def cadastrar_imovel(request):
 
 @login_required
 @staff_member_required
-def listar_imoveis(request):
+def listarImoveis(request):
     context = {}
     imoveis = Imovel.objects.all().order_by('-disponibilidade','nome')
     context['imoveis'] = imoveis
@@ -105,7 +107,7 @@ def listar_imoveis(request):
 
 @login_required
 @staff_member_required
-def atualizar_dados_imovel(request, id):
+def atualizarDadosImovel(request, id):
     context = {}
 
     imovel = get_object_or_404(Imovel, pk=id)
@@ -114,7 +116,9 @@ def atualizar_dados_imovel(request, id):
     if request.method == 'POST':
         formImovel = ImovelForm(request.POST, instance=imovel)
         if formImovel.is_valid():
-            formImovel.save()
+            imovel = formImovel.save(commit=False)
+            imovel.mensalidade = unmask(imovel.mensalidade, '.,')
+            imovel.save()
             return redirect('listarimoveis')
         
     context['formImovel'] = formImovel
@@ -124,7 +128,7 @@ def atualizar_dados_imovel(request, id):
 
 @login_required
 @staff_member_required
-def deletar_imovel(request, id):
+def deletarImovel(request, id):
     imovel = get_object_or_404(Imovel, pk=id)
     imovel.delete()
     return redirect('listarimoveis')
@@ -132,15 +136,13 @@ def deletar_imovel(request, id):
 
 # USUARIO
 @login_required
-def home_usuario(request):
+def homeUsuario(request):
     context = {}
 
     perfil = Perfil.objects.get(usuario=request.user)
-    # Pagamento.objects.filter(perfil = perfil).delete()
-    # p = Pagamento.objects.create()
-    # p.perfil = perfil; p.status = "P"; p.valor_pago = perfil.imovel.mensalidade; p.data = date.today(); p.save()
     pagamentos = Pagamento.objects.filter(perfil=perfil)
-    hoje = date(datetime.now().year, datetime.now().month, datetime.now().day)
+    hojeDateTime = datetime.now()
+    hojeDate = date(hojeDateTime.year, hojeDateTime.month, hojeDateTime.day)
 
     faturas = []
     if perfil.imovel:
@@ -161,11 +163,14 @@ def home_usuario(request):
                 pagamento = Pagamento(perfil=perfil)
                 pagamento.status = "N"
                 # aplicar juros
-                diasAtrasados = (hoje-mesReferencia).days
-                valorComJuros = int(porcentagem(1, valor=perfil.imovel.mensalidade, porcentagem=diasAtrasados))
-                pagamento.valor_pago = valorComJuros
+                diasAtrasados = (hojeDate-mesReferencia).days
+                if diasAtrasados > 0:
+                    valorComJuros = int(porcentagem(1, valor=perfil.imovel.mensalidade, porcentagem=diasAtrasados))
+                    pagamento.valor_pago = valorComJuros
+                else:
+                    pagamento.valor_pago = perfil.imovel.mensalidade
                 pagamento.data = mesReferencia
-                payload = pixcodegen.Payload('Luan dos Santos Sousa', '10421063475', str(valorComJuros), 'Joao Pessoa', 'IMOBILIARIA')
+                payload = pixcodegen.Payload('Luan dos Santos Sousa', '10421063475', str(pagamento.valor_pago), 'Joao Pessoa', 'IMOBILIARIA')
                 faturas.append({"pagamento": pagamento, "diasAtrasados": diasAtrasados, 'brcode': payload.crc16, 'b64qrcode': payload.base64})
             mesReferencia = date(mesReferencia.year, mesReferencia.month + 1, mesReferencia.day)
     faturas = faturas[::-1]
@@ -178,7 +183,7 @@ def home_usuario(request):
 
         pagamento = Pagamento(perfil = perfil)
         pagamento.valor_pago = valorPagamento
-        pagamento.data = datetime(year=int(dataRefPagamentoYMD[0]), month=int(dataRefPagamentoYMD[1]), day=int(dataRefPagamentoYMD[2]))
+        pagamento.data = datetime(year=int(dataRefPagamentoYMD[0]), month=int(dataRefPagamentoYMD[1]), day=int(dataRefPagamentoYMD[2]), hour=datetime.now().hour, minute=datetime.now().minute)
 
         try:
             pagamento = Pagamento.objects.get(perfil=perfil, data=pagamento.data)
@@ -189,32 +194,33 @@ def home_usuario(request):
 
         return redirect('home-usuario')
 
-    context['hoje'] = hoje
+    context['hojeDateTime'] = hojeDateTime
+    context['hojeDate'] = hojeDate
     context['perfil'] = perfil
     context['faturas'] = faturas
     return render(request, 'views/usuario/home-usuario.html', context)
 
 
 @login_required
-def historico_usuario(request):
+def historicoUsuario(request):
     context = {}
 
     perfil = Perfil.objects.get(usuario=request.user)
     pagamentos = Pagamento.objects.filter(perfil=perfil)
 
     if perfil.imovel:
-        data_entrada_imovel = perfil.data_entrada_imovel
+        dataEntradaImovel = perfil.data_entrada_imovel
         hoje = date(datetime.now().year, datetime.now().month, datetime.now().day)
-        meses_passados = relativedelta(hoje, data_entrada_imovel).months
+        mesesPassados = relativedelta(hoje, dataEntradaImovel).months
 
-        pagamentos_array = []
+        pagamentosArray = []
         
-        for _ in range(meses_passados+1):
+        for _ in range(mesesPassados+1):
             pago = False
             for p in pagamentos:
-                if p.data.month == data_entrada_imovel.month and p.data.year == data_entrada_imovel.year:
-                    pagamentos_array.insert(0,
-                        {'mes_referencia': data_entrada_imovel, 
+                if p.data.month == dataEntradaImovel.month and p.data.year == dataEntradaImovel.year:
+                    pagamentosArray.insert(0,
+                        {'mes_referencia': dataEntradaImovel, 
                         'status': p.status, 
                         'vencimento': p.perfil.imovel.vencimento, 
                         'mensalidade': p.perfil.imovel.mensalidade, 
@@ -223,15 +229,15 @@ def historico_usuario(request):
                     pago = True
                     continue
             if not pago:
-                pagamentos_array.insert(0,
-                    {'mes_referencia': data_entrada_imovel, 
+                pagamentosArray.insert(0,
+                    {'mes_referencia': dataEntradaImovel, 
                     'status': 'Aguardando', 
                     'vencimento': perfil.imovel.vencimento, 
                     'mensalidade': perfil.imovel.mensalidade, 
                     'valor_pago': '--', 
                     'data_pagamento': ''})
-            data_entrada_imovel += relativedelta(months=1)
+            dataEntradaImovel += relativedelta(months=1)
 
-        context['pagamentos'] = pagamentos_array
+        context['pagamentos'] = pagamentosArray
     
     return render(request, 'views/usuario/historico-usuario.html', context)
