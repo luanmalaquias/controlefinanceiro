@@ -72,6 +72,7 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" onclick="criar_pagamento('{{pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a></li>
+                            <!-- TODO modal confirmação -->
                             <li><a class="dropdown-item bg-danger text-white" href="{% url 'deletar-pagamento' pagamento.id %}"><i class="bi bi-trash-fill"></i> Deletar</a></li>
                         </ul>
                     </div>

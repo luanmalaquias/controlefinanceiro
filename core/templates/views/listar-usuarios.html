@@ -55,9 +55,11 @@
                             <li><a class="dropdown-item" href="{% url 'editarusuario' perfil.id %}"><i class="bi bi-key-fill"></i> Alterar senha</a></li>
                             <li>
                                 {% if perfil.imovel %}
-                                <a class="dropdown-item text-danger" href="{% url 'removerdoimovel' perfil.id %}"><i class="bi bi-house"></i> Remover do imovel</a>
+                                    <!-- TODO modal confirmação -->
+                                    <!-- TODO apagar pagamentos ao remover imovel -->
+                                    <a class="dropdown-item text-danger" href="{% url 'removerdoimovel' perfil.id %}"><i class="bi bi-house"></i> Remover do imovel</a>
                                 {% else %}
-                                <a class="dropdown-item text-success" href="{% url 'incluirnoimovel' perfil.id %}"><i class="bi bi-house-fill"></i> Incluir no imovel</a>
+                                    <a class="dropdown-item text-success" href="{% url 'incluirnoimovel' perfil.id %}"><i class="bi bi-house-fill"></i> Incluir no imovel</a>
                                 {% endif %}
                             </li>
                             <li>

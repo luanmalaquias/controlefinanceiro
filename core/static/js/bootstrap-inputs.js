@@ -17,3 +17,7 @@ $('input').each(function(){
 
 // configurações dos selects
 $('select').addClass('form-select')
+
+$('.errorlist').children().each(function(){
+    $(this).addClass('badge text-danger')
+})

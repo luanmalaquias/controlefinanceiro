@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Cadastrar Usuario{% endblock %}
 {% block content %}
+{% load static %}
 
 <div class="row d-lg-block d-sm-none bg-dark text-light mb-3">
     <h3 class="ps-5">Novo Usuário</h3>
@@ -60,15 +61,13 @@
     </div>
 </div>
 
-
-
-<!-- Bootstrap nos inputs -->
 <script>
     // alterar ordem dos labels
     $('p label').each(function() {
         $(this).insertAfter( $(this).next('input') );
         $(this).insertAfter( $(this).next('select') );
     });
+    
     // trocar os elementos P por DIVS
     $("p").each(function() {
         $(this).replaceWith("<div class=\"form-floating mb-3\">" + $(this).html() + "</div>");
@@ -82,20 +81,8 @@
 
     // configurações dos selects
     $('select').addClass('form-select')
-
-    // alterar os valores da senha
-    $("#id_password1").attr("type", "text")
-    $("#id_password2").attr("type", "text")
-
-    // alterar classe das dicas
-    $("span").addClass("text-muted")
 </script>
 
-<!-- Máscaras -->
-<script type="text/javascript">
-    $('#id_username').mask('000.000.000-00');
-    $('#id_telefone').mask('(00) 0 0000-0000');
-    $('#id_data_nascimento').mask('00/00/0000')
-</script>
+<script src="{% static 'js/criar-usuario.js' %}"></script>
 
 {% endblock %}

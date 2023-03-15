@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Usuários{% endblock %}
 {% block content %}
+{% load static %}
 
 <div class="row bg-dark text-light mb-3">
     <h3 class="ps-5">Adicionar imóvel ao usuario {{perfil}}</h3>
@@ -18,26 +19,6 @@
     </div>
 </div>
 
-<!-- Bootstrap nos inputs -->
-<script>
-    // alterar ordem dos labels
-    $('p label').each(function() {
-        $(this).insertAfter( $(this).next('input') );
-        $(this).insertAfter( $(this).next('select') );
-    });
-    // trocar os elementos P por DIVS
-    $("p").each(function() {
-        $(this).replaceWith("<div class=\"form-floating mb-3\">" + $(this).html() + "</div>");
-    });
-
-    // configurações dos inputs
-    $('input').addClass('form-control')
-    $('input').each(function(){
-        $(this).attr('placeholder', 'placeholder');
-    })
-
-    // configurações dos selects
-    $('select').addClass('form-select')
-</script>
+<script src="{% static 'js/bootstrap-inputs.js' %}"></script>
 
 {% endblock %}
