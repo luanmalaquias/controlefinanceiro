@@ -55,9 +55,7 @@
                             <li><a class="dropdown-item" href="{% url 'editarusuario' perfil.id %}"><i class="bi bi-key-fill"></i> Alterar senha</a></li>
                             <li>
                                 {% if perfil.imovel %}
-                                    <!-- TODO modal confirmação -->
-                                    <!-- TODO apagar pagamentos ao remover imovel -->
-                                    <a class="dropdown-item text-danger" href="{% url 'removerdoimovel' perfil.id %}"><i class="bi bi-house"></i> Remover do imovel</a>
+                                    <a class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#removerDoImovel{{perfil.id}}" href=""><i class="bi bi-house"></i> Remover do imovel</a>
                                 {% else %}
                                     <a class="dropdown-item text-success" href="{% url 'incluirnoimovel' perfil.id %}"><i class="bi bi-house-fill"></i> Incluir no imovel</a>
                                 {% endif %}
@@ -74,8 +72,30 @@
                     </div>
                 </td>
             </tr>
+
+            <!-- Modal remover do imovel -->
+            <div class="modal fade" id="removerDoImovel{{perfil.id}}" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Atenção</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Deseja retirar "{{perfil}}" do imovel "{{perfil.imovel.nome}}"" ?
+                            <div class="p">Não é possível reverter este processo.</div>
+                            <div class="p text-danger">Esta ação também apagará seus pagamentos referentes ao imovel atual.</div>
+                        </div>
+                        <div class="modal-footer">
+                            <a type="button" class="btn btn-danger" href="{% url 'removerdoimovel' perfil.id %}">Deletar</a>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
     
-            <!-- Modal precista estar dentro do for -->
+            <!-- Modal apagar usuario -->
             <div class="modal fade" id="staticBackdrop{{perfil.id}}" data-bs-backdrop="static" data-bs-keyboard="false"
                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">

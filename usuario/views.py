@@ -207,6 +207,7 @@ def recuperar_senha(request):
     return render(request, 'registration/recoverpassword.html', context)
 
 def remover_do_imovel(request, id):
+    # TODO apagar também os pagamentos referentes à este usuario
     perfil = get_object_or_404(Perfil, pk=id)
     perfil.imovel.alterarDisponibilidade(True)
     perfil.imovel = None

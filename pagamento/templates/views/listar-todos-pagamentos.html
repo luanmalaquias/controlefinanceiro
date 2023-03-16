@@ -72,12 +72,33 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" onclick="criar_pagamento('{{pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a></li>
-                            <!-- TODO modal confirmação -->
-                            <li><a class="dropdown-item bg-danger text-white" href="{% url 'deletar-pagamento' pagamento.id %}"><i class="bi bi-trash-fill"></i> Deletar</a></li>
+                            <!-- Button trigger modal -->
+                            <li><a class="dropdown-item bg-danger text-white" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{pagamento.id}}" href=""><i class="bi bi-trash-fill"></i> Deletar</a></li>
                         </ul>
                     </div>
                 </td>
             </tr>
+
+            <!-- Modal precista estar dentro do for -->
+            <div class="modal fade" id="staticBackdrop{{pagamento.id}}" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Atenção</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Deseja deletar o pagamento de "{{pagamento.perfil}}" na data {{pagamento.data|date:"d/m/y"}} ?
+                            <p class="text-danger">Esta ação não será revertida!</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a type="button" class="btn btn-danger" href="{% url 'deletar-pagamento' pagamento.id %}">Deletar</a>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
         </tbody>
     </table>
