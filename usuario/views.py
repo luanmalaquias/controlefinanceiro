@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Imovel
 from usuario.models import Perfil
+from pagamento.models import Pagamento
 from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm
 from utils.scripts import generatePassword, unmask
 from django.shortcuts import get_object_or_404
@@ -207,11 +208,12 @@ def recuperar_senha(request):
     return render(request, 'registration/recoverpassword.html', context)
 
 def remover_do_imovel(request, id):
-    # TODO apagar também os pagamentos referentes à este usuario
     perfil = get_object_or_404(Perfil, pk=id)
     perfil.imovel.alterarDisponibilidade(True)
     perfil.imovel = None
     perfil.save()
+
+    Pagamento.objects.filter(perfil = perfil).delete()
     return redirect('listarusuarios')
 
 def incluir_no_imovel(request, id):
