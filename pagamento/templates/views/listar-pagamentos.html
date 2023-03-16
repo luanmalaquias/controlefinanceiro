@@ -22,13 +22,13 @@
     <table class="table table-hover text-center">
         <thead>
             <tr>
+                <th scope="col">Status</th>
                 <th scope="col">Inquilino</th>
                 <th scope="col">Imovel</th>
-                <th scope="col">Status</th>
                 <th scope="col">Venc.</th>
+                <th scope="col">Data Pag.</th>
                 <th scope="col">Mens.</th>
                 <th scope="col">Valor pago</th>
-                <th scope="col">Data Pag.</th>
                 <th scope="col">Mudar status</th>
                 <th scope="col">Opções</th>
             </tr>
@@ -36,14 +36,6 @@
         <tbody>
             {% for perfil in perfilComPagamento %}
             <tr>
-                <td>{{perfil.nomeperfil}}</td>
-                <td>
-                    {% if perfil.nomeimovel == "Sem imovel" %}
-                        <span class="badge bg-danger-subtle text-danger">{{perfil.nomeimovel}}</span>
-                    {% else %}
-                        {{perfil.nomeimovel}}
-                    {% endif %}
-                </td>
                 <td>
                     {% if perfil.pagamento == "P" %}
                     <span class="badge bg-success-subtle text-success">Pago</span>
@@ -53,6 +45,14 @@
                     <span class="badge bg-danger-subtle text-danger">Aguardando</span>
                     {% endif %}
                 </td>
+                <td>{{perfil.nomeperfil}}</td>
+                <td>
+                    {% if perfil.nomeimovel == "Sem imovel" %}
+                        <span class="badge bg-danger-subtle text-danger">{{perfil.nomeimovel}}</span>
+                    {% else %}
+                        {{perfil.nomeimovel}}
+                    {% endif %}
+                </td>
                 <td>
                     {% if perfil.vencimento > 9 %}
                         {{ perfil.vencimento }}/{{data_atual|date:"M"}}
@@ -60,9 +60,9 @@
                         0{{perfil.vencimento}}/{{data_atual|date:"M"}}
                     {% endif %}
                 </td>
+                <td>{{perfil.data|date:"d/M/y H:i"}}</td>
                 <td>{{perfil.mensalidade}}</td>
                 <td>{{perfil.pagamentoefetuado}}</td>
-                <td>{{perfil.data|date:"d/M/y H:i"}}</td>
                 <td>
                     {% if perfil.pagamento == "P" %}
                     <a onclick="deletar_rapido('{{perfil.pagamentoid}}')" class="btn btn-outline-secondary btn-sm"><i class="bi bi-trash-fill"></i></a>

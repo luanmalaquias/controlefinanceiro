@@ -177,13 +177,10 @@ def homeUsuario(request):
 
     if request.method == 'POST':
         dadosPagamento = request.POST.get('dadosPagamento')
-        dadosPagamento = dadosPagamento.split(':')
-        dataRefPagamentoYMD = dadosPagamento[0].split('-')
-        valorPagamento = dadosPagamento[1]
 
         pagamento = Pagamento(perfil = perfil)
-        pagamento.valor_pago = valorPagamento
-        pagamento.data = datetime(year=int(dataRefPagamentoYMD[0]), month=int(dataRefPagamentoYMD[1]), day=int(dataRefPagamentoYMD[2]), hour=datetime.now().hour, minute=datetime.now().minute)
+        pagamento.valor_pago = dadosPagamento
+        pagamento.data = hojeDateTime
 
         try:
             pagamento = Pagamento.objects.get(perfil=perfil, data=pagamento.data)

@@ -23,27 +23,19 @@
     <table class="table table-hover text-center">
         <thead>
             <tr>
+                <th scope="col">Status</th>
                 <th scope="col">Inquilino</th>
                 <th scope="col">Imovel</th>
-                <th scope="col">Status</th>
                 <th scope="col">Venc.</th>
+                <th scope="col">Data Pag.</th>
                 <th scope="col">Mens.</th>
                 <th scope="col">Valor pago</th>
-                <th scope="col">Data Pag.</th>
                 <th scope="col">Opções</th>
             </tr>
         </thead>
         <tbody>
             {% for pagamento in pagamentos %}
             <tr>
-                <td>{{pagamento.perfil}}</td>
-                <td>
-                    {% if pagamento.perfil.imovel%}
-                        <span>{{pagamento.perfil.imovel}}</span>
-                    {% else %}
-                        <span class="badge bg-danger-subtle text-danger">Despejado</span>
-                    {% endif %}
-                </td>
                 <td>
                     {% if pagamento.status == "P" %}
                         <span class="badge bg-success-subtle text-success">Pago</span>
@@ -51,6 +43,14 @@
                         <span class="badge bg-warning-subtle text-dark">Em análise</span>
                     {% else %}
                         <span class="badge bg-danger-subtle text-danger">Aguardando</span>
+                    {% endif %}
+                </td>
+                <td>{{pagamento.perfil}}</td>
+                <td>
+                    {% if pagamento.perfil.imovel%}
+                        <span>{{pagamento.perfil.imovel}}</span>
+                    {% else %}
+                        <span class="badge bg-danger-subtle text-danger">Despejado</span>
                     {% endif %}
                 </td>
                 <td>
@@ -62,9 +62,9 @@
                         {% endif %}                        
                     {% endif %}
                 </td>
-                <td>{{pagamento.perfil.imovel.mensalidade}}</td>
-                <td>{{pagamento.valor_pago}}</td>
                 <td>{{pagamento.data|date:"d/m/y H:i"}}</td>
+                <td>R$ {{pagamento.perfil.imovel.mensalidade}}</td>
+                <td>R$ {{pagamento.valor_pago}}</td>
                 <td>
                     <div class="dropdown">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">

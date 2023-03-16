@@ -88,7 +88,7 @@
                                     <form method="POST">
                                         <div class="modal-footer">
                                             {% csrf_token %}
-                                            <button type="submit" name="dadosPagamento" value="{{fatura.pagamento.data|date:'Y-m-d'}}:{{fatura.pagamento.valor_pago}}" class="btn btn-primary" data-bs-dismiss="modal" onclick="abrirPicPay()">
+                                            <button type="submit" name="dadosPagamento" value="{{fatura.pagamento.valor_pago}}" class="btn btn-primary" data-bs-dismiss="modal" onclick="abrirPicPay()">
                                                 <strong>Clique aqui para copiar o código <br> e abrir o applicativo PicPay</strong>
                                             </button>
                                         </div>

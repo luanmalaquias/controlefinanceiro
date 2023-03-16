@@ -38,6 +38,12 @@
                 <ul class="nav nav-pills flex-column mb-auto">
                     {% if user.is_staff %}
                     <li>
+                        <a href="{% url 'indeximobiliaria' %}" class="nav-link {% if 'home' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-graph-up-arrow"></i>
+                            Início
+                        </a>
+                    </li>
+                    <li>
                         <a href="{% url 'listarimoveis' %}" class="nav-link {% if 'imobiliaria' in request.path %}active link-light{% else %}link-dark{% endif %}">
                             <i class="bi bi-houses-fill"></i>
                             Imóveis
@@ -107,8 +113,8 @@
                         <ul class="nav nav-pills flex-column mb-auto">
                             {% if user.is_staff %}
                                 <li>
-                                    <a href="{% url 'indeximobiliaria' %}" class="nav-link link-dark text-decoration-none">
-                                        <i class="bi bi-house"></i>
+                                    <a href="{% url 'indeximobiliaria' %}" class="nav-link {% if 'home' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                                        <i class="bi bi-graph-up-arrow"></i>
                                         <span class="ps-3">Início</span>
                                     </a>
                                 </li>
