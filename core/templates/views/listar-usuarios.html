@@ -83,12 +83,12 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            Deseja retirar "{{perfil}}" do imovel "{{perfil.imovel.nome}}"" ?
+                            Deseja retirar "{{perfil}}" do imovel "{{perfil.imovel.nome}}" ?
                             <div class="p">Não é possível reverter este processo.</div>
                             <div class="p text-danger">Esta ação também apagará seus pagamentos referentes ao imovel atual.</div>
                         </div>
                         <div class="modal-footer">
-                            <a type="button" class="btn btn-danger" href="{% url 'removerdoimovel' perfil.id %}">Deletar</a>
+                            <a type="button" class="btn btn-danger" href="{% url 'removerdoimovel' perfil.id %}">Remover</a>
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                         </div>
                     </div>
