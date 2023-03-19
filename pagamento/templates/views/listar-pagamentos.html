@@ -65,7 +65,8 @@
                 <td>{{perfil.pagamentoefetuado}}</td>
                 <td>
                     {% if perfil.pagamento == "P" %}
-                    <a onclick="deletar_rapido('{{perfil.pagamentoid}}')" class="btn btn-outline-secondary btn-sm"><i class="bi bi-trash-fill"></i></a>
+                    <!-- Button trigger modal -->
+                    <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDeletarRapido{{perfil.pagamentoid}}"><i class="bi bi-trash-fill"></i></a>
                     {% else %}
                     <a onclick="pagamento_rapido('{{perfil.id}}')" class="btn btn-success btn-sm"><i class="bi bi-currency-dollar"></i></a>
                     {% endif %}
@@ -85,6 +86,26 @@
                     </div>
                 </td>
             </tr>
+
+            <!-- Modal precista estar dentro do for -->
+            tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal fade" id="modalDeletarRapido{{perfil.pagamentoid}}" data-bs-backdrop="static" data-bs-keyboard="false"
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Atenção</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Deletar o pagamento ?
+                        </div>
+                        <div class="modal-footer">
+                            <a type="button" class="btn btn-danger" onclick="deletar_rapido('{{perfil.pagamentoid}}')">Deletar</a>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endfor %}
         </tbody>
     </table>
