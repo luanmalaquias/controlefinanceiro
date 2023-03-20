@@ -13,7 +13,7 @@ class Imovel(models.Model):
     cidade = models.CharField(max_length=100, blank=True, verbose_name= 'Cidade')
     uf = models.CharField(max_length=2, blank=True, verbose_name= 'UF')
 
-    mensalidade = models.IntegerField(blank=True, verbose_name='Mensalidade R$', validators=[MaxValueValidator(999999), MinValueValidator(0)])
+    mensalidade = models.IntegerField(null=True, blank=True, verbose_name='Mensalidade R$', validators=[MaxValueValidator(999999), MinValueValidator(0)])
     vencimento = models.IntegerField(default=5, verbose_name="Dia do vencimento da mensalidade", validators=[MaxValueValidator(29), MinValueValidator(1)])
 
     disponibilidade = models.BooleanField(default=True, verbose_name="Disponibilidade")
