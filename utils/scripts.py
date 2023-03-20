@@ -1,5 +1,7 @@
 import secrets
 import string
+from datetime import datetime, date
+
 
 def generatePassword(safety: int) -> str:
     """Retorna uma senha gerada automaticamente de acordo com o nível de segurança"""
@@ -166,3 +168,21 @@ def cpfIsValid(cpf: str|int) -> bool:
         return True
     
     return False
+
+def maskCpf(target: str|int) -> str:
+    target = str(target)
+
+    if len(target) != 11:
+        raise IndexError("Quantidade de numeros no cpf deve ser igual a 11")
+    
+    target = target[:3] + '.' + target[3:6] + '.' + target[6:9] + '-' + target[9:]
+    return target
+
+def maskPhone(target: str|int) -> str:
+    target = str(target)
+
+    if len(target) != 11:
+        raise IndexError("Número incorreto, verifique se faltou o DDD ou o numero 9")
+    
+    target = f'({target[:2]}) {target[2]} {target[3:7]}-{target[7:]}'
+    return target

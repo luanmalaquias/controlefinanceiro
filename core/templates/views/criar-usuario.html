@@ -48,15 +48,8 @@
                 </div>
             {% endif %}
             
-            {% if not tem_imoveis %}
-            <div class="alert alert-danger">
-                <p>Atenção</p>
-                <p>Não existem imóveis cadastrados, por favor cadastre ao menos um imóvel. <a href="{% url 'cadastrarimovel' %}">Cadastrar imóvel</a></p>
-            </div>
-            {% endif %}
-            
             <a href="{% url 'listarusuarios' %}" class="btn btn-light">Cancelar</a>
-            <button type="submit" class="btn btn-success {{ tem_imoveis|yesno:'enabled,disabled'}}">Salvar</button>
+            <button type="submit" class="btn btn-success">Salvar</button>
         </form>
     </div>
 </div>

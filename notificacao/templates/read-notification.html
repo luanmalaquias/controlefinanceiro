@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Notificação{% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- FIXME não terá campo de busca para usuarios padrão, refazer tudo isso daqui -->
+
+<div class="row d-sm-none d-lg-block bg-dark text-light mb-3">
+    <h3 class="ps-5">Notificação</h3>
+</div>
+
+<div class="col-sm-12 col-lg-6 offset-lg-3">
+    <div class="card mb-3 {{ n.lido|yesno:'text-muted bg-secondary-subtle,' }} ">
+        {% if user.is_staff %}
+            <div class="card-header">
+                <span><strong>{{notification.perfil}}</strong></span>
+            </div>
+        {% endif %}
+            
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <p>{{notification.mensagem}}</p>
+                {% if notification.perfil.imovel %}
+                    <p><em>{{notification.perfil.imovel}}</em></p>
+                {% else %}
+                    <p><em>Sem imóvel</em></p>
+                {% endif %}
+                <footer class="blockquote-footer">{{notification.datahora|date:"H:i d/m/y"}}</footer>
+            </blockquote>
+        </div>
+    </div>
+    <a href="{% url 'list-notifications' %}" class="btn btn-primary">
+        <i class="bi bi-arrow-90deg-left"></i>
+        Voltar
+    </a>
+    {% if not user.is_staff %}
+        <a href="{% url 'delete-notification' notification.id %}" class="btn btn-danger">
+            <i class="bi bi-trash-fill"></i>
+            Apagar
+        </a>
+    {% endif %}
+
+</div>
+
+
+
+<div class="row">
+    <div class="col-sm-12 col-lg-8 offset-lg-2 d-flex justify-content-between">
+        
+    </div>
+</div>
+
+{% endblock %}

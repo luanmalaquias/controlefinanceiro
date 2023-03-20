@@ -24,8 +24,15 @@
                 </div>
             {% endif %}
 
+            {% if not temPerfis %}
+                <div class="alert alert-danger">
+                    <p>Atenção!</p>
+                    <p>Não existem usuários cadastrados no sistema. Por favor, cadastre ao menos um usuário. <a href="{% url 'cadastrarusuario' %}">Cadastrar usuário</a></p>
+                </div>
+            {% endif %}
+
             <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="btn btn-light">Cancelar</a>
-            <button type="submit" class="btn btn-success">Salvar</button>
+            <button type="submit" class="btn btn-success {{ temPerfis|yesno:',disabled' }}">Salvar</button>
         </form>
     </div>
 </div>

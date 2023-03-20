@@ -7,9 +7,11 @@ from .models import Imovel
 from usuario.models import Perfil
 from pagamento.models import Pagamento
 from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm
-from utils.scripts import generatePassword, unmask
+from utils.scripts import generatePassword, unmask, maskCpf, maskPhone
 from django.shortcuts import get_object_or_404
 
+
+# TODO usuario pode se auto-cadastrar
 
 def criar_superusuario(request):
     # TODO criar super usuario
@@ -18,14 +20,13 @@ def criar_superusuario(request):
     #   nao : criar
     pass
 
+
 @login_required
 @staff_member_required
+# FIXME refatorar com padrão CRUD
+# FIXME refatorar para ingles
 def criar_usuario(request):
     context = {}
-
-    imoveis = Imovel.objects.all()
-    tem_imoveis = True if len(imoveis) > 0 else False
-    context['tem_imoveis'] = tem_imoveis
 
     senhaGerada = generatePassword(0)
     context['senhaGerada'] = senhaGerada
@@ -67,6 +68,7 @@ def criar_usuario(request):
 
     return render(request, 'views/criar-usuario.html', context)
 
+
 @login_required
 @staff_member_required
 def listar_usuarios(request):
@@ -81,15 +83,18 @@ def listar_usuarios(request):
             perfis = Perfil.objects.all().filter(nome_completo__contains = busca)
             context['perfis'] = perfis
             return render(request, 'views/listar-usuarios.html', context)
-    
-    try:
-        Imovel.objects.get()
-        tem_imoveis = True
-    except:
-        tem_imoveis = False
-    context['tem_imoveis'] = tem_imoveis
 
     return render(request, 'views/listar-usuarios.html', context)
+
+
+@login_required
+@staff_member_required
+def listUsersWithoutProperty(request):
+    context = {}
+    perfis = Perfil.objects.filter(imovel = None).order_by('nome_completo')
+    context['perfis'] = perfis
+    return render(request, 'views/listar-usuarios.html', context)
+
 
 @login_required
 @staff_member_required
@@ -133,6 +138,7 @@ def editar_perfil(request, id):
     
     return render(request, 'views/editar-perfil.html', context)
 
+
 @login_required
 @staff_member_required
 def editar_usuario(request, id):
@@ -157,6 +163,7 @@ def editar_usuario(request, id):
     context['senhaGerada'] = senhaGerada
     return render(request, 'views/editar-usuario.html', context)
 
+
 @login_required
 @staff_member_required
 def deletar_usuario(request, id):
@@ -167,6 +174,7 @@ def deletar_usuario(request, id):
     except: pass
     usuario.delete()
     return redirect('listarusuarios')
+
 
 def recuperar_senha(request):
     context = {}
@@ -207,6 +215,9 @@ def recuperar_senha(request):
     context['formPerfil'] = formPerfil
     return render(request, 'registration/recoverpassword.html', context)
 
+
+@login_required
+@staff_member_required
 def remover_do_imovel(request, id):
     perfil = get_object_or_404(Perfil, pk=id)
     perfil.imovel.alterarDisponibilidade(True)
@@ -216,6 +227,9 @@ def remover_do_imovel(request, id):
     Pagamento.objects.filter(perfil = perfil).delete()
     return redirect('listarusuarios')
 
+
+@login_required
+@staff_member_required
 def incluir_no_imovel(request, id):
     context = {}
 

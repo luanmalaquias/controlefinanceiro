@@ -38,33 +38,43 @@
                 <ul class="nav nav-pills flex-column mb-auto">
                     {% if user.is_staff %}
                     <li>
+                        <a href="{% url 'list-notifications' %}" class="nav-link position-relative {% if 'notificacao' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-bell-fill"></i>
+                            <span class="ps-3">Notificações</span>
+
+                            {% if qtdNotificacoesAdmin > 0 %}
+                                <span class="badge bg-danger ms-3">{{qtdNotificacoesAdmin}}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li>
                         <a href="{% url 'indeximobiliaria' %}" class="nav-link {% if 'home' in request.path %}active link-light{% else %}link-dark{% endif %}">
                             <i class="bi bi-graph-up-arrow"></i>
-                            Início
+                            <span class="ps-3">Início</span>
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'listarimoveis' %}" class="nav-link {% if 'imobiliaria' in request.path %}active link-light{% else %}link-dark{% endif %}">
                             <i class="bi bi-houses-fill"></i>
-                            Imóveis
+                            <span class="ps-3">Imóveis</span>
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'listarusuarios' %}" class="nav-link {% if '/usuario/' in request.path %}active link-light{% else %}link-dark{% endif %}">
                             <i class="bi bi-people-fill"></i>
-                            Usuários
+                            <span class="ps-3">Usuários</span>
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="nav-link {% if 'listar-pagamentos-por-usuarios' in request.path %}active link-light{% else %}link-dark{% endif %}">
                             <i class="bi bi-person-vcard-fill"></i>
-                            Devedores
+                            <span class="ps-3">Devedores</span>
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'listar-todos-os-pagamentos' %}" class="nav-link {% if 'o/listar-todos-os-pagamentos/' in request.path %}active link-light{% else %}link-dark{% endif %}">
                             <i class="bi bi-piggy-bank-fill"></i>
-                            Todos os pagamentos
+                            <span class="ps-3">Pagamentos</span>
                         </a>
                     </li>
                     <li>
@@ -72,15 +82,21 @@
                     </li>
                     {% else %}
                     <li>
+                        <a href="{% url 'list-notifications' %}" class="nav-link {% if 'notificacao' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                            <i class="bi bi-chat-right-text-fill"></i>
+                            <span class="ps-3">Mensagens</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{% url 'home-usuario' %}" class="nav-link {% if 'home-usuario' in request.path %}active link-light{% else %}link-dark{% endif %}">
                             <i class="bi bi-house-fill"></i>
-                            Home
+                            <span class="ps-3">Início</span>
                         </a>
                     </li>
                     <li>
                         <a href="{% url 'historico-usuario' %}" class="nav-link {% if 'historico-usuario' in request.path %}active link-light{% else %}link-dark{% endif %}">
                             <i class="bi bi-clipboard2-data-fill"></i>
-                            Historico de faturas
+                            <span class="ps-3">Historico de faturas</span>
                         </a>
                     </li>
                     <li>
@@ -113,6 +129,16 @@
                         <ul class="nav nav-pills flex-column mb-auto">
                             {% if user.is_staff %}
                                 <li>
+                                    <a href="{% url 'list-notifications' %}" class="nav-link {% if 'notificacao' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                                        <i class="bi bi-bell-fill"></i>
+                                        <span class="ps-3">Notificações</span>
+
+                                        {% if qtdNotificacoesAdmin > 0 %}
+                                            <span class="badge bg-danger ms-3">{{qtdNotificacoesAdmin}}</span>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="{% url 'indeximobiliaria' %}" class="nav-link {% if 'home' in request.path %}active link-light{% else %}link-dark{% endif %}">
                                         <i class="bi bi-graph-up-arrow"></i>
                                         <span class="ps-3">Início</span>
@@ -139,16 +165,20 @@
                                 <li>
                                     <a href="{% url 'listar-todos-os-pagamentos' %}" class="nav-link {% if 'o/listar-todos-os-pagamentos/' in request.path %}active link-light{% else %}link-dark{% endif %}">
                                         <i class="bi bi-piggy-bank-fill"></i>
-                                        <span class="ps-3">
-                                            Pagamentos
-                                        </span>
+                                        <span class="ps-3">Pagamentos</span>
                                     </a>
                                 </li>
                             {% else %}
                                 <li>
+                                    <a href="{% url 'list-notifications' %}" class="nav-link {% if 'notificacao' in request.path %}active link-light{% else %}link-dark{% endif %}">
+                                        <i class="bi bi-chat-right-text-fill"></i>
+                                        <span class="ps-3">Mensagens</span>
+                                    </a>
+                                </li>
+                                <li>
                                     <a href="{% url 'home-usuario' %}" class="nav-link {% if 'home-usuario' in request.path %}active link-light{% else %}link-dark{% endif %}">
                                         <i class="bi bi-house-fill"></i>
-                                        <span class="ps-3">Home</span>
+                                        <span class="ps-3">Início</span>
                                     </a>
                                 </li>
                                 <li>
@@ -157,6 +187,7 @@
                                         <span class="ps-3">Historico</span>
                                     </a>
                                 </li>
+                                <!-- TODO contrato -->
                             {% endif %}
                             <li>
                                 <a href="{% url 'logout' %}" class="nav-link link-dark">Sair</a>

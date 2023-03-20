@@ -35,9 +35,13 @@
         <tbody>
             {% for perfil in perfis %}
             <tr>
-                <td>{{perfil.nome_completo}}</td>
+                <td>{{perfil.nome_completo|truncatechars:20}}</td>
+                <!-- TODO formatar -->
                 <td>{{perfil.cpf}}</td>
-                <td>{{perfil.telefone}}</td>
+                <!-- TODO formatar -->
+                <td>
+                    <a href="https://api.whatsapp.com/send?phone=55{{perfil.telefone}}" target="_blank">{{perfil.telefone}}</a>
+                </td>
                 {% if perfil.imovel %}
                     <td>{{perfil.imovel}}</td>
                     <td>{{perfil.data_entrada_imovel|date:"d/m/Y"}}</td>

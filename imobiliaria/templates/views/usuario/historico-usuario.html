@@ -8,11 +8,11 @@
 
 <div class="col-sm-12 col-lg-6 offset-lg-3">
     <div class="table-responsive">
-        <table class="table table-borderless text-center mt-5">
+        <table class="table table-borderless text-center">
             <thead>
                 <tr>
-                    <th scope="col">Referência</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Referência</th>
                     <th scope="col">Valor pago</th>
                     <th scope="col">Data Pag.</th>
                 </tr>
@@ -20,7 +20,6 @@
             <tbody>
                 {% for pagamento in pagamentos %}
                 <tr>
-                    <td>{{pagamento.mes_referencia|date:"M/Y"}}</td>
                     <td>
                         {% if pagamento.status == "P" %}
                         <span class="badge bg-success-subtle text-success">Pago</span>
@@ -30,6 +29,7 @@
                         <span class="badge bg-danger-subtle text-danger">Aguardando</span>
                         {% endif %}
                     </td>
+                    <td>{{pagamento.mes_referencia|date:"M/Y"}}</td>
                     <td>R$ {{pagamento.valor_pago}}</td>
                     <td>{{pagamento.data_pagamento|date:"d/M/y"}}</td>
                 </tr>

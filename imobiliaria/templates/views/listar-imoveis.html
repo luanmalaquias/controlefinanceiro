@@ -45,7 +45,7 @@
                 <td><span class="badge bg-danger-subtle text-danger">Não</span></td>
                 {% endif %}
                 <td>{{imovel.cep}}</td>
-                <td>{{imovel.endereco}}</td>
+                <td>{{imovel.endereco|truncatechars:20}}</td>
                 <td>{{imovel.numero}}</td>
                 <td>{{imovel.bairro}}</td>
                 <td>{{imovel.cidade}}</td>

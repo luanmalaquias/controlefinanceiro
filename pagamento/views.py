@@ -101,6 +101,8 @@ def criar_pagamento(request):
     context = {}
     form = PagamentoForm()
 
+    perfis = Perfil.objects.all()
+
     if request.method == 'POST':
         form = PagamentoForm(request.POST)
         if form.is_valid():
@@ -126,6 +128,7 @@ def criar_pagamento(request):
             return redirect('listar-pagamentos-por-usuarios')
 
     context['form'] = form
+    context['temPerfis'] = True if len(perfis) > 0 else False
     return render(request, 'views/criar-pagamento.html', context)
 
 

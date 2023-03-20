@@ -73,6 +73,7 @@ def indexImobiliaria(request):
 
     return render(request, 'index-imobiliaria.html', context)
 
+
 @login_required
 @staff_member_required
 def cadastrarImovel(request):
@@ -89,6 +90,7 @@ def cadastrarImovel(request):
     context['formImovel'] = formImovel
     return render(request, 'views/criar-imovel.html', context)
 
+
 @login_required
 @staff_member_required
 def listarImoveis(request):
@@ -104,6 +106,17 @@ def listarImoveis(request):
             return render(request, 'views/listar-imoveis.html', context)
 
     return render(request, 'views/listar-imoveis.html', context)
+
+
+@login_required
+@staff_member_required
+def listAvailableProperties(request):
+    context = {}
+    availableProperties = Imovel.objects.filter(disponibilidade = True).order_by('nome')
+    context['imoveis'] = availableProperties
+    return render(request, 'views/listar-imoveis.html', context)
+
+
 
 @login_required
 @staff_member_required
@@ -125,6 +138,7 @@ def atualizarDadosImovel(request, id):
     context['imovel'] = imovel
         
     return render(request, 'views/criar-imovel.html', context)
+
 
 @login_required
 @staff_member_required

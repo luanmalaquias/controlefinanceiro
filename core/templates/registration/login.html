@@ -53,8 +53,8 @@
 </div>
 
 <!-- Desktop -->
-<div class="d-lg-block d-sm-none container-fluid h-100">
-	<div class="row h-100" style="padding: 10% 20%;">
+<div class="d-lg-block d-sm-none h-100">
+	<div class="row h-100" style="padding: 5% 20%;">
 		<div class="col-4 d-flex flex-column">
 			<div class="row h-25">
 				<img src="{% static 'imgs/imobiliariaIcon.png' %}" alt="icone" style="width: 60%;">
@@ -62,7 +62,7 @@
 				<span class="text-muted">Gestão finnancer</span>
 			</div>
 			<div class="row h-50 mt-5">
-				<span class="mt-2 fs-5 text-muted">Faça login com a sua conta</span>
+				<span class="mt-2 text-muted">Faça login com a sua conta</span>
 				<hr class="my-3">
 				<form method="post">
 					{% csrf_token %}
@@ -86,21 +86,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-4">
-			<hr style="border: none; border-left: 1px solid hsla(200, 10%, 50%,100); height: 100%; width: 1px;">
-		</div>
 		<!-- Aplicar animação -->
-		<div class="col-4 quadrado bg-primary" style="border-top-right-radius: 3rem; border-bottom-right-radius: 3rem;">
+		<div class="col-8 quadrado bg-primary" style="border-top-right-radius: 3rem; border-bottom-right-radius: 3rem; background-image: linear-gradient(to right, white, #0b5ed7);">
 		</div>
 	</div>
 </div>
-
-<script>
-	var errorListNonField = $('.nonfield')
-	console.log(errorListNonField);
-	var errorList = $('ul').children().remove()
-	console.log(errorList);
-	var alert = $('.alert').add(errorListNonField)
-</script>
 
 {% endblock %}
