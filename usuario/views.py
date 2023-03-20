@@ -89,6 +89,15 @@ def listar_usuarios(request):
 
 @login_required
 @staff_member_required
+def readUser(request, id):
+    context = {}
+    perfil = get_object_or_404(Perfil, pk=id)
+    context['perfil'] = perfil
+    return render(request, 'views/read-user.html', context)
+
+
+@login_required
+@staff_member_required
 def listUsersWithoutProperty(request):
     context = {}
     perfis = Perfil.objects.filter(imovel = None).order_by('nome_completo')

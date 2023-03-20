@@ -4,9 +4,8 @@ from .views import *
 urlpatterns = [
     path('cadastrar/', criar_usuario, name="cadastrarusuario"),
     path('listar/', listar_usuarios, name="listarusuarios"),
-    # TODO listar um usuario -> listar/<int:id>
-    # TODO listar usuarios sem imovel
-    path('listUsersWithoutProperty', listUsersWithoutProperty, name='listUsersWithoutProperty'),
+    path('read-user/<int:id>', readUser, name='read-user'),
+    path('list-users-without-property', listUsersWithoutProperty, name='list-users-without-property'),
     path('editarperfil/<int:id>', editar_perfil, name="editarperfil"),
     path('editarusuario/<int:id>', editar_usuario, name="editarusuario"),
     path('deletar/<int:id>', deletar_usuario, name="deletarusuario"),
