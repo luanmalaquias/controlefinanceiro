@@ -45,7 +45,11 @@
                     <span class="badge bg-danger-subtle text-danger">Aguardando</span>
                     {% endif %}
                 </td>
-                <td>{{perfil.nomeperfil}}</td>
+                <td>
+                    <a href="{% url 'read-user' perfil.id %}" class="text-dark">
+                        {{perfil.nomeperfil|truncatechars:20}}
+                    </a>
+                </td>
                 <td>
                     {% if perfil.nomeimovel == "Sem imovel" %}
                         <span class="badge bg-danger-subtle text-danger">{{perfil.nomeimovel}}</span>

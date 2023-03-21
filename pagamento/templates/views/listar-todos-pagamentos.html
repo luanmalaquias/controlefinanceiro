@@ -45,7 +45,11 @@
                         <span class="badge bg-danger-subtle text-danger">Aguardando</span>
                     {% endif %}
                 </td>
-                <td>{{pagamento.perfil}}</td>
+                <td>
+                    <a href="{% url 'read-user' pagamento.perfil.id %}" class="text-dark">
+                        {{pagamento.perfil|truncatechars:20}}
+                    </a>
+                </td>
                 <td>
                     {% if pagamento.perfil.imovel%}
                         <span>{{pagamento.perfil.imovel}}</span>
