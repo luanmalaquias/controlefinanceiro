@@ -36,12 +36,13 @@
             {% for perfil in perfis %}
             <tr>
                 <td>
-                    <a href="{% url 'read-user' perfil.id %}" class="text-dark">
+                    <a href="{% url 'read-user' perfil.id %}" class="text-decoration-none">
                         {{perfil.nome_completo|truncatechars:20}}
                     </a>                    
                 </td>
+                <td>{{perfil.cpf}}</td>
                 <td>
-                    <a href="https://api.whatsapp.com/send?phone=55{{perfil.telefone}}" target="_blank" class="text-dark">
+                    <a href="https://api.whatsapp.com/send?phone=55{{perfil.telefone}}" target="_blank" class="text-decoration-none">
                         {{perfil.telefone}}
                     </a>
                 </td>

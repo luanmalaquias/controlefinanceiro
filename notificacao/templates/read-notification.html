@@ -11,7 +11,13 @@
     <div class="card mb-3 {{ n.lido|yesno:'text-muted bg-secondary-subtle,' }} ">
         {% if user.is_staff %}
             <div class="card-header">
-                <span><strong>{{notification.perfil}}</strong></span>
+                <span>
+                    <a href="{%url 'read-user' notification.perfil.id%}" class="text-decoration-none">
+                        <strong>
+                            {{notification.perfil}}
+                        </strong>
+                    </a>                    
+                </span>
             </div>
         {% endif %}
             
