@@ -1,13 +1,137 @@
 {% extends 'base.html' %}
 {% block title %}Usuário{% endblock %}
 {% block content %}
+{% load static %}
 <div class="row d-lg-block d-sm-none bg-dark text-light mb-3">
     <h3 class="ps-5">Usuário</h3>
 </div>
 
 <div class="col-sm-12 col-lg-6 offset-lg-3">
-    <h2>{{perfil.nome_completo}}</h2>
-    <h3>{{perfil.imovel}}</h3>
-    <!-- TODO o resto e os pagamentos -->
+    <div class="row">        
+        <div class="col-12 d-flex align-items-center justify-content-center">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0">
+                    <img src="{% static 'imgs/profilePic.png' %}" alt="user" style="width: 4rem; border-radius: 50%;">
+                </div>
+                <div class="flex-grow-1 ms-3">
+                    <strong>
+                        {{perfil.nome_completo}} <br> 
+                        {{perfil.imovel|default_if_none:"Sem Imóvel"}}
+                    </strong>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    
+    <div class="row">
+        <div class="col-12">
+            <h3>Dados pessoais</h3>
+            <p>
+                <strong>CPF </strong> {{perfil.cpf|default_if_none:"Não registrado"}} <br>
+                <strong>Data Nascimento </strong> {{perfil.data_nascimento|default_if_none:"Não registrado"}} <br>
+                <strong>Telefone </strong> {{perfil.telefone|default_if_none:"Não registrado"}} <br>
+                <strong>Data entrada imovel </strong> {{perfil.data_entrada_imovel|default_if_none:"Não registrado"}}
+            </p>
+            <hr>
+        </div>
+    </div>
+    
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                    aria-expanded="true" aria-controls="collapseOne">
+                    Pagamentos
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Venc.</th>
+                                    <th scope="col">Data Pag.</th>
+                                    <th scope="col">Mens.</th>
+                                    <th scope="col">Valor pago</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pagamento in pagamentos %}
+                                <tr>
+                                    <td>
+                                        {% if pagamento.status == "P" %}
+                                            <span class="badge bg-success-subtle text-success">Pago</span>
+                                        {% elif pagamento.status == "A" %}
+                                            <span class="badge bg-warning-subtle text-dark">Em análise</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger">Aguardando</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if pagamento.perfil.imovel %}
+                                            {% if pagamento.perfil.imovel.vencimento > 9 %}
+                                                {{ pagamento.perfil.imovel.vencimento }}
+                                            {% else %}
+                                                0{{pagamento.perfil.imovel.vencimento}}
+                                            {% endif %}                        
+                                        {% endif %}
+                                    </td>
+                                    <td>{{pagamento.data|date:"d/m/y H:i"}}</td>
+                                    <td>R$ {{pagamento.perfil.imovel.mensalidade}}</td>
+                                    <td>R$ {{pagamento.valor_pago}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Mensagens 
+                    {% if msgsNaoLidas > 0 %}
+                        <span class="badge bg-danger ms-2">{{msgsNaoLidas}}</span>
+                    {% endif %}
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <div class="table-responsive">
+                        {% for m in mensagens %}
+                            <div class="col-12">
+                                <a href="{% url 'read-notification' m.id %}" class="btn w-100 text-start">
+                                    <div class="card mb-3 {{ n.lido|yesno:'text-muted bg-secondary-subtle,' }} ">
+                                        {% if user.is_staff %}
+                                            <div class="card-header">
+                                                {% if not m.lido %}
+                                                    <i class="bi bi-circle-fill text-danger me-2"></i>
+                                                {% endif %}
+                                                <span><strong>{{m.perfil}}</strong></span>
+                                            </div>
+                                        {% endif %}
+                                            
+                                        <div class="card-body">
+                                            <blockquote class="blockquote mb-0">
+                                                <p>{{m.mensagem|truncatechars:20}}</p>
+                                                <footer class="blockquote-footer">{{m.datahora}}</footer>
+                                            </blockquote>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

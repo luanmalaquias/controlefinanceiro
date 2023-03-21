@@ -9,6 +9,7 @@ from pagamento.models import Pagamento
 from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm
 from utils.scripts import generatePassword, unmask, maskCpf, maskPhone
 from django.shortcuts import get_object_or_404
+from notificacao.models import Notificacao
 
 
 # TODO usuario pode se auto-cadastrar
@@ -92,7 +93,14 @@ def listar_usuarios(request):
 def readUser(request, id):
     context = {}
     perfil = get_object_or_404(Perfil, pk=id)
+    pagamentos = Pagamento.objects.filter(perfil = perfil).order_by('-data')
+    mensagens = Notificacao.objects.filter(perfil = perfil).order_by('lido', 'datahora')
+    msgsNaoLidas = len(Notificacao.objects.filter(perfil = perfil, lido = False))
+
     context['perfil'] = perfil
+    context['pagamentos'] = pagamentos
+    context['mensagens'] = mensagens
+    context['msgsNaoLidas'] = msgsNaoLidas
     return render(request, 'views/read-user.html', context)
 
 
