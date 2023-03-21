@@ -38,7 +38,11 @@
         <tbody>
             {% for imovel in imoveis %}
             <tr>
-                <td>{{imovel.nome}}</td>
+                <td>
+                    <a href="{%url 'read-property' imovel.id%}" class="text-decoration-none">
+                        {{imovel.nome}}
+                    </a>
+                </td>
                 {% if imovel.disponibilidade %}
                 <td><span class="badge bg-success-subtle text-success">Sim</span></td>
                 {% else %}

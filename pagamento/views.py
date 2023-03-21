@@ -47,6 +47,7 @@ def listarPagamentosPorUsuarios(request, dataParam=None):
                     {"id":perfil.id,
                     "nomeperfil":perfil.nome_completo, 
                     "nomeimovel":perfil.imovel.nome, 
+                    "idimovel":perfil.imovel.id,
                     "pagamento":pagamento.status,
                     "pagamentoid":pagamento.id, 
                     "vencimento":perfil.imovel.vencimento, 
@@ -74,6 +75,7 @@ def listarPagamentosPorUsuarios(request, dataParam=None):
 
     return render(request, 'views/listar-pagamentos.html', context)
 
+
 @login_required
 @staff_member_required
 def listar_pagamentos(request):
@@ -94,6 +96,7 @@ def listar_pagamentos(request):
     context['pagamentos'] = pagamentos
 
     return render(request, 'views/listar-todos-pagamentos.html', context)
+
 
 @login_required
 @staff_member_required

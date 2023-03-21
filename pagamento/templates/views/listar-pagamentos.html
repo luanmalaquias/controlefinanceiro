@@ -46,7 +46,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a href="{% url 'read-user' perfil.id %}" class="text-dark">
+                    <a href="{% url 'read-user' perfil.id %}" class="text-decoration-none">
                         {{perfil.nomeperfil|truncatechars:20}}
                     </a>
                 </td>
@@ -54,7 +54,9 @@
                     {% if perfil.nomeimovel == "Sem imovel" %}
                         <span class="badge bg-danger-subtle text-danger">{{perfil.nomeimovel}}</span>
                     {% else %}
-                        {{perfil.nomeimovel}}
+                        <a href="{%url 'read-property' perfil.idimovel%}" class="text-decoration-none">
+                            {{perfil.nomeimovel}}
+                        </a>
                     {% endif %}
                 </td>
                 <td>

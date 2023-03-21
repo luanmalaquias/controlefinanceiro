@@ -7,7 +7,6 @@
     <h3 class="ps-5">Home</h3>
 </div>
 
-<!-- Mobile -->
 <div class="row d-flex align-items-center">
 
     <!-- Usuario -->
@@ -16,15 +15,22 @@
         <div class="col-12 d-flex align-items-center justify-content-center">
             <div class="d-flex align-items-center">
                 <div class="flex-shrink-0">
-                    <img src="{% static 'imgs/profilePic.png' %}" alt="user" style="width: 4rem; border-radius: 50%;">
+                    <a href="{% url 'read-user' perfil.id %}">
+                        <img src="{% static 'imgs/profilePic.png' %}" alt="user" style="width: 4rem; border-radius: 50%;">
+                    </a>
                 </div>
                 <div class="flex-grow-1 ms-3">
                     <strong>
-                        {{perfil.nome_completo}} <br> 
+                        <a href="{% url 'read-user' perfil.id %}" class="text-decoration-none text-dark">
+                            {{perfil.nome_completo}}
+                        </a>
+                        <br> 
                         {%if perfil.imovel%}
-                        {{perfil.imovel}}
+                            <a href="{% url 'read-property' perfil.imovel.id %}" class="text-decoration-none text-dark">
+                                {{perfil.imovel}}
+                            </a>
                         {% else %}
-                        Sem imovel
+                            Sem imovel
                         {% endif %}
                     </strong>
                 </div>

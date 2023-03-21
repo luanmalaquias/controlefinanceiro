@@ -46,13 +46,15 @@
                     {% endif %}
                 </td>
                 <td>
-                    <a href="{% url 'read-user' pagamento.perfil.id %}" class="text-dark">
+                    <a href="{% url 'read-user' pagamento.perfil.id %}" class="text-decoration-none">
                         {{pagamento.perfil|truncatechars:20}}
                     </a>
                 </td>
                 <td>
                     {% if pagamento.perfil.imovel%}
-                        <span>{{pagamento.perfil.imovel}}</span>
+                        <a href="{%url 'read-property' pagamento.perfil.imovel.id%}" class="text-decoration-none">
+                            {{pagamento.perfil.imovel}}
+                        </a>
                     {% else %}
                         <span class="badge bg-danger-subtle text-danger">Despejado</span>
                     {% endif %}

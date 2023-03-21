@@ -25,6 +25,13 @@ def listNotifications(request):
 def readNotification(request, id):
     context = {}
 
+    # a notificação tem que ser do usuario
+    if request.user.is_staff == False:
+        perfil = Perfil.objects.get(cpf = request.user.username)
+        notificacao = get_object_or_404(Notificacao, pk=id)
+        if notificacao.perfil != perfil:
+            return redirect('home-usuario')
+
     notification = get_object_or_404(Notificacao, pk=id)
     if request.user.is_staff and notification.lido == False:
         notification.lido = True

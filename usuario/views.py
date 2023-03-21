@@ -89,9 +89,15 @@ def listar_usuarios(request):
 
 
 @login_required
-@staff_member_required
 def readUser(request, id):
     context = {}
+
+    # o usuário tem que ser o logado
+    if request.user.is_staff == False:
+        perfil = Perfil.objects.get(cpf = request.user.username)
+        if id != perfil.id:
+            return redirect('home-usuario')
+
     perfil = get_object_or_404(Perfil, pk=id)
     pagamentos = Pagamento.objects.filter(perfil = perfil).order_by('-data')
     mensagens = Notificacao.objects.filter(perfil = perfil).order_by('lido', 'datahora')

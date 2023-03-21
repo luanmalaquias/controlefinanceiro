@@ -109,6 +109,29 @@ def listarImoveis(request):
 
 
 @login_required
+def readProperty(request, id):
+    context = {}
+
+    # o imovel tem que ser do usuario
+    if request.user.is_staff == False:
+        perfil = Perfil.objects.get(cpf = request.user.username)
+        if id != perfil.imovel.id:
+            return redirect('home-usuario')
+
+    imovel = get_object_or_404(Imovel, pk=id)
+    inquilino = Perfil.objects.filter(imovel = imovel)
+    inquilino = inquilino[0] if len(inquilino) > 0 else None
+    pagamentos = []
+    if inquilino:
+        pagamentos = Pagamento.objects.filter(perfil = inquilino)
+
+    context['imovel'] = imovel
+    context['inquilino'] = inquilino
+    context['pagamentos'] = pagamentos if pagamentos else []
+    return render(request, 'views/read-property.html', context)
+
+
+@login_required
 @staff_member_required
 def listAvailableProperties(request):
     context = {}
