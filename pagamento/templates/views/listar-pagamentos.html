@@ -34,67 +34,67 @@
             </tr>
         </thead>
         <tbody>
-            {% for perfil in perfilComPagamento %}
+            {% for p in pagamentosDesteMes %}
             <tr>
                 <td>
-                    {% if perfil.pagamento == "P" %}
-                    <span class="badge bg-success-subtle text-success">Pago</span>
-                    {% elif perfil.pagamento == "A" %}
-                    <span class="badge bg-warning-subtle text-dark">Em análise</span>
+                    {% if p.pagamento.status == "P" %}
+                        <span class="badge bg-success-subtle text-success">Pago</span>
+                    {% elif p.pagamento.status == "A" %}
+                        <span class="badge bg-warning-subtle text-dark">Em análise</span>
                     {% else %}
-                    <span class="badge bg-danger-subtle text-danger">Aguardando</span>
+                        <span class="badge bg-danger-subtle text-danger">Aguardando</span>
                     {% endif %}
                 </td>
                 <td>
-                    <a href="{% url 'read-user' perfil.id %}" class="text-decoration-none">
-                        {{perfil.nomeperfil|truncatechars:20}}
+                    <a href="{% url 'read-user' p.perfil.id %}" class="text-decoration-none">
+                        {{ p.perfil.nome_completo|truncatechars:20 }}
                     </a>
                 </td>
                 <td>
-                    {% if perfil.nomeimovel == "Sem imovel" %}
-                        <span class="badge bg-danger-subtle text-danger">{{perfil.nomeimovel}}</span>
+                    {% if not p.perfil.imovel %}
+                        <span class="badge bg-danger-subtle text-danger">Sem imóvel</span>
                     {% else %}
-                        <a href="{%url 'read-property' perfil.idimovel%}" class="text-decoration-none">
-                            {{perfil.nomeimovel}}
+                        <a href="{% url 'read-property' p.perfil.imovel.id %}" class="text-decoration-none">
+                            {{p.perfil.imovel.nome}}
                         </a>
                     {% endif %}
                 </td>
                 <td>
-                    {% if perfil.vencimento > 9 %}
-                        {{ perfil.vencimento }}/{{data_atual|date:"M"}}
+                    {% if p.perfil.imovel.vencimento > 9 %}
+                        {{ p.perfil.imovel.vencimento }}/{{data_atual|date:"M"}}
                     {% else %}
-                        0{{perfil.vencimento}}/{{data_atual|date:"M"}}
+                        0{{ p.perfil.imovel.vencimento }}/{{data_atual|date:"M"}}
                     {% endif %}
                 </td>
-                <td>{{perfil.data|date:"d/M/y H:i"}}</td>
-                <td>{{perfil.mensalidade}}</td>
-                <td>{{perfil.pagamentoefetuado}}</td>
+                <td>{{p.pagamento.data|date:"d/M/y H:i"}}</td>
+                <td>R$ {{p.perfil.imovel.mensalidade}}</td>
+                <td>{% if p.pagamento.valor_pago %}R$ {% endif %} {{p.pagamento.valor_pago|default_if_none:""}}</td>
                 <td>
-                    {% if perfil.pagamento == "P" %}
-                    <!-- Button trigger modal -->
-                    <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDeletarRapido{{perfil.pagamentoid}}"><i class="bi bi-trash-fill"></i></a>
+                    {% if p.pagamento.status == "P" %}
+                        <!-- Button trigger modal -->
+                        <a class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDeletarRapido{{p.pagamento.id}}"><i class="bi bi-trash-fill"></i></a>
                     {% else %}
-                    <a onclick="pagamento_rapido('{{perfil.id}}')" class="btn btn-success btn-sm"><i class="bi bi-currency-dollar"></i></a>
+                        <a onclick="pagamento_rapido('{{p.perfil.id}}')" class="btn btn-success btn-sm"><i class="bi bi-currency-dollar"></i></a>
                     {% endif %}
                 </td>
                 <td>
-                    <div class="dropdown">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="bi bi-gear-fill"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                {% if perfil.pagamentoid %}
-                                    <a class="dropdown-item" onclick="criar_pagamento('{{perfil.pagamentoid}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a>
-                                {% endif %}
-                            </li>
-                        </ul>
-                    </div>
+                    {% if p.pagamento.id %}
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="bi bi-gear-fill"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" onclick="criar_pagamento('{{p.pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
                 </td>
             </tr>
 
              <!-- Modal precista estar dentro do for -->
-            <div class="modal fade" id="modalDeletarRapido{{perfil.pagamentoid}}" data-bs-backdrop="static" data-bs-keyboard="false"
+            <div class="modal fade" id="modalDeletarRapido{{p.pagamento.id}}" data-bs-backdrop="static" data-bs-keyboard="false"
                 tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -106,7 +106,7 @@
                             Deletar o pagamento ?
                         </div>
                         <div class="modal-footer">
-                            <a type="button" class="btn btn-danger" onclick="deletar_rapido('{{perfil.pagamentoid}}')">Deletar</a>
+                            <a type="button" class="btn btn-danger" onclick="deletar_rapido('{{p.pagamento.id}}')">Deletar</a>
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                         </div>
                     </div>

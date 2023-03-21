@@ -11,8 +11,9 @@ from utils.scripts import gerarDados, unmask, porcentagem
 from utils import pixcodegen
 from datetime import datetime, timedelta, time, date
 from dateutil.relativedelta import relativedelta
+from django.db.models import Q
 
-# Create your views here.
+
 
 @login_required
 def indexImobiliaria(request):
@@ -101,7 +102,7 @@ def listarImoveis(request):
     if request.method == "GET":
         busca = request.GET.get('busca')
         if busca != None:
-            imoveis = Imovel.objects.all().filter(nome__contains = busca).order_by('-disponibilidade','nome')
+            imoveis = Imovel.objects.all().filter(Q(nome__contains=busca) | Q(cep__contains=busca) | Q(endereco__contains=busca) | Q(bairro__contains=busca) | Q(cidade__contains=busca) | Q(uf__contains=busca)).order_by('-disponibilidade','nome')
             context['imoveis'] = imoveis
             return render(request, 'views/listar-imoveis.html', context)
 

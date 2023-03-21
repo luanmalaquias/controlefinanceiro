@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from .forms import NotificacaoForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Q
 
 
 @login_required
@@ -13,6 +14,18 @@ def listNotifications(request):
 
     if request.user.is_staff:
         notificacoes = Notificacao.objects.all().order_by('lido', 'datahora')
+        if request.method == 'GET':
+            if request.GET.get('busca') != None:
+                busca = request.GET.get('busca')
+                perfis = Perfil.objects.filter(Q(nome_completo__contains=busca))
+                notificacoes = []
+                for p in perfis:
+                    notificacoesDB = Notificacao.objects.filter(perfil=p).order_by('datahora', 'lido')
+                    for nDB in notificacoesDB:
+                        notificacoes.append(nDB)
+                notificacoes.sort(key=_ordenar_lista)
+                context['notificacoes'] = notificacoes
+                return render(request, 'list-notifications.html', context)
     else:
         perfil = Perfil.objects.get(cpf = request.user.username)
         notificacoes = Notificacao.objects.filter(perfil = perfil).order_by('lido', 'datahora')
@@ -64,3 +77,7 @@ def createNotification(request):
 
     context['form'] = form
     return render(request, 'create-notification.html', context)
+
+
+def _ordenar_lista(lista):
+    return lista.lido

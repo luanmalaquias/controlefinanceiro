@@ -10,6 +10,7 @@ from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm
 from utils.scripts import generatePassword, unmask, maskCpf, maskPhone
 from django.shortcuts import get_object_or_404
 from notificacao.models import Notificacao
+from django.db.models import Q
 
 
 # TODO usuario pode se auto-cadastrar
@@ -81,7 +82,7 @@ def listar_usuarios(request):
     if request.method == "GET":
         busca = request.GET.get('busca')
         if busca != None:
-            perfis = Perfil.objects.all().filter(nome_completo__contains = busca)
+            perfis = Perfil.objects.all().filter(Q(nome_completo__contains=busca) | Q(cpf__contains=busca))
             context['perfis'] = perfis
             return render(request, 'views/listar-usuarios.html', context)
 

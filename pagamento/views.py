@@ -35,43 +35,24 @@ def listarPagamentosPorUsuarios(request, dataParam=None):
             data_atual = mes_vigente
 
     # criar novos itens com os valores juntos
-    perfil_com_pagamento = []
+    pagamentosDesteMes = []
     for perfil in perfis:
         encontrado = False
         if not perfil.imovel:
             continue
         for pagamento in pagamentos:
-            encontrado = False
             if pagamento.perfil == perfil and pagamento.data.month == data_atual.month and pagamento.data.year == data_atual.year:
-                perfil_com_pagamento.append(
-                    {"id":perfil.id,
-                    "nomeperfil":perfil.nome_completo, 
-                    "nomeimovel":perfil.imovel.nome, 
-                    "idimovel":perfil.imovel.id,
-                    "pagamento":pagamento.status,
-                    "pagamentoid":pagamento.id, 
-                    "vencimento":perfil.imovel.vencimento, 
-                    "mensalidade": f'R$ {perfil.imovel.mensalidade}', 
-                    "pagamentoefetuado": f'R$ {pagamento.valor_pago}', 
-                    "data":pagamento.data})
+                pagamentosDesteMes.append({'perfil':perfil, 'pagamento':pagamento})
                 encontrado = True
                 break
         if not encontrado:
-            perfil_com_pagamento.append(
-                {"id":perfil.id,
-                "nomeperfil":perfil.nome_completo, 
-                "nomeimovel":perfil.imovel.nome, 
-                "pagamento":"Não efetuado",
-                "vencimento":perfil.imovel.vencimento, 
-                "mensalidade": f'R$ {perfil.imovel.mensalidade}', 
-                "pagamentoefetuado":"", 
-                "data":"--/--/--"})
+            pagamentosDesteMes.append({'perfil':perfil, 'pagamento':Pagamento(perfil=perfil, status="N")})
     
     # ordenação
-    perfil_com_pagamento.sort(key=_ordenar_lista)
+    pagamentosDesteMes.sort(key=_ordenar_lista)
 
     context['data_atual'] = data_atual
-    context['perfilComPagamento'] = perfil_com_pagamento
+    context['pagamentosDesteMes'] = pagamentosDesteMes
 
     return render(request, 'views/listar-pagamentos.html', context)
 
@@ -173,6 +154,7 @@ def editar_pagamento(request, id, pagina:str, data:str = 'None'):
     context = {}
     pagamento = get_object_or_404(Pagamento, pk=id)
     form = PagamentoForm(instance = pagamento)
+    perfis = Perfil.objects.all()
 
     if request.method == 'POST':
         form = PagamentoForm(request.POST, instance=pagamento)
@@ -187,6 +169,7 @@ def editar_pagamento(request, id, pagina:str, data:str = 'None'):
 
     context['pagamento'] = pagamento
     context['form'] = form
+    context['temPerfis'] = True if len(perfis) > 0 else False
     return render(request, 'views/criar-pagamento.html', context)
 
 
@@ -209,4 +192,4 @@ def deletar_pagamento_rapido(request, id, data):
     return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)
 
 def _ordenar_lista(lista):
-    return lista["vencimento"]
+    return lista["perfil"].imovel.vencimento
