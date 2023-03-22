@@ -23,16 +23,19 @@
 {% for n in notificacoes %}
     <div class="col-sm-12 col-lg-6 offset-lg-3">
         <a href="{% url 'read-notification' n.id %}" class="btn w-100 text-start">
+            {% if user.is_staff %}
             <div class="card mb-3 {{ n.lido|yesno:'text-muted bg-secondary-subtle,' }} ">
-                {% if user.is_staff %}
                     <div class="card-header">
                         {% if not n.lido %}
-                            <i class="bi bi-circle-fill text-danger me-2"></i>
+                            <i class="bi bi-envelope-fill text-danger me-2"></i>
+                        {% else %}
+                            <i class="bi bi-envelope-open-fill me-2"></i>
                         {% endif %}
                         <span><strong>{{n.perfil}}</strong></span>
                     </div>
-                {% endif %}
-                    
+            {% else %}
+            <div class="card mb-3 ">
+            {% endif %}                    
                 <div class="card-body">
                     <blockquote class="blockquote mb-0">
                         <p>{{n.mensagem|truncatechars:20}}</p>
