@@ -83,7 +83,9 @@ def listar_pagamentos(request):
 @staff_member_required
 def criar_pagamento(request):
     context = {}
+
     form = PagamentoForm()
+    context['form'] = form
 
     perfis = Perfil.objects.all()
 
@@ -106,12 +108,10 @@ def criar_pagamento(request):
             if existe_pagamento_para_este_mes:
                 context['errop'] = True
                 context['form'] = form
-                return render(request, 'views/criar-pagamento.html', context)
             else:
                 pagamento.save()
-            return redirect('listar-pagamentos-por-usuarios')
+                return redirect('listar-pagamentos-por-usuarios')
 
-    context['form'] = form
     context['temPerfis'] = True if len(perfis) > 0 else False
     return render(request, 'views/criar-pagamento.html', context)
 
@@ -152,7 +152,12 @@ def criar_pagamento_rapido(request, id, data):
 @staff_member_required
 def editar_pagamento(request, id, pagina:str, data:str = 'None'):
     context = {}
+
     pagamento = get_object_or_404(Pagamento, pk=id)
+    # hora com timezone local
+    dataHora = datetime(pagamento.data.year, pagamento.data.month, pagamento.data.day, pagamento.data.hour-3, pagamento.data.minute)
+    pagamento.data = dataHora.strftime("%Y-%m-%dT%H:%M")
+
     form = PagamentoForm(instance = pagamento)
     perfis = Perfil.objects.all()
 
@@ -190,6 +195,7 @@ def deletar_pagamento_rapido(request, id, data):
     get_object_or_404(Pagamento, pk=id).delete()
 
     return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)
+
 
 def _ordenar_lista(lista):
     return lista["perfil"].imovel.vencimento
