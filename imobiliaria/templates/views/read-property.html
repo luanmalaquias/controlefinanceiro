@@ -29,7 +29,15 @@
     <div class="row mb-3">
         <div class="col-12">
             <p>
-                <strong>Inquilino </strong> {{inquilino|default_if_none:"Sem inquilino"}} <br>
+                <strong>
+                    Inquilino
+                    {% if inquilino %}
+                        <a href="{% url 'read-user' inquilino.id %}" class="text-decoration-none">{{inquilino}}</a>
+                    {% else %}
+                        Sem inquilino
+                    {% endif %}
+                    <br>
+                </strong>
                 <strong>CEP </strong> {{imovel.cep}}, n° {{imovel.numero}}<br>
                 <strong>Bairro </strong> {{imovel.bairro}} <br>
                 <strong>Cidade </strong> {{imovel.cidade}} <br>

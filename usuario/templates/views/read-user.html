@@ -15,8 +15,14 @@
                 </div>
                 <div class="flex-grow-1 ms-3">
                     <strong>
-                        {{perfil.nome_completo}} <br> 
-                        {{perfil.imovel|default_if_none:"Sem Imóvel"}}
+                        {{perfil.nome_completo}} <br>                         
+                        {% if perfil.imovel %}
+                            <a href="{% url 'read-property' perfil.imovel.id %}" class="text-decoration-none">
+                                {{perfil.imovel}}
+                            </a>
+                        {% else %}
+                            Sem Imóvel
+                        {% endif %}                        
                     </strong>
                 </div>
             </div>
