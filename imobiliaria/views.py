@@ -117,7 +117,7 @@ def readProperty(request, id):
     if request.user.is_staff == False:
         perfil = Perfil.objects.get(cpf = request.user.username)
         if id != perfil.imovel.id:
-            return redirect('home-usuario')
+            return redirect('read-property', perfil.imovel.id)
 
     imovel = get_object_or_404(Imovel, pk=id)
     inquilino = Perfil.objects.filter(imovel = imovel)

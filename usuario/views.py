@@ -155,7 +155,7 @@ def readUser(request, id):
     if request.user.is_staff == False:
         perfil = Perfil.objects.get(cpf = request.user.username)
         if id != perfil.id:
-            return redirect('home-usuario')
+            return redirect('read-user', perfil.id)
 
     perfil = get_object_or_404(Perfil, pk=id)
     pagamentos = Pagamento.objects.filter(perfil = perfil).order_by('-data')
