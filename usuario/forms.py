@@ -18,6 +18,12 @@ class PerfilForm(forms.ModelForm):
         self.fields['imovel'] = forms.ModelChoiceField(queryset=_imoveis_filtrados, initial=_imovel_initial, required=False)
 
 
+class AutoCadastroForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ('nome_completo', 'data_nascimento', 'telefone')
+
+
 class RecuperarSenhaForm(forms.Form):
     cpf = forms.CharField()
     data_de_nascimento = forms.DateField()

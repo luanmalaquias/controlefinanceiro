@@ -5,6 +5,7 @@ urlpatterns = [
     path('home-usuario', homeUsuario, name="home-usuario"),
     path('historico-usuario', historicoUsuario, name="historico-usuario"),
     path('cadastrar/', criar_usuario, name="cadastrarusuario"),
+    path('auto-cadastro/', autoCadastro, name="auto-cadastro"),
     path('listar/', listar_usuarios, name="listarusuarios"),
     path('read-user/<int:id>', readUser, name='read-user'),
     path('list-users-without-property', listUsersWithoutProperty, name='list-users-without-property'),

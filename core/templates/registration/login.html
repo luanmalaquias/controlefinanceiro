@@ -12,7 +12,7 @@
 				<div class="row h-100">
 					<div class="col-sm-12 col-lg-4 h-100 d-flex flex-column">
 						<!-- cima -->
-						<div class="row pt-5 h-25">
+						<div class="row pt-4 h-25">
 							<div class="col-12 d-flex flex-column align-items-center">
 								<img src="{% static 'imgs/imobiliariaIcon.png' %}" alt="icone" style="width: 40%;">
 								<h2 class="mt-2 strong">Login</h2>
@@ -39,13 +39,17 @@
 										</div>
 									{% endif %}
 								</form>	
+								<p class="pt-3">
+									Não possui conta?
+									<a href="{%url 'auto-cadastro'%}" class="text-decoration-none">Cadastrar-se</a>
+								</p>
 							</div>
 						</div>	
 	
 						<!-- baixo -->
 						<div class="row pb-5 h-25 d-flex">
-							<div class="col-12 d-flex justify-content-between flex-column align-items-center">
-								<div class="card w-75 h-75 rounded-4 quadrado sombra border-0 d-sm-block d-lg-none"></div>
+							<div class="col-12 d-flex justify-content-end flex-column align-items-center">
+								<div class="card w-75 h-75 rounded-4 quadrado sombra border-0 d-sm-block d-lg-none mb-5"></div>
 								<span class="fs-6 text-muted">&copy; Luan All rights reserved.</span>
 							</div>
 						</div>

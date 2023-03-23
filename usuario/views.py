@@ -6,8 +6,8 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Imovel
 from usuario.models import Perfil
 from pagamento.models import Pagamento
-from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm
-from utils.scripts import generatePassword, unmask, maskCpf, maskPhone
+from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm, AutoCadastroForm
+from utils.scripts import generatePassword, unmask, cpfIsValid
 from django.shortcuts import get_object_or_404
 from notificacao.models import Notificacao
 from django.db.models import Q
@@ -32,6 +32,7 @@ def criar_superusuario(request):
 @staff_member_required
 # FIXME refatorar com padrão CRUD
 # FIXME refatorar para ingles
+# FIXME criar view e form de login 
 def criar_usuario(request):
     context = {}
 
@@ -74,6 +75,58 @@ def criar_usuario(request):
     context['formPerfil'] = formPerfil
 
     return render(request, 'views/criar-usuario.html', context)
+
+
+def autoCadastro(request):
+    context = {}
+    usuarioForm = UserCreationForm()
+    perfilForm = AutoCadastroForm()
+    context['usuarioForm'] = usuarioForm
+    context['perfilForm'] = perfilForm
+    context['senhaGerada'] = generatePassword(0)
+
+    if request.method == 'POST':
+        usuarioForm = UserCreationForm(request.POST)
+        perfilForm = AutoCadastroForm(request.POST)
+
+        context['usuarioForm'] = usuarioForm
+        context['perfilForm'] = perfilForm
+
+        # validação de erros
+        errorsp = []
+        cpf = unmask(request.POST.get('username'), '.-')
+        telefone = unmask(request.POST.get('telefone'), ' ()-')
+        if User.objects.filter(username = cpf):
+            errorsp.append("CPF já cadastrado no sistema, tente fazer login")
+        if not cpfIsValid(cpf):
+            errorsp.append("CPF informado não é valido")
+        if len(telefone) != 11:
+            errorsp.append("Telefone invalido")
+
+        if len(errorsp) == 0:
+            if usuarioForm.is_valid() and perfilForm.is_valid():
+                usuario = usuarioForm.save(commit=False)
+                usuario.username = unmask(usuario.username, '.-')
+
+                perfil = perfilForm.save(commit=False)
+                perfil.usuario = usuario
+                perfil.cpf = usuario.username
+                perfil.telefone = unmask(perfil.telefone, ' ()-')
+
+                try:
+                    usuario.save()
+                    perfil.save()
+                    context['contaCriada'] = True
+                except:
+                    pass
+
+        
+        context['errorsp'] = errorsp
+
+    # TODO desmascarar os dados
+    # TODO verificar se o cpf é valido e possui 16 letras, caso contrario enviar erro
+
+    return render(request, 'views/auto-cadastro-usuario.html', context)
 
 
 @login_required
