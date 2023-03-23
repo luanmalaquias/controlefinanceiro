@@ -18,16 +18,6 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 
-# TODO usuario pode se auto-cadastrar
-
-def criar_superusuario(request):
-    # TODO criar super usuario
-    # existe super usuario?
-    #   sim : redirecionar imobiliaria
-    #   nao : criar
-    pass
-
-
 @login_required
 @staff_member_required
 # FIXME refatorar com padrão CRUD
@@ -106,7 +96,7 @@ def autoCadastro(request):
         if len(errorsp) == 0:
             if usuarioForm.is_valid() and perfilForm.is_valid():
                 usuario = usuarioForm.save(commit=False)
-                usuario.username = unmask(usuario.username, '.-')
+                usuario.username = unmask(usuario.username, '.-')                
 
                 perfil = perfilForm.save(commit=False)
                 perfil.usuario = usuario
@@ -114,17 +104,15 @@ def autoCadastro(request):
                 perfil.telefone = unmask(perfil.telefone, ' ()-')
 
                 try:
-                    usuario.save()
-                    perfil.save()
-                    context['contaCriada'] = True
-                except:
-                    pass
-
+                    if User.objects.count() == 0:
+                        User.objects.create_superuser(username=unmask(request.POST.get('username'), '.-'), password=request.POST.get('password1'))
+                    else:
+                        usuario.save()
+                        perfil.save()
+                except: pass
+                context['contaCriada'] = True
         
         context['errorsp'] = errorsp
-
-    # TODO desmascarar os dados
-    # TODO verificar se o cpf é valido e possui 16 letras, caso contrario enviar erro
 
     return render(request, 'views/auto-cadastro-usuario.html', context)
 

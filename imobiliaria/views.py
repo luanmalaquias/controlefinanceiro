@@ -54,8 +54,6 @@ def indexImobiliaria(request):
     # FIXME remover gerar dados isso daqui quando for implantar
     # gerarDados(2)
 
-    # TODO levar pra area de cadastro de superusuario se não existir
-
     # quando o usuario nao tiver perfil
     usuarioLogado = request.user
     if request.user.is_staff == False:

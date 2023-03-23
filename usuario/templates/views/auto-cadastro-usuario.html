@@ -139,6 +139,7 @@
 <script>
     if("{{contaCriada}}" == "True"){
         alert("Conta criada, tente fazer login")
+        window.location.href = "{% url 'login'%}"
     }
 </script>
 
