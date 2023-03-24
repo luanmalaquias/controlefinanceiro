@@ -249,41 +249,28 @@ def deletar_usuario(request, id):
 def recuperar_senha(request):
     context = {}
 
-    formPerfil = RecuperarSenhaForm()
-
     if request.method == "POST":
-        formPerfil = RecuperarSenhaForm(request.POST)
+        cpf = unmask(request.POST.get('cpf'), '.-')
+        birth = (request.POST.get('dataNascimento')).split('-')
+        birth = datetime(int(birth[0]), int(birth[1]), int(birth[2]))
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
 
-        if formPerfil.is_valid():
-            # get perfil
-            cpf = formPerfil.cleaned_data['cpf']
-            cpf = unmask(cpf, '.-')
-            data_nascimento = formPerfil.cleaned_data['data_de_nascimento']
-            data_nascimento = unmask(data_nascimento, '/')
+        errors = []
+        profile = Perfil.objects.filter(cpf = cpf, data_nascimento = birth).first()
+        if not profile:
+            errors.append("CPF ou data de nascimento inválido")
+        if password1 != password2:
+            errors.append("Senhas não conferem")
 
-            usuario = None
+            
 
-            # get usuario
-            try:
-                perfil = Perfil.objects.get(cpf = cpf, data_nascimento = data_nascimento)
-                usuario = User.objects.get(username = perfil.cpf)
-                context['usuario'] = usuario
-            except:
-                context['erro'] = 'Usuario não encontrado!'
+        if len(errors) == 0:
+            profile.usuario.set_password(str(password1))
+            profile.usuario.save()
 
-            # tentar salvar
-            try:
-                senha1 = request.POST['password1']
-                senha2 = request.POST['password2']
-                if senha1 == senha2:
-                    usuario.set_password(senha1)
-                    usuario.save()
-                    return redirect('login')
-            except:
-                pass
-
-    context['formPerfil'] = formPerfil
-    return render(request, 'registration/recoverpassword.html', context)
+        context['errors'] = errors
+    return render(request, 'views/recover-password.html', context)
 
 
 @login_required
