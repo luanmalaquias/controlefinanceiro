@@ -10,17 +10,18 @@
 			<div class="card-body">
 				
 				<div class="row h-100">
-                    <div class="col-sm-12 col-lg-4 h-100 d-flex flex-column">
+                    <!-- esquerda -->
+                    <div class="col-sm-12 col-lg-4 h-100 d-flex flex-column justify-content-between">
                          <!-- cima -->
-                        <div class="row pt-5 h-25">
-                            <div class="col-12 d-flex flex-column align-items-center justify-content-center">
+                        <div class="row">
+                            <div class="col-12 d-flex flex-column align-items-center justify-content-start">
                                 <img src="{% static 'imgs/imobiliariaIcon.png' %}" alt="icone" style="width: 40%;">
                                 <h2 class="mt-2 strong">Criar conta</h2>
                             </div>
                         </div>
 
                         <!-- Formulario -->
-                        <div class="row h-75">
+                        <div class="row">
                             <div class="col-12 d-flex flex-column justify-content-center align-items-center">
                                 <form method="post" autocomplete="off">
                                     {% csrf_token %}
@@ -28,21 +29,21 @@
                                     <div class="row">
                                         <!-- Username -->
                                         <div class="col-12">
-                                            <div class="form-group mb-3">
+                                            <div class="form-group">
                                                 <p class="badge text-dark mb-0">Cpf <span class="text-danger">*</span></p>
                                                 <input type="text" class="form-control" name="username" maxlength="11" minlength="11" required id="id_username" placeholder="CPF">
                                             </div>
                                         </div>
                                         <!-- Senha -->
                                         <div class="col-6">
-                                            <div class="form-group mb-3">
+                                            <div class="form-group">
                                                 <p class="badge text-dark mb-0">Senha <span class="text-danger">*</span></p>
                                                 <input type="text" class="form-control" name="password1" minlength="8" required id="id_password1" placeholder="Senha" value="{{senhaGerada}}">
                                             </div>
                                         </div>
                                         <!-- Confirmar senha -->
                                         <div class="col-6">
-                                            <div class="form-group mb-3">
+                                            <div class="form-group">
                                                 <p class="badge text-dark mb-0">Confirmar senha <span class="text-danger">*</span></p>
                                                 <input type="text" class="form-control" name="password2" minlength="8" required id="id_password2" placeholder="Confirmar senha" value="{{senhaGerada}}">
                                             </div>
@@ -53,7 +54,7 @@
                                     <div class="row">
                                         <!-- nome completo -->
                                         <div class="col-12">
-                                            <div class="form-group mb-3">
+                                            <div class="form-group">
                                                 <p class="badge text-dark mb-0">Nome completo <span class="text-danger">*</span></p>
                                                 <input type="text" class="form-control" name="nome_completo" maxlength="50" minlength="5" required id="id_nome_completo" placeholder="Nome completo">
                                             </div>
@@ -61,7 +62,7 @@
 
                                         <!-- telefone -->
                                         <div class="col-12">
-                                            <div class="form-group mb-3">
+                                            <div class="form-group">
                                                 <p class="badge text-dark mb-0">Telefone <span class="text-danger">*</span></p>
                                                 <input type="text" class="form-control" name="telefone" maxlength="16" minlength="16" required id="id_telefone" placeholder="Telefone para contato">
                                             </div>
@@ -69,59 +70,42 @@
 
                                         <!-- data nascimento -->
                                         <div class="col-12">
-                                            <div class="form-group mb-3">
+                                            <div class="form-group">
                                                 <p class="badge text-dark mb-0">Data de nascimento</p>
                                                 <input type="date" class="form-control" name="data_nascimento" min="10" max="10" id="id_data_nascimento" placeholder="Data de nascimento">
                                             </div>
                                         </div>
                                     </div>
-
-                                    {% if contaCriada %}
-                                        <div class="col-12 text-center mt-4">
-                                            <a href="{% url 'login' %}" class="text-decoration-none w-100 rounded-pill w-100">
-                                                <strong>Fazer login</strong>
-                                            </a>
-                                        </div>
-                                    {% else %}
-                                        <button type="submit" class="btn btn-primary rounded-pill w-100">
-                                            <strong>Criar conta</strong>
-                                        </button>
-                                    {% endif %}
+                                    
+                                    <button type="submit" class="btn btn-primary mt-3 rounded-pill w-100">
+                                        <strong>Criar conta</strong>
+                                    </button>
 
                                 </form>
                             </div>
                         </div>
 
-                        <!-- erros mobile -->
-                        <div class="row-25 d-sm-block d-lg-none">
-                            <div class="d-flex flex-column col-sm-12 col-lg-4">
-                                {% if usuarioForm.errors or perfilForm.errors or errorsp %}
-                                    <div class="alert alert-danger">
-                                        {% for error in errorsp %}
-                                            <p>{{error}}</p>
-                                        {% endfor %}
-                                        {{ usuarioForm.errors }}
-                                        {{ perfilForm.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+                        <!-- baixo -->
+						<div class="row d-flex">
+							<div class="col-12 d-flex justify-content-between flex-column align-items-center h-100">
+								<span class="fs-6 text-muted">&copy; Luan All rights reserved.</span>
+							</div>
+						</div>
 
                     </div>
 
-                    <!-- erros desktop -->
-                    <div class="flex-column col-4 d-sm-none d-lg-flex justify-content-center">
-                        {% if usuarioForm.errors or perfilForm.errors or errorsp|length > 0 %}
-                            <div class="alert alert-danger">
-                                {% for error in errorsp %}
+                    <!-- meio | erros -->
+                    <div class="flex-column col-sm-12 col-lg-4 justify-content-center">
+                        {% if errors|length > 0 %}
+                            <div class="alert rounded-4 sombra">
+                                {% for error in errors %}
                                     <p>{{error}}</p>
                                 {% endfor %}
-                                {{ usuarioForm.errors }}
-                                {{ perfilForm.errors }}
                             </div>
                         {% endif %}
                     </div>
 
+                    <!-- direita | imagem -->
                     <div class="d-sm-none d-lg-block col-4 rounded-4 quadrado sombra">
 					</div>
 

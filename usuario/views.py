@@ -18,11 +18,102 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 
-@login_required
-@staff_member_required
 # FIXME refatorar com padrão CRUD
 # FIXME refatorar para ingles
-# FIXME criar view e form de login 
+
+def register(request):
+    context = {}
+    usuarioForm = UserCreationForm()
+    perfilForm = AutoCadastroForm()
+    context['usuarioForm'] = usuarioForm
+    context['perfilForm'] = perfilForm
+    context['senhaGerada'] = generatePassword(0)
+
+    if request.method == 'POST':
+        usuarioForm = UserCreationForm(request.POST)
+        perfilForm = AutoCadastroForm(request.POST)
+
+        context['usuarioForm'] = usuarioForm
+        context['perfilForm'] = perfilForm
+
+        cpf = unmask(request.POST.get('username'), '.-')
+        pass1 = request.POST.get('password1')
+        pass2 = request.POST.get('password2')
+        telefone = unmask(request.POST.get('telefone'), ' ()-')
+        dataNascimento = request.POST.get('data_nascimento')
+
+        errors = []
+        if User.objects.filter(username = cpf):
+            errors.append("CPF já cadastrado no sistema, tente fazer login.")
+        if not cpfIsValid(cpf) or len(cpf) != 11:
+            errors.append("CPF informado não é valido.")
+        if len(telefone) != 11:
+            errors.append("Telefone invalido.")
+        if pass1 != pass2:
+            errors.append("Senhas não conferem.")
+        if len(pass1) < 8:
+            errors.append("Senha fraca.")
+        if len(dataNascimento) != 10 and len(dataNascimento) != 0:
+            errors.append("Data de nascimento inválida.")
+
+        if len(errors) == 0:
+            if usuarioForm.is_valid() and perfilForm.is_valid():
+                usuario = usuarioForm.save(commit=False)
+                usuario.username = unmask(usuario.username, '.-')                
+
+                perfil = perfilForm.save(commit=False)
+                perfil.usuario = usuario
+                perfil.cpf = usuario.username
+                perfil.telefone = unmask(perfil.telefone, ' ()-')
+
+                try:
+                    if User.objects.count() == 0:
+                        User.objects.create_superuser(username=unmask(request.POST.get('username'), '.-'), password=request.POST.get('password1'))
+                    else:
+                        usuario.save()
+                        perfil.save()
+                except: pass
+                context['contaCriada'] = True
+        
+        context['errors'] = errors
+
+    return render(request, 'views/auto-cadastro-usuario.html', context)
+
+
+def recoverPassword(request):
+    context = {}
+
+    if request.method == "POST":
+        cpf = unmask(request.POST.get('cpf'), '.-')
+        birth = request.POST.get('dataNascimento')
+        birthFinal = birth.split('-')
+        try:
+            birthFinal = datetime(int(birthFinal[0]), int(birthFinal[1]), int(birthFinal[2]))
+        except:
+            birthFinal = None
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        errors = []
+        profile = Perfil.objects.filter(cpf = cpf, data_nascimento = birthFinal).first()
+        if not profile:
+            errors.append("CPF ou data de nascimento inválido")
+        if password1 != password2:
+            errors.append("Senhas não conferem")
+        if len(birth) != 10:
+            errors.append("Data de nascimento inválida.")
+
+        if len(errors) == 0:
+            profile.usuario.set_password(str(password1))
+            profile.usuario.save()
+            return redirect('loginPage')
+
+        context['errors'] = errors
+    return render(request, 'views/recover-password.html', context)
+
+
+@login_required
+@staff_member_required
 def criar_usuario(request):
     context = {}
 
@@ -65,56 +156,6 @@ def criar_usuario(request):
     context['formPerfil'] = formPerfil
 
     return render(request, 'views/criar-usuario.html', context)
-
-
-def autoCadastro(request):
-    context = {}
-    usuarioForm = UserCreationForm()
-    perfilForm = AutoCadastroForm()
-    context['usuarioForm'] = usuarioForm
-    context['perfilForm'] = perfilForm
-    context['senhaGerada'] = generatePassword(0)
-
-    if request.method == 'POST':
-        usuarioForm = UserCreationForm(request.POST)
-        perfilForm = AutoCadastroForm(request.POST)
-
-        context['usuarioForm'] = usuarioForm
-        context['perfilForm'] = perfilForm
-
-        # validação de erros
-        errorsp = []
-        cpf = unmask(request.POST.get('username'), '.-')
-        telefone = unmask(request.POST.get('telefone'), ' ()-')
-        if User.objects.filter(username = cpf):
-            errorsp.append("CPF já cadastrado no sistema, tente fazer login")
-        if not cpfIsValid(cpf):
-            errorsp.append("CPF informado não é valido")
-        if len(telefone) != 11:
-            errorsp.append("Telefone invalido")
-
-        if len(errorsp) == 0:
-            if usuarioForm.is_valid() and perfilForm.is_valid():
-                usuario = usuarioForm.save(commit=False)
-                usuario.username = unmask(usuario.username, '.-')                
-
-                perfil = perfilForm.save(commit=False)
-                perfil.usuario = usuario
-                perfil.cpf = usuario.username
-                perfil.telefone = unmask(perfil.telefone, ' ()-')
-
-                try:
-                    if User.objects.count() == 0:
-                        User.objects.create_superuser(username=unmask(request.POST.get('username'), '.-'), password=request.POST.get('password1'))
-                    else:
-                        usuario.save()
-                        perfil.save()
-                except: pass
-                context['contaCriada'] = True
-        
-        context['errorsp'] = errorsp
-
-    return render(request, 'views/auto-cadastro-usuario.html', context)
 
 
 @login_required
@@ -244,33 +285,6 @@ def deletar_usuario(request, id):
     except: pass
     usuario.delete()
     return redirect('listarusuarios')
-
-
-def recuperar_senha(request):
-    context = {}
-
-    if request.method == "POST":
-        cpf = unmask(request.POST.get('cpf'), '.-')
-        birth = (request.POST.get('dataNascimento')).split('-')
-        birth = datetime(int(birth[0]), int(birth[1]), int(birth[2]))
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-
-        errors = []
-        profile = Perfil.objects.filter(cpf = cpf, data_nascimento = birth).first()
-        if not profile:
-            errors.append("CPF ou data de nascimento inválido")
-        if password1 != password2:
-            errors.append("Senhas não conferem")
-
-            
-
-        if len(errors) == 0:
-            profile.usuario.set_password(str(password1))
-            profile.usuario.save()
-
-        context['errors'] = errors
-    return render(request, 'views/recover-password.html', context)
 
 
 @login_required

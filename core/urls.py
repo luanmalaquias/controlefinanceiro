@@ -15,16 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic.base import RedirectView
-from imobiliaria.views import indexImobiliaria
+from .views import *
 
 urlpatterns = [
+    path('', loginPage, name='loginPage'),
+    path('logout/', logoutPage, name='logout'),
     path('admin/', admin.site.urls),
     path('accounts/', include("django.contrib.auth.urls")),
-    path('home/', indexImobiliaria, name="indeximobiliaria"),
-    path('imobiliaria/', include('imobiliaria.urls'), name="imobilaria"),
+    path('imobiliaria/', include('imobiliaria.urls')),
     path('usuario/', include('usuario.urls')),
     path('pagamento/', include('pagamento.urls')),
     path('notificacao/', include('notificacao.urls')),
-    path('', RedirectView.as_view(url='accounts/login/')),
 ]

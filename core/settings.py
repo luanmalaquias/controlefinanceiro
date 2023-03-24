@@ -127,6 +127,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "indeximobiliaria"
-LOGOUT_REDIRECT_URL = "login"
+LOGOUT_REDIRECT_URL = "loginPage"
 STATICFILES_DIRS = [BASE_DIR / "core/static"]
 AUTH_USER_MODEL = 'auth.User'

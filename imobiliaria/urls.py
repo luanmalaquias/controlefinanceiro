@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import *
 
-urlpatterns = [    
+urlpatterns = [
+    path('home/', indexImobiliaria, name="indeximobiliaria"),
     path('cadastrar/', cadastrarImovel, name="cadastrarimovel"),
     path('listar/', listarImoveis, name="listarimoveis"),
     path('read-property/<int:id>', readProperty, name='read-property'),

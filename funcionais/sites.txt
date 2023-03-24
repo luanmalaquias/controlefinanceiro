@@ -1,4 +1,4 @@
-learndjango.com
+https://learndjango.com/tutorials/django-login-and-logout-tutorial
 medium.com (https://medium.com/@gabrielfgularte/custom-user-model-no-django-d9bdf2838bd8)
 
 Pagamento
