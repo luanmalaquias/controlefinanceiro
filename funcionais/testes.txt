@@ -17,3 +17,43 @@ editar um pagamento
     data no dia do vencimento
 página 404 redirecionar para HOME
 HTTPS
+
+links para teste:
+    login ok
+    logout ok
+    realestate
+        home ok
+        create ok
+        list ok 
+        read <> ok
+        listavailableproperties ok
+        update <> ok
+        delete <> ok
+    messages
+        list ok
+        read <> ok
+        create ok
+        delete <> ok
+    user
+        registry ok
+        home ok
+        paymenthistory ok
+        recoverpassword ok
+        create ok
+        list ok
+        read <> ok
+        listuserwithoutproperty ok
+        editprofile <> ok
+        changepassword <> ok
+        includeinproperty <> ok
+        removefromproperty <> ok
+        delete <> ok
+    payment
+        create ok
+        listdebtors ok
+        listdebtors <> ok
+        quickdelete <> ok
+        quickcreate <> <> ok
+        list ok
+        update <> ok
+        delete <> ok

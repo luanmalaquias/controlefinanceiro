@@ -85,7 +85,7 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item" onclick="criar_pagamento('{{p.pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a>
+                                    <a class="dropdown-item" onclick="editar_pagamento('{{p.pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a>
                                 </li>
                             </ul>
                         </div>
@@ -117,6 +117,21 @@
     </table>
 </div>
 
-<script src="{% static 'js/listar-pagamentos.js' %}"></script>
+<script>
+    function editar_pagamento(id){
+        data = document.getElementById("id_data").value
+        window.location.href = `/payment/update/${id}/listar-todos-os-pagamentos/${data}`
+    }
+
+    function pagamento_rapido(id){
+        data = document.getElementById("id_data").value
+        window.location.href = `/payment/quickcreate/${id}/${data}`
+    }
+
+    function deletar_rapido(id){
+        data = document.getElementById("id_data").value
+        window.location.href = `/payment/quickdelete/${id}/${data}`
+    }
+</script>
 
 {% endblock %}

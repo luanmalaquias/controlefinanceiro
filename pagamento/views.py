@@ -118,7 +118,7 @@ def createPayment(request):
 
 @login_required
 @staff_member_required
-def createQuickPayment(request, id, data):
+def quickCreatePayment(request, id, data):
     context = {}
 
     today = datetime.now()
@@ -188,7 +188,7 @@ def deletePayment(request, id):
 
 @login_required
 @staff_member_required
-def deleteQuickPayment(request, id, data):
+def quickDeletePayment(request, id, data):
     context = {}
     get_object_or_404(Pagamento, pk=id).delete()
     return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)

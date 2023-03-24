@@ -22,8 +22,8 @@ urlpatterns = [
     path('logout/', logoutPage, name='logout'),
     path('admin/', admin.site.urls),
     path('accounts/', include("django.contrib.auth.urls")),
-    path('imobiliaria/', include('imobiliaria.urls')),
-    path('usuario/', include('usuario.urls')),
-    path('pagamento/', include('pagamento.urls')),
-    path('notificacao/', include('notificacao.urls')),
+    path('realestate/', include('imobiliaria.urls')),
+    path('user/', include('usuario.urls')),
+    path('payment/', include('pagamento.urls')),
+    path('messages/', include('notificacao.urls')),
 ]

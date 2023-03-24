@@ -303,7 +303,7 @@ def removeFromProperty(request, id):
 
 @login_required
 @staff_member_required
-def includeInTheProperty(request, id):
+def includeInProperty(request, id):
     context = {}
 
     profile = get_object_or_404(Perfil,pk=id)
