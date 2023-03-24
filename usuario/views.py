@@ -97,9 +97,9 @@ def recoverPassword(request):
         errors = []
         profile = Perfil.objects.filter(cpf = cpf, data_nascimento = birthFinal).first()
         if not profile:
-            errors.append("CPF ou data de nascimento inválido")
+            errors.append("CPF ou data de nascimento inválido.")
         if password1 != password2:
-            errors.append("Senhas não conferem")
+            errors.append("Senhas não conferem.")
         if len(birth) != 10:
             errors.append("Data de nascimento inválida.")
 

@@ -16,7 +16,7 @@
         </a>
     </li>
     <li>
-        <a href="{% url 'listarimoveis' %}" class="nav-link {% if 'imobiliaria' in request.path %}active link-light{% else %}link-dark{% endif %}">
+        <a href="{% url 'listarimoveis' %}" class="nav-link {% if 'imobiliaria' in request.path and 'home' not in request.path %}active link-light{% else %}link-dark{% endif %}">
             <i class="bi bi-houses-fill"></i>
             <span class="ps-3">Imóveis</span>
         </a>
