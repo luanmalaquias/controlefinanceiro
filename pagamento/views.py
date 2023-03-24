@@ -13,7 +13,7 @@ from .models import Pagamento
 
 @login_required
 @staff_member_required
-def listarPagamentosPorUsuarios(request, dataParam=None):
+def monthlyDebtors(request, dataParam=None):
     context = {}
 
     # get objects
@@ -49,7 +49,7 @@ def listarPagamentosPorUsuarios(request, dataParam=None):
             pagamentosDesteMes.append({'perfil':perfil, 'pagamento':Pagamento(perfil=perfil, status="N")})
     
     # ordenação
-    pagamentosDesteMes.sort(key=_ordenar_lista)
+    pagamentosDesteMes.sort(key=_orderList)
 
     context['data_atual'] = data_atual
     context['pagamentosDesteMes'] = pagamentosDesteMes
@@ -59,7 +59,7 @@ def listarPagamentosPorUsuarios(request, dataParam=None):
 
 @login_required
 @staff_member_required
-def listar_pagamentos(request):
+def listPayments(request):
     context = {}
 
     pagamentos = Pagamento.objects.all().order_by('-data').order_by('-status', '-data')
@@ -81,68 +81,69 @@ def listar_pagamentos(request):
 
 @login_required
 @staff_member_required
-def criar_pagamento(request):
+def createPayment(request):
     context = {}
 
     form = PagamentoForm()
     context['form'] = form
 
-    perfis = Perfil.objects.all()
+    profiles = Perfil.objects.all()
 
     if request.method == 'POST':
         form = PagamentoForm(request.POST)
         if form.is_valid():
-            pagamento = form.save(commit=False)
+            payment = form.save(commit=False)
             
             # Não permitir mais de um pagamento para o mesmo mês
-            pagamentos_do_usuario = Pagamento.objects.filter(perfil=pagamento.perfil)
-            existe_pagamento_para_este_mes = False
-            for p in pagamentos_do_usuario:
-                if p.data.month == pagamento.data.month :
-                    existe_pagamento_para_este_mes = True
+            userPayments = Pagamento.objects.filter(perfil=payment.perfil)
+            thisMonthPayment = False
+            for p in userPayments:
+                if p.data.month == payment.data.month :
+                    thisMonthPayment = True
                     if p.status == "A":
                         p.status = "P"
                         p.save()
                     break
             
-            if existe_pagamento_para_este_mes:
+            if thisMonthPayment:
                 context['errop'] = True
                 context['form'] = form
             else:
-                pagamento.save()
+                payment.save()
                 return redirect('listar-pagamentos-por-usuarios')
 
-    context['temPerfis'] = True if len(perfis) > 0 else False
+    context['temPerfis'] = True if len(profiles) > 0 else False
     return render(request, 'views/criar-pagamento.html', context)
 
 
 @login_required
 @staff_member_required
-def criar_pagamento_rapido(request, id, data):
+def createQuickPayment(request, id, data):
     context = {}
-    newdata = data.split('-')
-    agora = datetime.now()
-    newdata = datetime(day=agora.day, month=int(newdata[1]), year=int(newdata[0]), hour=agora.hour, minute=agora.minute)
 
-    perfil = get_object_or_404(Perfil, pk=id)
+    today = datetime.now()
+    newDate = data.split('-')
+    newDate = datetime(day=today.day, month=int(newDate[1]), year=int(newDate[0]), hour=today.hour, minute=today.minute)
 
-    pagamentos_do_usuario = Pagamento.objects.filter(perfil=perfil)
+    profile = get_object_or_404(Perfil, pk=id)
+
+    userPayments = Pagamento.objects.filter(perfil=profile)
 
     # Verificar se existe pagamento para este mês, se tiver ele troca o status de "A (Em analise)" para "P (pago)"
     # se não, ele criar um pagamento para este mês
-    existe_pagamentos_deste_mes = False
-    for p in pagamentos_do_usuario:
-        if p.data.month == newdata.month and p.data.year == newdata.year:
-            existe_pagamentos_deste_mes = True
+    thisMonthPayment = False
+    for p in userPayments:
+        if p.data.month == newDate.month and p.data.year == newDate.year:
+            thisMonthPayment = True
             if p.status == "A":
                 p.status = "P"
                 p.save()
-    if not existe_pagamentos_deste_mes:
+    if not thisMonthPayment:
         Pagamento.objects.create(
-            perfil = perfil, 
+            perfil = profile, 
             status = "P", 
-            valor_pago = perfil.imovel.mensalidade, 
-            data = newdata
+            valor_pago = profile.imovel.mensalidade, 
+            data = newDate
         ).save()
     
     return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)
@@ -150,19 +151,19 @@ def criar_pagamento_rapido(request, id, data):
 
 @login_required
 @staff_member_required
-def editar_pagamento(request, id, pagina:str, data:str = 'None'):
+def updatePayment(request, id, pagina:str, data:str = 'None'):
     context = {}
 
-    pagamento = get_object_or_404(Pagamento, pk=id)
+    payment = get_object_or_404(Pagamento, pk=id)
     # hora com timezone local
-    dataHora = datetime(pagamento.data.year, pagamento.data.month, pagamento.data.day, pagamento.data.hour-3, pagamento.data.minute)
-    pagamento.data = dataHora.strftime("%Y-%m-%dT%H:%M")
+    dateTime = datetime(payment.data.year, payment.data.month, payment.data.day, payment.data.hour-3, payment.data.minute)
+    payment.data = dateTime.strftime("%Y-%m-%dT%H:%M")
 
-    form = PagamentoForm(instance = pagamento)
-    perfis = Perfil.objects.all()
+    form = PagamentoForm(instance = payment)
+    profiles = Perfil.objects.all()
 
     if request.method == 'POST':
-        form = PagamentoForm(request.POST, instance=pagamento)
+        form = PagamentoForm(request.POST, instance=payment)
         if form.is_valid():
             form.save()
             if data=='None':
@@ -172,30 +173,26 @@ def editar_pagamento(request, id, pagina:str, data:str = 'None'):
         else:
             print(form.errors)
 
-    context['pagamento'] = pagamento
+    context['pagamento'] = payment
     context['form'] = form
-    context['temPerfis'] = True if len(perfis) > 0 else False
+    context['temPerfis'] = True if len(profiles) > 0 else False
     return render(request, 'views/criar-pagamento.html', context)
 
 
 @login_required
 @staff_member_required
-def deletar_pagamento(request, id):
+def deletePayment(request, id):
     get_object_or_404(Pagamento, pk=id).delete()
     return redirect('listar-todos-os-pagamentos')        
 
 
 @login_required
 @staff_member_required
-def deletar_pagamento_rapido(request, id, data):
+def deleteQuickPayment(request, id, data):
     context = {}
-    newdata = data.split('-')
-    newdata = datetime(day=datetime.now().day, month=int(newdata[1]), year=int(newdata[0]))
-
     get_object_or_404(Pagamento, pk=id).delete()
-
     return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)
 
 
-def _ordenar_lista(lista):
-    return lista["perfil"].imovel.vencimento
+def _orderList(list):
+    return list["perfil"].imovel.vencimento

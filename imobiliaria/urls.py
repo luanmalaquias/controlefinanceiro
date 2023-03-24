@@ -2,11 +2,11 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('home/', indexImobiliaria, name="indeximobiliaria"),
-    path('cadastrar/', cadastrarImovel, name="cadastrarimovel"),
-    path('listar/', listarImoveis, name="listarimoveis"),
+    path('home/', homeRealEstate, name="indeximobiliaria"),
+    path('cadastrar/', createProperty, name="cadastrarimovel"),
+    path('listar/', listProperties, name="listarimoveis"),
     path('read-property/<int:id>', readProperty, name='read-property'),
     path('list-available-properties/', listAvailableProperties, name='list-available-properties'),
-    path('atualizar/<int:id>', atualizarDadosImovel, name="atualizardadosimovel"),
-    path('deletar/<int:id>', deletarImovel, name="deletarimovel"),
+    path('atualizar/<int:id>', updateProperty, name="atualizardadosimovel"),
+    path('deletar/<int:id>', deleteProperty, name="deletarimovel"),
 ]

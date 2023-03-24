@@ -16,92 +16,92 @@ from django.db.models import Q
 
 
 @login_required
-def indexImobiliaria(request):
+def homeRealEstate(request):
     if not request.user.is_staff:
         return redirect('home-usuario')
 
     context = {}
 
-    imoveis = Imovel.objects.all()
-    perfis = Perfil.objects.all()
-    pagamentos = Pagamento.objects.all()
+    properties = Imovel.objects.all()
+    profiles = Perfil.objects.all()
+    payments = Pagamento.objects.all()
 
-    imoveisDisponiveis = Imovel.objects.filter(disponibilidade=True)
-    perfisSemImovel = Perfil.objects.filter(imovel=None)
+    availableProperties = Imovel.objects.filter(disponibilidade=True)
+    profilesWithoutProperty = Perfil.objects.filter(imovel=None)
     
-    devedoresDesteMes = []
-    hoje = datetime.now()
-    for perfil in perfis:
-        pagou = False
-        if perfil.imovel != None:
-            for pagamento in pagamentos:
-                if pagamento.perfil == perfil and pagamento.data.month == hoje.month and pagamento.data.year == hoje.year:
-                    pagou = True
+    thisMonthDebtors = []
+    today = datetime.now()
+    for profile in profiles:
+        paid = False
+        if profile.imovel != None:
+            for payment in payments:
+                if payment.perfil == profile and payment.data.month == today.month and payment.data.year == today.year:
+                    paid = True
                     break
         else: continue
-        if pagou == False:
-            devedoresDesteMes.append(perfil)
+        if paid == False:
+            thisMonthDebtors.append(profile)
 
-    rendimentoTotal = 0
-    for pagamento in pagamentos:
-        rendimentoTotal += int(unmask(pagamento.valor_pago, '.'))
+    totalIncome = 0
+    for payment in payments:
+        totalIncome += int(unmask(payment.valor_pago, '.'))
     
-    rendimentoMensal = 0
-    for imovel in imoveis:
-        if imovel.disponibilidade == False:
-            rendimentoMensal += int(imovel.mensalidade)
+    monthlyIncome = 0
+    for property in properties:
+        if property.disponibilidade == False:
+            monthlyIncome += int(property.mensalidade)
 
     # FIXME remover gerar dados isso daqui quando for implantar
     # gerarDados(2)
 
     # quando o usuario nao tiver perfil
-    usuarioLogado = request.user
+    loggedInUser = request.user
     if request.user.is_staff == False:
-        perfil = Perfil.objects.get(usuario = usuarioLogado)
-        context['perfil'] = perfil
+        profile = Perfil.objects.get(usuario = loggedInUser)
+        context['perfil'] = profile
 
-    context['imoveis'] = imoveis
-    context['perfis'] = perfis
-    context['pagamentos'] = pagamentos
-    context['imoveisDisponiveis'] = imoveisDisponiveis
-    context['perfisSemImovel'] = perfisSemImovel
-    context['devedoresDesteMes'] = devedoresDesteMes
-    context['rendimentoTotal'] = rendimentoTotal
-    context['rendimentoMensal'] = rendimentoMensal
-    context['hoje'] = hoje
+    context['imoveis'] = properties
+    context['perfis'] = profiles
+    context['pagamentos'] = payments
+    context['imoveisDisponiveis'] = availableProperties
+    context['perfisSemImovel'] = profilesWithoutProperty
+    context['devedoresDesteMes'] = thisMonthDebtors
+    context['rendimentoTotal'] = totalIncome
+    context['rendimentoMensal'] = monthlyIncome
+    context['hoje'] = today
 
     return render(request, 'index-imobiliaria.html', context)
 
 
 @login_required
 @staff_member_required
-def cadastrarImovel(request):
+def createProperty(request):
     context = {}
     if request.method == 'POST':
-        formImovel = ImovelForm(request.POST)
-        if formImovel.is_valid():
-            imovel = formImovel.save(commit=False)
-            imovel.mensalidade = unmask(imovel.mensalidade, '.,')
-            imovel.save()
+        formProperty = ImovelForm(request.POST)
+        if formProperty.is_valid():
+            property = formProperty.save(commit=False)
+            property.mensalidade = unmask(property.mensalidade, '.,')
+            property.save()
             return redirect('listarimoveis')
     else:
-        formImovel = ImovelForm()
-    context['formImovel'] = formImovel
+        formProperty = ImovelForm()
+    context['formImovel'] = formProperty
     return render(request, 'views/criar-imovel.html', context)
 
 
 @login_required
 @staff_member_required
-def listarImoveis(request):
+def listProperties(request):
     context = {}
-    imoveis = Imovel.objects.all().order_by('-disponibilidade','nome')
-    context['imoveis'] = imoveis
+    properties = Imovel.objects.all().order_by('-disponibilidade','nome')
+    context['imoveis'] = properties
 
     if request.method == "GET":
-        busca = request.GET.get('busca')
-        if busca != None:
-            imoveis = Imovel.objects.all().filter(Q(nome__contains=busca) | Q(cep__contains=busca) | Q(endereco__contains=busca) | Q(bairro__contains=busca) | Q(cidade__contains=busca) | Q(uf__contains=busca)).order_by('-disponibilidade','nome')
-            context['imoveis'] = imoveis
+        search = request.GET.get('busca')
+        if search != None:
+            properties = Imovel.objects.all().filter(Q(nome__contains=search) | Q(cep__contains=search) | Q(endereco__contains=search) | Q(bairro__contains=search) | Q(cidade__contains=search) | Q(uf__contains=search)).order_by('-disponibilidade','nome')
+            context['imoveis'] = properties
             return render(request, 'views/listar-imoveis.html', context)
 
     return render(request, 'views/listar-imoveis.html', context)
@@ -113,20 +113,20 @@ def readProperty(request, id):
 
     # o imovel tem que ser do usuario
     if request.user.is_staff == False:
-        perfil = Perfil.objects.get(cpf = request.user.username)
-        if id != perfil.imovel.id:
-            return redirect('read-property', perfil.imovel.id)
+        profile = Perfil.objects.get(cpf = request.user.username)
+        if id != profile.imovel.id:
+            return redirect('read-property', profile.imovel.id)
 
-    imovel = get_object_or_404(Imovel, pk=id)
-    inquilino = Perfil.objects.filter(imovel = imovel)
-    inquilino = inquilino[0] if len(inquilino) > 0 else None
-    pagamentos = []
-    if inquilino:
-        pagamentos = Pagamento.objects.filter(perfil = inquilino)
+    property = get_object_or_404(Imovel, pk=id)
+    tenant = Perfil.objects.filter(imovel = property)
+    tenant = tenant[0] if len(tenant) > 0 else None
+    payments = []
+    if tenant:
+        payments = Pagamento.objects.filter(perfil = tenant)
 
-    context['imovel'] = imovel
-    context['inquilino'] = inquilino
-    context['pagamentos'] = pagamentos if pagamentos else []
+    context['imovel'] = property
+    context['inquilino'] = tenant
+    context['pagamentos'] = payments if payments else []
     return render(request, 'views/read-property.html', context)
 
 
@@ -139,33 +139,31 @@ def listAvailableProperties(request):
     return render(request, 'views/listar-imoveis.html', context)
 
 
-
 @login_required
 @staff_member_required
-def atualizarDadosImovel(request, id):
+def updateProperty(request, id):
     context = {}
 
-    imovel = get_object_or_404(Imovel, pk=id)
-    formImovel = ImovelForm(instance=imovel)
+    property = get_object_or_404(Imovel, pk=id)
+    formProperty = ImovelForm(instance=property)
 
     if request.method == 'POST':
-        formImovel = ImovelForm(request.POST, instance=imovel)
-        if formImovel.is_valid():
-            imovel = formImovel.save(commit=False)
-            imovel.mensalidade = unmask(imovel.mensalidade, '.,')
-            imovel.save()
+        formProperty = ImovelForm(request.POST, instance=property)
+        if formProperty.is_valid():
+            property = formProperty.save(commit=False)
+            property.mensalidade = unmask(property.mensalidade, '.,')
+            property.save()
             return redirect('listarimoveis')
         
-    context['formImovel'] = formImovel
-    context['imovel'] = imovel
+    context['formImovel'] = formProperty
+    context['imovel'] = property
         
     return render(request, 'views/criar-imovel.html', context)
 
 
 @login_required
 @staff_member_required
-def deletarImovel(request, id):
-    imovel = get_object_or_404(Imovel, pk=id)
-    imovel.delete()
+def deleteProperty(request, id):
+    property = get_object_or_404(Imovel, pk=id)
+    property.delete()
     return redirect('listarimoveis')
-

@@ -14,9 +14,12 @@ body {
 
 .quadrado {
     /* background-image: url('https://cdn.dribbble.com/userupload/4010881/file/original-afb237e3dda5bda7f149b100bf5a15dd.jpg'); */
-    background-image: url('https://i.pinimg.com/originals/89/dd/7a/89dd7adf1fde0041eb1671403b00a5b7.gif');
+    /* background-image: url('https://i.pinimg.com/originals/89/dd/7a/89dd7adf1fde0041eb1671403b00a5b7.gif'); */
     /* background-image: url('https://img.freepik.com/free-vector/isometric-tower-building_1344-4.jpg'); */
-    
+    /* background-image: url('https://img.freepik.com/free-vector/real-estate-abstract-concept-vector-illustration-real-estate-agency-residential-industrial-commercial-property-market-investment-portfolio-home-ownership-property-value-abstract-metaphor_335657-1967.jpg?w=2000'); */
+    background-image: url('https://unblast.com/wp-content/uploads/2021/09/Real-Estate-Agent-Illustration.jpg');
+    /* background-image: url('https://cdn.dribbble.com/users/160641/screenshots/14703365/emptystreets.gif'); */
+
     background-repeat: no-repeat;
     background-size: 300px;
     background-position: center;

@@ -13,24 +13,24 @@ def listNotifications(request):
     context = {}
 
     if request.user.is_staff:
-        notificacoes = Notificacao.objects.all().order_by('lido', 'datahora')
+        notifications = Notificacao.objects.all().order_by('lido', 'datahora')
         if request.method == 'GET':
             if request.GET.get('busca') != None:
-                busca = request.GET.get('busca')
-                perfis = Perfil.objects.filter(Q(nome_completo__contains=busca))
-                notificacoes = []
-                for p in perfis:
-                    notificacoesDB = Notificacao.objects.filter(perfil=p).order_by('datahora', 'lido')
-                    for nDB in notificacoesDB:
-                        notificacoes.append(nDB)
-                notificacoes.sort(key=_ordenar_lista)
-                context['notificacoes'] = notificacoes
+                search = request.GET.get('busca')
+                profiles = Perfil.objects.filter(Q(nome_completo__contains=search))
+                notifications = []
+                for p in profiles:
+                    notificationsDB = Notificacao.objects.filter(perfil=p).order_by('datahora', 'lido')
+                    for nDB in notificationsDB:
+                        notifications.append(nDB)
+                notifications.sort(key=_orderList)
+                context['notificacoes'] = notifications
                 return render(request, 'list-notifications.html', context)
     else:
         perfil = Perfil.objects.get(cpf = request.user.username)
-        notificacoes = Notificacao.objects.filter(perfil = perfil).order_by('lido', 'datahora')
+        notifications = Notificacao.objects.filter(perfil = perfil).order_by('lido', 'datahora')
 
-    context['notificacoes'] = notificacoes
+    context['notificacoes'] = notifications
     return render(request, 'list-notifications.html', context)
 
 
@@ -40,9 +40,9 @@ def readNotification(request, id):
 
     # a notificação tem que ser do usuario
     if request.user.is_staff == False:
-        perfil = Perfil.objects.get(cpf = request.user.username)
-        notificacao = get_object_or_404(Notificacao, pk=id)
-        if notificacao.perfil != perfil:
+        profile = Perfil.objects.get(cpf = request.user.username)
+        notifications = get_object_or_404(Notificacao, pk=id)
+        if notifications.perfil != profile:
             return redirect('home-usuario')
 
     notification = get_object_or_404(Notificacao, pk=id)
@@ -69,15 +69,15 @@ def createNotification(request):
 
     if request.method == 'POST':
         form = NotificacaoForm(request.POST)
-        mensagem:Notificacao = form.save(commit=False)
-        perfil = Perfil.objects.get(cpf = request.user.username)
-        mensagem.perfil = perfil
-        mensagem.save()
+        message:Notificacao = form.save(commit=False)
+        profile = Perfil.objects.get(cpf = request.user.username)
+        message.perfil = profile
+        message.save()
         return redirect('list-notifications')
 
     context['form'] = form
     return render(request, 'create-notification.html', context)
 
 
-def _ordenar_lista(lista):
+def _orderList(lista):
     return lista.lido

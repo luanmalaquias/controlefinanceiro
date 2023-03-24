@@ -23,55 +23,56 @@ from dateutil.relativedelta import relativedelta
 
 def register(request):
     context = {}
-    usuarioForm = UserCreationForm()
-    perfilForm = AutoCadastroForm()
-    context['usuarioForm'] = usuarioForm
-    context['perfilForm'] = perfilForm
+
+    userForm = UserCreationForm()
+    profileForm = AutoCadastroForm()
+    context['usuarioForm'] = userForm
+    context['perfilForm'] = profileForm
     context['senhaGerada'] = generatePassword(0)
 
     if request.method == 'POST':
-        usuarioForm = UserCreationForm(request.POST)
-        perfilForm = AutoCadastroForm(request.POST)
+        userForm = UserCreationForm(request.POST)
+        profileForm = AutoCadastroForm(request.POST)
 
-        context['usuarioForm'] = usuarioForm
-        context['perfilForm'] = perfilForm
+        context['usuarioForm'] = userForm
+        context['perfilForm'] = profileForm
 
         cpf = unmask(request.POST.get('username'), '.-')
         pass1 = request.POST.get('password1')
         pass2 = request.POST.get('password2')
-        telefone = unmask(request.POST.get('telefone'), ' ()-')
-        dataNascimento = request.POST.get('data_nascimento')
+        phone = unmask(request.POST.get('telefone'), ' ()-')
+        birth = request.POST.get('data_nascimento')
 
         errors = []
         if User.objects.filter(username = cpf):
             errors.append("CPF já cadastrado no sistema, tente fazer login.")
         if not cpfIsValid(cpf) or len(cpf) != 11:
             errors.append("CPF informado não é valido.")
-        if len(telefone) != 11:
+        if len(phone) != 11:
             errors.append("Telefone invalido.")
         if pass1 != pass2:
             errors.append("Senhas não conferem.")
         if len(pass1) < 8:
             errors.append("Senha fraca.")
-        if len(dataNascimento) != 10 and len(dataNascimento) != 0:
+        if len(birth) != 10 and len(birth) != 0:
             errors.append("Data de nascimento inválida.")
 
         if len(errors) == 0:
-            if usuarioForm.is_valid() and perfilForm.is_valid():
-                usuario = usuarioForm.save(commit=False)
-                usuario.username = unmask(usuario.username, '.-')                
+            if userForm.is_valid() and profileForm.is_valid():
+                user = userForm.save(commit=False)
+                user.username = unmask(user.username, '.-')                
 
-                perfil = perfilForm.save(commit=False)
-                perfil.usuario = usuario
-                perfil.cpf = usuario.username
-                perfil.telefone = unmask(perfil.telefone, ' ()-')
+                profile = profileForm.save(commit=False)
+                profile.usuario = user
+                profile.cpf = user.username
+                profile.telefone = unmask(profile.telefone, ' ()-')
 
                 try:
                     if User.objects.count() == 0:
                         User.objects.create_superuser(username=unmask(request.POST.get('username'), '.-'), password=request.POST.get('password1'))
                     else:
-                        usuario.save()
-                        perfil.save()
+                        user.save()
+                        profile.save()
                 except: pass
                 context['contaCriada'] = True
         
@@ -114,63 +115,62 @@ def recoverPassword(request):
 
 @login_required
 @staff_member_required
-def criar_usuario(request):
+def createUser(request):
     context = {}
 
-    senhaGerada = generatePassword(0)
-    context['senhaGerada'] = senhaGerada
+    context['senhaGerada'] = generatePassword(0)
 
     if request.method == 'POST':
-        formUsuario = UserCreationForm(request.POST)  
-        formPerfil = PerfilForm(request.POST)
+        userForm = UserCreationForm(request.POST)  
+        profileForm = PerfilForm(request.POST)
 
-        if formUsuario.is_valid() and formPerfil.is_valid():
-            usuario = formUsuario.save(commit=False)
-            usuario.username = unmask(usuario.username, '-.,')
+        if userForm.is_valid() and profileForm.is_valid():
+            user = userForm.save(commit=False)
+            user.username = unmask(user.username, '-.,')
             
             # igualar login do usuario com o cpf do perfil
-            perfil = formPerfil.save(commit=False)
-            perfil.telefone = unmask(perfil.telefone, ' ()-')
-            perfil.cpf = usuario.username
-            perfil.usuario = usuario
+            profile = profileForm.save(commit=False)
+            profile.telefone = unmask(profile.telefone, ' ()-')
+            profile.cpf = user.username
+            profile.usuario = user
 
             # alterar disponibilidade do imovel
-            if perfil.imovel:
-                imovel = Imovel.objects.get(id = perfil.imovel.id)
-                imovel.alterarDisponibilidade(False)
+            if profile.imovel:
+                property = Imovel.objects.get(id = profile.imovel.id)
+                property.alterarDisponibilidade(False)
 
             try:
-                usuario.save()
-                perfil.save()
+                user.save()
+                profile.save()
             except:
                 raise Exception
 
             return redirect('listarusuarios')        
 
     else:
-        formUsuario = UserCreationForm()
-        formPerfil = PerfilForm()
-        formPerfil.ajustar_escolhas()
+        userForm = UserCreationForm()
+        profileForm = PerfilForm()
+        profileForm.ajustar_escolhas()
 
-    context['formUsuario'] = formUsuario
-    context['formPerfil'] = formPerfil
+    context['formUsuario'] = userForm
+    context['formPerfil'] = profileForm
 
     return render(request, 'views/criar-usuario.html', context)
 
 
 @login_required
 @staff_member_required
-def listar_usuarios(request):
+def listUsers(request):
     context = {}
     
-    perfis = Perfil.objects.all().order_by('imovel','-data_entrada_imovel','nome_completo')
-    context['perfis'] = perfis
+    profiles = Perfil.objects.all().order_by('imovel','-data_entrada_imovel','nome_completo')
+    context['perfis'] = profiles
 
     if request.method == "GET":
-        busca = request.GET.get('busca')
-        if busca != None:
-            perfis = Perfil.objects.all().filter(Q(nome_completo__contains=busca) | Q(cpf__contains=busca))
-            context['perfis'] = perfis
+        search = request.GET.get('busca')
+        if search != None:
+            profiles = Perfil.objects.all().filter(Q(nome_completo__contains=search) | Q(cpf__contains=search))
+            context['perfis'] = profiles
             return render(request, 'views/listar-usuarios.html', context)
 
     return render(request, 'views/listar-usuarios.html', context)
@@ -182,19 +182,19 @@ def readUser(request, id):
 
     # o usuário tem que ser o logado
     if request.user.is_staff == False:
-        perfil = Perfil.objects.get(cpf = request.user.username)
-        if id != perfil.id:
-            return redirect('read-user', perfil.id)
+        profile = Perfil.objects.get(cpf = request.user.username)
+        if id != profile.id:
+            return redirect('read-user', profile.id)
 
-    perfil = get_object_or_404(Perfil, pk=id)
-    pagamentos = Pagamento.objects.filter(perfil = perfil).order_by('-data')
-    mensagens = Notificacao.objects.filter(perfil = perfil).order_by('lido', 'datahora')
-    msgsNaoLidas = len(Notificacao.objects.filter(perfil = perfil, lido = False))
+    profile = get_object_or_404(Perfil, pk=id)
+    payments = Pagamento.objects.filter(perfil = profile).order_by('-data')
+    messages = Notificacao.objects.filter(perfil = profile).order_by('lido', 'datahora')
+    unreadMessages = len(Notificacao.objects.filter(perfil = profile, lido = False))
 
-    context['perfil'] = perfil
-    context['pagamentos'] = pagamentos
-    context['mensagens'] = mensagens
-    context['msgsNaoLidas'] = msgsNaoLidas
+    context['perfil'] = profile
+    context['pagamentos'] = payments
+    context['mensagens'] = messages
+    context['msgsNaoLidas'] = unreadMessages    
     return render(request, 'views/read-user.html', context)
 
 
@@ -202,122 +202,124 @@ def readUser(request, id):
 @staff_member_required
 def listUsersWithoutProperty(request):
     context = {}
-    perfis = Perfil.objects.filter(imovel = None).order_by('nome_completo')
-    context['perfis'] = perfis
+    profiles = Perfil.objects.filter(imovel = None).order_by('nome_completo')
+    context['perfis'] = profiles
     return render(request, 'views/listar-usuarios.html', context)
 
 
 @login_required
 @staff_member_required
-def editar_perfil(request, id):
+def updateProfile(request, id):
     context = {}
 
-    imoveis = Imovel.objects.all()
-    tem_imoveis = True if len(imoveis) > 0 else False
+    properties = Imovel.objects.all()
+    hasProperty = True if len(properties) > 0 else False
 
-    perfil = get_object_or_404(Perfil, pk=id,)
-    formPerfil = PerfilForm(instance=perfil)
+    profile = get_object_or_404(Perfil, pk=id,)
+    profileForm = PerfilForm(instance=profile)
 
     if request.method == 'POST':
-        formPerfil = PerfilForm(request.POST, instance=perfil)
-        if formPerfil.is_valid():
+        profileForm = PerfilForm(request.POST, instance=profile)
+        if profileForm.is_valid():
 
+            # check this
             # alterar disponibilidade do imovel
             try:
-                perfil_antes = Perfil.objects.get(id = id)
-                imovel_antes = Imovel.objects.get(id = perfil_antes.imovel.id)
-                imovel_antes.alterarDisponibilidade(True)
+                profileBefore = Perfil.objects.get(id = id)
+                propertyBefore = Imovel.objects.get(id = profileBefore.imovel.id)
+                propertyBefore.alterarDisponibilidade(True)
             except:
                 # usuario sem imovel antes da atualização
                 pass
 
-            if perfil.imovel:
-                perfil.atualizar_data_entrada_imovel()
-                imovel = Imovel.objects.get(id = perfil.imovel.id)
-                imovel.alterarDisponibilidade(False)
+            if profile.imovel:
+                profile.atualizar_data_entrada_imovel()
+                property = Imovel.objects.get(id = profile.imovel.id)
+                property.alterarDisponibilidade(False)
 
-            perfil = formPerfil.save()
+            profile = profileForm.save()
             return redirect('listarusuarios')
         
     else:
-        formPerfil = PerfilForm(instance = perfil)
-        formPerfil.ajustar_escolhas(perfil)
+        profileForm = PerfilForm(instance = profile)
+        profileForm.ajustar_escolhas(profile)
 
-    context['tem_imoveis'] = tem_imoveis
-    context['perfil'] = perfil
-    context['formPerfil'] = formPerfil
+    context['tem_imoveis'] = hasProperty
+    context['perfil'] = profile
+    context['formPerfil'] = profileForm
     
     return render(request, 'views/editar-perfil.html', context)
 
 
 @login_required
 @staff_member_required
-def editar_usuario(request, id):
+def updateUser(request, id):
     context = {}
 
-    perfil = get_object_or_404(Perfil, pk=id)
-    usuario = get_object_or_404(User, pk=perfil.usuario.id)
-    senhaGerada = generatePassword(2)
+    profile = get_object_or_404(Perfil, pk=id)
+    user = get_object_or_404(User, pk=profile.usuario.id)
 
     if request.method == 'POST':
-        formUsuario = UserCreationForm(request.POST, instance=usuario)
-        if formUsuario.is_valid():
-            usuario = formUsuario.save()
+        userForm = UserCreationForm(request.POST, instance=user)
+        if userForm.is_valid():
+            user = userForm.save()
             return redirect('listarusuarios')
     
     else:
-        formUsuario = UserCreationForm(instance = usuario)
+        userForm = UserCreationForm(instance = user)
 
-    context['formUsuario'] = formUsuario
-    context['usuario'] = usuario
-    context['perfil'] = perfil
-    context['senhaGerada'] = senhaGerada
+    context['formUsuario'] = userForm
+    context['usuario'] = user
+    context['perfil'] = profile
+    context['senhaGerada'] = generatePassword(2)
     return render(request, 'views/editar-usuario.html', context)
 
 
 @login_required
 @staff_member_required
-def deletar_usuario(request, id):
-    perfil = get_object_or_404(Perfil, pk=id)
-    usuario = get_object_or_404(User, pk=perfil.usuario.id)
-    try:
-        perfil.imovel.alterarDisponibilidade(True)
-    except: pass
-    usuario.delete()
+def deleteUserAndProfile(request, id):
+    profile = get_object_or_404(Perfil, pk=id)
+    user = get_object_or_404(User, pk=profile.usuario.id)
+
+    if profile.imovel:
+        profile.imovel.alterarDisponibilidade(True)
+    
+    user.delete()
     return redirect('listarusuarios')
 
 
 @login_required
 @staff_member_required
-def remover_do_imovel(request, id):
-    perfil = get_object_or_404(Perfil, pk=id)
-    perfil.imovel.alterarDisponibilidade(True)
-    perfil.imovel = None
-    perfil.save()
+def removeFromProperty(request, id):
+    profile = get_object_or_404(Perfil, pk=id)
 
-    Pagamento.objects.filter(perfil = perfil).delete()
+    profile.imovel.alterarDisponibilidade(True)
+    profile.imovel = None
+    profile.save()
+
+    Pagamento.objects.filter(perfil = profile).delete()
     return redirect('listarusuarios')
 
 
 @login_required
 @staff_member_required
-def incluir_no_imovel(request, id):
+def includeInTheProperty(request, id):
     context = {}
 
-    perfil = get_object_or_404(Perfil,pk=id)
+    profile = get_object_or_404(Perfil,pk=id)
 
     if request.method == 'POST':
-        form = IncluirNoImovelForm(request.POST, instance=perfil)
+        form = IncluirNoImovelForm(request.POST, instance=profile)
         form.ajustar_escolhas()
         if form.is_valid():
-            perfil.imovel.alterarDisponibilidade(False)
+            profile.imovel.alterarDisponibilidade(False)
             form.save()
             return redirect('listarusuarios')
     else:
-        form = IncluirNoImovelForm(instance=perfil)
+        form = IncluirNoImovelForm(instance=profile)
         form.ajustar_escolhas()
 
-    context['perfil'] = perfil
+    context['perfil'] = profile
     context['form'] = form
 
     return render(request, 'views/adicionar-imovel-usuario.html', context)
@@ -325,105 +327,107 @@ def incluir_no_imovel(request, id):
 
 # USUARIO
 @login_required
-def homeUsuario(request):
+def homeUser(request):
     context = {}
 
-    perfil = Perfil.objects.get(usuario=request.user)
-    pagamentos = Pagamento.objects.filter(perfil=perfil)
-    hojeDateTime = datetime.now()
-    hojeDate = date(hojeDateTime.year, hojeDateTime.month, hojeDateTime.day)
+    profile = Perfil.objects.get(usuario=request.user)
+    payments = Pagamento.objects.filter(perfil=profile)
+    todayDateTime = datetime.now()
+    dotayDate = date(todayDateTime.year, todayDateTime.month, todayDateTime.day)
 
-    faturas = []
-    if perfil.imovel:
-        dataEntradaImovel = date(perfil.data_entrada_imovel.year, perfil.data_entrada_imovel.month, perfil.imovel.vencimento)
-        mesesPassados = relativedelta(date.today(), dataEntradaImovel).months
-        mesReferencia = dataEntradaImovel
+    # Faturas
+    invoices = []
+    if profile.imovel:
+        dateEntryProperty = date(profile.data_entrada_imovel.year, profile.data_entrada_imovel.month, profile.imovel.vencimento)
+        passedMonths = relativedelta(date.today(), dateEntryProperty).months
+        referrenceMonth = dateEntryProperty
 
-        for _ in range(mesesPassados+1):
-            pagoMesAtual = False
-            for p in pagamentos:
-                if (p.status == "P" or p.status == "A") and (p.data.month == mesReferencia.month and p.data.year == mesReferencia.year):
-                    pagoMesAtual = True
+        # FIXME ajeitar isso daqui
+        for _ in range(passedMonths+1):
+            thisMonthPaid = False
+            for p in payments:
+                if (p.status == "P" or p.status == "A") and (p.data.month == referrenceMonth.month and p.data.year == referrenceMonth.year):
+                    thisMonthPaid = True
                     break
 
-            if pagoMesAtual:
-                faturas.append({"pagamento": p})
+            if thisMonthPaid:
+                invoices.append({"pagamento": p})
             else:
-                pagamento = Pagamento(perfil=perfil)
-                pagamento.status = "N"
+                payments = Pagamento(perfil=profile)
+                payments.status = "N"
                 # aplicar juros
-                diasAtrasados = (hojeDate-mesReferencia).days
-                if diasAtrasados > 0:
-                    valorComJuros = int(porcentagem(1, valor=perfil.imovel.mensalidade, porcentagem=diasAtrasados))
-                    pagamento.valor_pago = valorComJuros
+                lateDays = (dotayDate-referrenceMonth).days
+                if lateDays > 0:
+                    amountWithInterest = int(porcentagem(1, valor=profile.imovel.mensalidade, porcentagem=lateDays))
+                    payments.valor_pago = amountWithInterest
                 else:
-                    pagamento.valor_pago = perfil.imovel.mensalidade
-                pagamento.data = mesReferencia
-                payload = pixcodegen.Payload('Luan dos Santos Sousa', '10421063475', str(pagamento.valor_pago), 'Joao Pessoa', 'IMOBILIARIA')
-                faturas.append({"pagamento": pagamento, "diasAtrasados": diasAtrasados, 'brcode': payload.crc16, 'b64qrcode': payload.base64})
-            mesReferencia = date(mesReferencia.year, mesReferencia.month + 1, mesReferencia.day)
-    faturas = faturas[::-1]
+                    payments.valor_pago = profile.imovel.mensalidade
+                payments.data = referrenceMonth
+                payload = pixcodegen.Payload('Luan dos Santos Sousa', '10421063475', str(payments.valor_pago), 'Joao Pessoa', 'IMOBILIARIA')
+                invoices.append({"pagamento": payments, "diasAtrasados": lateDays, 'brcode': payload.crc16, 'b64qrcode': payload.base64})
+            referrenceMonth = date(referrenceMonth.year, referrenceMonth.month + 1, referrenceMonth.day)
+    invoices = invoices[::-1]
 
     if request.method == 'POST':
-        dadosPagamento = request.POST.get('dadosPagamento')
+        dataPayment = request.POST.get('dadosPagamento')
 
-        pagamento = Pagamento(perfil = perfil)
-        pagamento.valor_pago = dadosPagamento
-        pagamento.data = hojeDateTime
+        payments = Pagamento(perfil = profile)
+        payments.valor_pago = dataPayment
+        payments.data = todayDateTime
 
         try:
-            pagamento = Pagamento.objects.get(perfil=perfil, data=pagamento.data)
-            pagamento.status = "A"
-            pagamento.save()
+            payments = Pagamento.objects.get(perfil=profile, data=payments.data)
+            payments.status = "A"
+            payments.save()
         except:
-            pagamento.save()
+            payments.save()
 
         return redirect('home-usuario')
 
-    context['hojeDateTime'] = hojeDateTime
-    context['hojeDate'] = hojeDate
-    context['perfil'] = perfil
-    context['faturas'] = faturas
+    context['hojeDateTime'] = todayDateTime
+    context['hojeDate'] = dotayDate
+    context['perfil'] = profile
+    context['faturas'] = invoices
     return render(request, 'views/usuario/home-usuario.html', context)
 
 
 @login_required
-def historicoUsuario(request):
+def userPaymentHistory(request):
     context = {}
 
-    perfil = Perfil.objects.get(usuario=request.user)
-    pagamentos = Pagamento.objects.filter(perfil=perfil)
+    profile = Perfil.objects.get(usuario=request.user)
+    payments = Pagamento.objects.filter(perfil=profile)
 
-    if perfil.imovel:
-        dataEntradaImovel = perfil.data_entrada_imovel
-        hoje = date(datetime.now().year, datetime.now().month, datetime.now().day)
-        mesesPassados = relativedelta(hoje, dataEntradaImovel).months
+    if profile.imovel:
+        dateEntryProperty = profile.data_entrada_imovel
+        today = date(datetime.now().year, datetime.now().month, datetime.now().day)
+        passedMonths = relativedelta(today, dateEntryProperty).months
 
-        pagamentosArray = []
-        
-        for _ in range(mesesPassados+1):
-            pago = False
-            for p in pagamentos:
-                if p.data.month == dataEntradaImovel.month and p.data.year == dataEntradaImovel.year:
-                    pagamentosArray.insert(0,
-                        {'mes_referencia': dataEntradaImovel, 
+        # FIXME ajeitar isso daqui
+        paymentsArray = []        
+        for _ in range(passedMonths+1):
+            paid = False
+            for p in payments:
+                if p.data.month == dateEntryProperty.month and p.data.year == dateEntryProperty.year:
+                    paymentsArray.insert(0,
+                        {'mes_referencia': dateEntryProperty, 
                         'status': p.status, 
                         'vencimento': p.perfil.imovel.vencimento, 
                         'mensalidade': p.perfil.imovel.mensalidade, 
                         'valor_pago': p.valor_pago, 
                         'data_pagamento': p.data})
-                    pago = True
+                    paid = True
                     continue
-            if not pago:
-                pagamentosArray.insert(0,
-                    {'mes_referencia': dataEntradaImovel, 
+            if not paid:
+                paymentsArray.insert(0,
+                    {'mes_referencia': dateEntryProperty, 
                     'status': 'Aguardando', 
-                    'vencimento': perfil.imovel.vencimento, 
-                    'mensalidade': perfil.imovel.mensalidade, 
+                    'vencimento': profile.imovel.vencimento, 
+                    'mensalidade': profile.imovel.mensalidade, 
                     'valor_pago': '--', 
                     'data_pagamento': ''})
-            dataEntradaImovel += relativedelta(months=1)
+            dateEntryProperty += relativedelta(months=1)
 
-        context['pagamentos'] = pagamentosArray
+        context['pagamentos'] = paymentsArray
     
     return render(request, 'views/usuario/historico-usuario.html', context)

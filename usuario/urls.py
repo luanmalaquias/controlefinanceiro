@@ -2,17 +2,17 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('home-usuario', homeUsuario, name="home-usuario"),
-    path('historico-usuario', historicoUsuario, name="historico-usuario"),
-    path('cadastrar/', criar_usuario, name="cadastrarusuario"),
+    path('home-usuario', homeUser, name="home-usuario"),
+    path('historico-usuario', userPaymentHistory, name="historico-usuario"),
     path('auto-cadastro/', register, name="auto-cadastro"),
-    path('listar/', listar_usuarios, name="listarusuarios"),
+    path('recuperarsenha/', recoverPassword, name="recuperarsenha"),
+    path('cadastrar/', createUser, name="cadastrarusuario"),
+    path('listar/', listUsers, name="listarusuarios"),
     path('read-user/<int:id>', readUser, name='read-user'),
     path('list-users-without-property', listUsersWithoutProperty, name='list-users-without-property'),
-    path('editarperfil/<int:id>', editar_perfil, name="editarperfil"),
-    path('editarusuario/<int:id>', editar_usuario, name="editarusuario"),
-    path('deletar/<int:id>', deletar_usuario, name="deletarusuario"),
-    path('removerdoimovel/<int:id>', remover_do_imovel, name="removerdoimovel"),
-    path('incluirnoimovel/<int:id>', incluir_no_imovel, name="incluirnoimovel"),
-    path('recuperarsenha/', recoverPassword, name="recuperarsenha"), # FIXME o usuario vai poder recuperar senha?
+    path('editarperfil/<int:id>', updateProfile, name="editarperfil"),
+    path('editarusuario/<int:id>', updateUser, name="editarusuario"),
+    path('deletar/<int:id>', deleteUserAndProfile, name="deletarusuario"),
+    path('removerdoimovel/<int:id>', removeFromProperty, name="removerdoimovel"),
+    path('incluirnoimovel/<int:id>', includeInTheProperty, name="incluirnoimovel"),
 ]
