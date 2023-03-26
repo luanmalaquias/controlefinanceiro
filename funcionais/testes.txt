@@ -19,41 +19,41 @@ página 404 redirecionar para HOME
 HTTPS
 
 links para teste:
-    login ok
-    logout ok
+    login
+    logout
     realestate
-        home ok
-        create ok
-        list ok 
-        read <> ok
-        listavailableproperties ok
-        update <> ok
-        delete <> ok
+        home
+        create
+        list 
+        read <>
+        listavailableproperties
+        update <>
+        delete <>
     messages
-        list ok
-        read <> ok
-        create ok
-        delete <> ok
+        list
+        read <>
+        create
+        delete <>
     user
-        registry ok
-        home ok
-        paymenthistory ok
-        recoverpassword ok
-        create ok
-        list ok
-        read <> ok
-        listuserwithoutproperty ok
-        editprofile <> ok
-        changepassword <> ok
-        includeinproperty <> ok
-        removefromproperty <> ok
-        delete <> ok
+        registry
+        home
+        paymenthistory
+        recoverpassword
+        create
+        list
+        read <>
+        listuserwithoutproperty
+        editprofile <>
+        changepassword <>
+        includeinproperty <>
+        removefromproperty <>
+        delete <>
     payment
-        create ok
-        listdebtors ok
-        listdebtors <> ok
-        quickdelete <> ok
-        quickcreate <> <> ok
-        list ok
-        update <> ok
-        delete <> ok
+        create
+        listdebtors
+        listdebtors <>
+        quickdelete <>
+        quickcreate <> <>
+        list
+        update <>
+        delete <>

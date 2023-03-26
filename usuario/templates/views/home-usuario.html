@@ -40,7 +40,39 @@
     <hr class="mt-3">  
     <!-- // Usuario -->
 
+    <!-- FIXME mudar para card -->
     <div class="col-sm-10 offset-sm-1 col-lg-4 offset-lg-4">
+        <div class="card rounded-4 border-0 sombra">
+            <div class="card-body">
+                {% for fatura in faturas %}
+                    {% if fatura.pagamento.status == "P" and fatura.pagamento.data.month == hojeDate.month and fatura.pagamento.data.year == hojeDate.year %}
+                        <p><strong>Fatura paga</strong></p>
+                        <h1 class="card-title ">R$ {{fatura.pagamento.valor_pago}}</h1>
+                        <span><em>{{fatura.pagamento.data|date:"F Y"}}</em></span>
+                    {% elif fatura.pagamento.status == "A" %}
+                        <p><strong>Fatura em análise</strong></p>
+                        <p class="card-title h1">R$ {{fatura.pagamento.valor_pago}}</p>
+                        <span><em>{{fatura.pagamento.data|date:"F Y"}}</em></span>
+                    {% elif fatura.pagamento.status == "N" %}
+                        <p><strong>Fatura aguardando pagamento</strong></p>
+                        {% if fatura.diasAtrasados > 0 %} <span><strong>Atrasado</strong></span><br> {% endif %}
+                        {% if fatura.diasAtrasados >= 1 %}
+                            <span class="card-title"><em>Juros de {{fatura.diasAtrasados}}% por dias atrasados</em></span>
+                        {% endif %}
+                        <h1 class="card-title">R$ {{fatura.pagamento.valor_pago}}</h1>
+                        <span><em>Vencimento {{fatura.pagamento.data|date:"d F"}}</em></span>
+                        <hr>
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <a class="btn-pagar-com-pix btn btn-light rounded-75 px-3" data-bs-toggle="modal" data-bs-target="#staticBackdropMobile" style="border-radius: 2rem;">
+                                    <i class="bi bi-x-diamond-fill"></i> <strong>Pagar com pix</strong>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
         {% for fatura in faturas %}
             {% if fatura.pagamento.status == "P" and fatura.pagamento.data.month == hojeDate.month and fatura.pagamento.data.year == hojeDate.year %}
                 <div class="card mb-4 bg-success text-light shadow rounded-4">

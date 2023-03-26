@@ -1,6 +1,6 @@
 {% if user.is_staff %}
     <li>
-        <a href="{% url 'list-notifications' %}" class="nav-link {% if 'notificacao' in request.path %}active link-light{% else %}link-dark{% endif %}">
+        <a href="{% url 'list-notifications' %}" class="nav-link {% if 'messages' in request.path %}active link-light{% else %}link-dark{% endif %}">
             <i class="bi bi-bell-fill"></i>
             <span class="ps-3">Notificações</span>
 
@@ -16,25 +16,25 @@
         </a>
     </li>
     <li>
-        <a href="{% url 'listarimoveis' %}" class="nav-link {% if 'imobiliaria' in request.path and 'home' not in request.path %}active link-light{% else %}link-dark{% endif %}">
+        <a href="{% url 'listarimoveis' %}" class="nav-link {% if 'realestate' in request.path and 'home' not in request.path %}active link-light{% else %}link-dark{% endif %}">
             <i class="bi bi-houses-fill"></i>
             <span class="ps-3">Imóveis</span>
         </a>
     </li>
     <li>
-        <a href="{% url 'listarusuarios' %}" class="nav-link {% if '/usuario/' in request.path %}active link-light{% else %}link-dark{% endif %}">
+        <a href="{% url 'listarusuarios' %}" class="nav-link {% if 'user' in request.path %}active link-light{% else %}link-dark{% endif %}">
             <i class="bi bi-people-fill"></i>
             <span class="ps-3">Usuários</span>
         </a>
     </li>
     <li>
-        <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="nav-link {% if 'listar-pagamentos-por-usuarios' in request.path %}active link-light{% else %}link-dark{% endif %}">
+        <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="nav-link {% if 'listdebtors' in request.path %}active link-light{% else %}link-dark{% endif %}">
             <i class="bi bi-person-vcard-fill"></i>
             <span class="ps-3">Devedores</span>
         </a>
     </li>
     <li>
-        <a href="{% url 'listar-todos-os-pagamentos' %}" class="nav-link {% if 'o/listar-todos-os-pagamentos/' in request.path %}active link-light{% else %}link-dark{% endif %}">
+        <a href="{% url 'listar-todos-os-pagamentos' %}" class="nav-link {% if 'payment/list/' in request.path %}active link-light{% else %}link-dark{% endif %}">
             <i class="bi bi-piggy-bank-fill"></i>
             <span class="ps-3">Pagamentos</span>
         </a>

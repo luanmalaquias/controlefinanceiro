@@ -30,7 +30,7 @@
                         {% endif %}
                     </td>
                     <td>{{pagamento.mes_referencia|date:"M/Y"}}</td>
-                    <td>R$ {{pagamento.valor_pago}}</td>
+                    <td>{% if pagamento.valor_pago %}R$ {{pagamento.valor_pago}} {% endif %}</td>
                     <td>{{pagamento.data_pagamento|date:"d/M/y"}}</td>
                 </tr>
                 {% endfor %}

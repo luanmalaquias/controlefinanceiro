@@ -18,7 +18,6 @@ from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 
 
-# FIXME refatorar com padrão CRUD
 # FIXME refatorar para ingles
 
 def register(request):
@@ -342,7 +341,6 @@ def homeUser(request):
         passedMonths = relativedelta(date.today(), dateEntryProperty).months
         referrenceMonth = dateEntryProperty
 
-        # FIXME ajeitar isso daqui
         for _ in range(passedMonths+1):
             thisMonthPaid = False
             for p in payments:
@@ -353,9 +351,7 @@ def homeUser(request):
             if thisMonthPaid:
                 invoices.append({"pagamento": p})
             else:
-                payments = Pagamento(perfil=profile)
-                payments.status = "N"
-                # aplicar juros
+                payments = Pagamento(perfil=profile, status="N")
                 lateDays = (dotayDate-referrenceMonth).days
                 if lateDays > 0:
                     amountWithInterest = int(porcentagem(1, valor=profile.imovel.mensalidade, porcentagem=lateDays))
@@ -388,7 +384,7 @@ def homeUser(request):
     context['hojeDate'] = dotayDate
     context['perfil'] = profile
     context['faturas'] = invoices
-    return render(request, 'views/usuario/home-usuario.html', context)
+    return render(request, 'views/home-usuario.html', context)
 
 
 @login_required
@@ -412,8 +408,6 @@ def userPaymentHistory(request):
                     paymentsArray.insert(0,
                         {'mes_referencia': dateEntryProperty, 
                         'status': p.status, 
-                        'vencimento': p.perfil.imovel.vencimento, 
-                        'mensalidade': p.perfil.imovel.mensalidade, 
                         'valor_pago': p.valor_pago, 
                         'data_pagamento': p.data})
                     paid = True
@@ -421,13 +415,11 @@ def userPaymentHistory(request):
             if not paid:
                 paymentsArray.insert(0,
                     {'mes_referencia': dateEntryProperty, 
-                    'status': 'Aguardando', 
-                    'vencimento': profile.imovel.vencimento, 
-                    'mensalidade': profile.imovel.mensalidade, 
-                    'valor_pago': '--', 
+                    'status': 'N', 
+                    'valor_pago': '', 
                     'data_pagamento': ''})
             dateEntryProperty += relativedelta(months=1)
 
         context['pagamentos'] = paymentsArray
     
-    return render(request, 'views/usuario/historico-usuario.html', context)
+    return render(request, 'views/historico-usuario.html', context)
