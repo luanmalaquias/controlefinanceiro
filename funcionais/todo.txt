@@ -1,0 +1,8 @@
+TODO
+
+vencimento do imovel deve ser alterado para a data de entrada do usuário do imovel
+    para isso, a data de entrada no imovel precisa ser editavel, com valor inicial o dia de hoje
+
+pesquisar sobre calção
+    o usuario paga uma entrada no imovel por danos no append
+    quando ele sair, este valor é usado para repara os danos ou devolvido

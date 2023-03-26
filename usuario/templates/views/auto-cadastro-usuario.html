@@ -25,62 +25,12 @@
                             <div class="col-12 d-flex flex-column justify-content-center align-items-center">
                                 <form method="post" autocomplete="off">
                                     {% csrf_token %}
-                                    <!-- User -->
                                     <div class="row">
-                                        <!-- Username -->
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <p class="badge text-dark mb-0">Cpf <span class="text-danger">*</span></p>
-                                                <input type="text" class="form-control" name="username" maxlength="11" minlength="11" required id="id_username" placeholder="CPF">
-                                            </div>
-                                        </div>
-                                        <!-- Senha -->
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <p class="badge text-dark mb-0">Senha <span class="text-danger">*</span></p>
-                                                <input type="text" class="form-control" name="password1" minlength="8" required id="id_password1" placeholder="Senha" value="{{senhaGerada}}">
-                                            </div>
-                                        </div>
-                                        <!-- Confirmar senha -->
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <p class="badge text-dark mb-0">Confirmar senha <span class="text-danger">*</span></p>
-                                                <input type="text" class="form-control" name="password2" minlength="8" required id="id_password2" placeholder="Confirmar senha" value="{{senhaGerada}}">
-                                            </div>
-                                        </div>
+                                        {{form}}
+                                        <button type="submit" class="btn btn-primary mt-3 rounded-pill w-100">
+                                            <strong>Criar conta</strong>
+                                        </button>
                                     </div>
-
-                                    <!-- Perfil -->
-                                    <div class="row">
-                                        <!-- nome completo -->
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <p class="badge text-dark mb-0">Nome completo <span class="text-danger">*</span></p>
-                                                <input type="text" class="form-control" name="nome_completo" maxlength="50" minlength="5" required id="id_nome_completo" placeholder="Nome completo">
-                                            </div>
-                                        </div>                                        
-
-                                        <!-- telefone -->
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <p class="badge text-dark mb-0">Telefone <span class="text-danger">*</span></p>
-                                                <input type="text" class="form-control" name="telefone" maxlength="16" minlength="16" required id="id_telefone" placeholder="Telefone para contato">
-                                            </div>
-                                        </div>
-
-                                        <!-- data nascimento -->
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <p class="badge text-dark mb-0">Data de nascimento</p>
-                                                <input type="date" class="form-control" name="data_nascimento" min="10" max="10" id="id_data_nascimento" placeholder="Data de nascimento">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <button type="submit" class="btn btn-primary mt-3 rounded-pill w-100">
-                                        <strong>Criar conta</strong>
-                                    </button>
-
                                 </form>
                             </div>
                         </div>
@@ -119,7 +69,7 @@
 
 <script src="{% static 'js/auto-cadastro-usuario.js' %}"></script>
 <script>
-    if("{{contaCriada}}" == "True"){
+    if("{{saved}}" == "True"){
         alert("Conta criada, tente fazer login")
         window.location.href = "{% url 'login'%}"
     }

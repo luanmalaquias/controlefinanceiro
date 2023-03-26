@@ -27,14 +27,10 @@
 								<span class="text-muted mb-4">Faça login com a sua conta</span>
 								<form method="post" class="w-75">
 									{% csrf_token %}
-									<div class="input-group mb-3">
-										<input type="text" class="rounded-pill form-control" name="cpf" autofocus="" autocapitalize="none" maxlength="150" required id="id_cpf" placeholder="CPF">
-									</div>
-									<div class="input-group mb-3">
-										<input type="password" class="rounded-pill form-control" name="password" autocomplete="current-password" required id="id_password" placeholder="Senha">
-									</div>
-									<button type="submit" class="rounded-pill btn btn-primary strong w-100">Login</button>									
+									{{form}}
+									<button type="submit" class="rounded-pill btn btn-primary strong w-100 mt-3">Login</button>									
 								</form>	
+
 								<p class="pt-3 text-center">
 									Não possui conta?
 									<a href="{%url 'auto-cadastro'%}" class="text-decoration-none">Cadastrar-se</a> 
@@ -65,7 +61,7 @@
                     </div>
 					
 					<!-- direita -->
-					<div class="d-sm-none d-lg-block col-lg-4 rounded-4 quadrado  sombra">
+					<div class="d-sm-none d-lg-block col-lg-4 rounded-4 quadrado sombra">
 					</div>
 				</div>
 
@@ -73,5 +69,7 @@
 		</div>
 	</div>
 </div>
+
+<script src="{% static 'js/login.js' %}"></script>
 
 {% endblock %}

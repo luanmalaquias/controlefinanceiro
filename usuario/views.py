@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Imovel
 from usuario.models import Perfil
 from pagamento.models import Pagamento
-from .forms import PerfilForm, RecuperarSenhaForm, IncluirNoImovelForm, AutoCadastroForm
+from .forms import PerfilForm, ChangePasswordForm, IncluirNoImovelForm, AutoCadastroForm
 from utils.scripts import generatePassword, unmask, cpfIsValid
 from django.shortcuts import get_object_or_404
 from notificacao.models import Notificacao
@@ -23,59 +23,19 @@ from dateutil.relativedelta import relativedelta
 def register(request):
     context = {}
 
-    userForm = UserCreationForm()
-    profileForm = AutoCadastroForm()
-    context['usuarioForm'] = userForm
-    context['perfilForm'] = profileForm
-    context['senhaGerada'] = generatePassword(0)
+    generatedPass = generatePassword(0)
+    form = AutoCadastroForm(initial={'password1': generatedPass, 'password2': generatedPass})
+    context['form'] = form
 
     if request.method == 'POST':
-        userForm = UserCreationForm(request.POST)
-        profileForm = AutoCadastroForm(request.POST)
+        form = AutoCadastroForm(request.POST)
 
-        context['usuarioForm'] = userForm
-        context['perfilForm'] = profileForm
+        context['form'] = form    
 
-        cpf = unmask(request.POST.get('username'), '.-')
-        pass1 = request.POST.get('password1')
-        pass2 = request.POST.get('password2')
-        phone = unmask(request.POST.get('telefone'), ' ()-')
-        birth = request.POST.get('data_nascimento')
-
-        errors = []
-        if User.objects.filter(username = cpf):
-            errors.append("CPF já cadastrado no sistema, tente fazer login.")
-        if not cpfIsValid(cpf) or len(cpf) != 11:
-            errors.append("CPF informado não é valido.")
-        if len(phone) != 11:
-            errors.append("Telefone invalido.")
-        if pass1 != pass2:
-            errors.append("Senhas não conferem.")
-        if len(pass1) < 8:
-            errors.append("Senha fraca.")
-        if len(birth) != 10 and len(birth) != 0:
-            errors.append("Data de nascimento inválida.")
-
-        if len(errors) == 0:
-            if userForm.is_valid() and profileForm.is_valid():
-                user = userForm.save(commit=False)
-                user.username = unmask(user.username, '.-')                
-
-                profile = profileForm.save(commit=False)
-                profile.usuario = user
-                profile.cpf = user.username
-                profile.telefone = unmask(profile.telefone, ' ()-')
-
-                try:
-                    if User.objects.count() == 0:
-                        User.objects.create_superuser(username=unmask(request.POST.get('username'), '.-'), password=request.POST.get('password1'))
-                    else:
-                        user.save()
-                        profile.save()
-                except: pass
-                context['contaCriada'] = True
-        
-        context['errors'] = errors
+        if form.is_valid():            
+            saved, errors = form.save()
+            context['saved'] = saved
+            context['errors'] = errors
 
     return render(request, 'views/auto-cadastro-usuario.html', context)
 
@@ -83,32 +43,16 @@ def register(request):
 def recoverPassword(request):
     context = {}
 
+    form = ChangePasswordForm()
+
     if request.method == "POST":
-        cpf = unmask(request.POST.get('cpf'), '.-')
-        birth = request.POST.get('dataNascimento')
-        birthFinal = birth.split('-')
-        try:
-            birthFinal = datetime(int(birthFinal[0]), int(birthFinal[1]), int(birthFinal[2]))
-        except:
-            birthFinal = None
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            saved, errors = form.save()
+            context['saved'] = saved
+            context['errors'] = errors
 
-        errors = []
-        profile = Perfil.objects.filter(cpf = cpf, data_nascimento = birthFinal).first()
-        if not profile:
-            errors.append("CPF ou data de nascimento inválido.")
-        if password1 != password2:
-            errors.append("Senhas não conferem.")
-        if len(birth) != 10:
-            errors.append("Data de nascimento inválida.")
-
-        if len(errors) == 0:
-            profile.usuario.set_password(str(password1))
-            profile.usuario.save()
-            return redirect('loginPage')
-
-        context['errors'] = errors
+    context['form'] = form
     return render(request, 'views/recover-password.html', context)
 
 

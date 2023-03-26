@@ -38,14 +38,15 @@ def listNotifications(request):
 def readNotification(request, id):
     context = {}
 
+    notification = get_object_or_404(Notificacao, pk=id)
+
     # a notificação tem que ser do usuario
     if request.user.is_staff == False:
         profile = Perfil.objects.get(cpf = request.user.username)
-        notifications = get_object_or_404(Notificacao, pk=id)
-        if notifications.perfil != profile:
+        if notification.perfil != profile:
             return redirect('home-usuario')
 
-    notification = get_object_or_404(Notificacao, pk=id)
+    # só o adm setará como lido
     if request.user.is_staff and notification.lido == False:
         notification.lido = True
         notification.save()
