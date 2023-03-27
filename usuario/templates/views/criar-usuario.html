@@ -3,78 +3,44 @@
 {% block content %}
 {% load static %}
 
-<div class="row d-lg-block d-sm-none bg-dark text-light mb-3">
-    <h3 class="ps-5">Novo Usuário</h3>
-</div>
 
-<div class="row text-center">
-    <div class="col-sm-12 col-lg-6 offset-lg-3">
+<div class="row text-start">
+    <!-- form -->
+    <div class="col-sm-12 col-lg-4 offset-lg-2">
         <form method="post" autocomplete="off">
             {% csrf_token %}
-            <div class="row">
-                <div class="col-12">
-                    <!-- Usuario -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="username" maxlength="150" required autocapitalize="none" id="id_username" placeholder="Usuário" value="{{usuario.username}}">
-                        <label for="id_username">CPF:</label>
+            <div class="card rounded-4 sombra">
+                <div class="card-header">
+                    Cadastro de usuário
+                </div>
+                <div class="card-body">
+                    {{form}}  
+                </div>
+                <div class="card-footer text-end">
+                    <div class="mt-3">
+                        <a href="{% url 'listarusuarios' %}" class="btn btn-light rounded-pill">Cancelar</a>
+                        <button type="submit" class="btn btn-success rounded-pill">Salvar</button>
                     </div>
                 </div>
-                <div class="col-6">
-                    <!-- Senha -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="password1" required id="id_password1" placeholder="Senha" value="{{ senhaGerada }}">
-                        <label for="id_password1">Senha:</label>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <!-- Confirmar senha -->
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="password2" required id="id_password2" placeholder="Confirmar senha" value="{{ senhaGerada }}">
-                        <label for="id_password2">Confirmar senha:</label>
-                    </div>
-                </div>
-            </div>
-        
-            {{ formPerfil.as_p }}
+            </div>    
             
-            {% if formUsuario.errors %}
-                <div class="alert alert-danger">
-                    {{ formUsuario.errors }}
-                </div>
-            {% endif %}
-            {% if formPerfil.errors %}
-                <div class="alert alert-danger">
-                    {{ formPerfil.errors }}
-                </div>
-            {% endif %}
-            
-            <a href="{% url 'listarusuarios' %}" class="btn btn-light">Cancelar</a>
-            <button type="submit" class="btn btn-success">Salvar</button>
         </form>
     </div>
+
+    <!-- errors -->
+    <div class="col-sm-12 col-lg-4">
+        <div class="card rounded-4 sombra">
+            <div class="card-header">
+                Mensagens
+            </div>
+            <div class="card-body">
+                {% for error in errors %}
+                    <p>{{error}}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
-
-<script>
-    // alterar ordem dos labels
-    $('p label').each(function() {
-        $(this).insertAfter( $(this).next('input') );
-        $(this).insertAfter( $(this).next('select') );
-    });
-    
-    // trocar os elementos P por DIVS
-    $("p").each(function() {
-        $(this).replaceWith("<div class=\"form-floating mb-3\">" + $(this).html() + "</div>");
-    });
-
-    // configurações dos inputs
-    $('input').addClass('form-control')
-    $('input').each(function(){
-        $(this).attr('placeholder', 'placeholder');
-    })
-
-    // configurações dos selects
-    $('select').addClass('form-select')
-</script>
 
 <script src="{% static 'js/criar-usuario.js' %}"></script>
 

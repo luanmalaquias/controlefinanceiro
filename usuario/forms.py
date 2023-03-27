@@ -6,20 +6,53 @@ from django.contrib.auth.models import User
 from datetime import datetime
 from django.contrib.auth import authenticate, login, logout
 
-class PerfilForm(forms.ModelForm):
 
-    class Meta:
-        model = Perfil
-        fields = ('nome_completo', 'data_nascimento', 'telefone', 'imovel')
 
-    def ajustar_escolhas(self, perfil: Perfil = None):
-        if perfil and perfil.imovel:
-            _imoveis_filtrados = Imovel.objects.filter(id=perfil.imovel.id) | Imovel.objects.filter(disponibilidade = True)
-            _imovel_initial = Imovel.objects.filter(id=perfil.imovel.id)
+class PerfilForm(forms.Form):
+    cpf = forms.CharField(label_suffix=' *', required=True, max_length=14, min_length=14, widget=forms.TextInput(attrs={'placeholder': 'Cpf'}))
+    password1 = forms.CharField(label='Senha', label_suffix=' *',required=True, min_length=8, max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Senha'}))
+    password2 = forms.CharField(label='Confirmar senha', label_suffix=' *', required=True, min_length=8, max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Repita a senha'}))
+    fullName = forms.CharField(label='Nome completo', label_suffix=' *', required=True, min_length=4, max_length=80, widget=forms.TextInput(attrs={'placeholder': 'Nome completo'}))
+    phone = forms.CharField(label='Telefone', label_suffix=' *', required=True, min_length=16, max_length=16, widget=forms.TextInput(attrs={'placeholder': 'Telefone para contato'}))
+    birth = forms.DateField(label='Data de nascimento', label_suffix=' *', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    _availableProperties = Imovel.objects.filter(disponibilidade = True)
+    _choices = [(None, 'Sem imóvel')] + [(i.id, i) for i in _availableProperties]
+    property = forms.ChoiceField(choices=_choices, label='Imóvel', label_suffix='', required=False)
+    dateEntryProperty = forms.DateField(label='Data de entrada no imovel', required=False, label_suffix='', widget=forms.DateInput(attrs={'type': 'date'}))
+
+    def save(self):
+        saved = False
+        errors = []
+
+        cpf = unmask(self.cleaned_data['cpf'], '.-')
+        password1 = self.cleaned_data['password1']
+        password2 = self.cleaned_data['password2']
+        fullname = self.cleaned_data['fullName']
+        phone = unmask(self.cleaned_data['phone'], '() -')
+        birth = self.cleaned_data['birth']
+        property = self.cleaned_data['property']
+        dateEntryProperty = self.cleaned_data['dateEntryProperty']
+
+        if User.objects.filter(username = cpf).exists():
+            errors.append("CPF já cadastrado no sistema.")
+        if not cpfIsValid(cpf):
+            errors.append("CPF informado não é valido.")
+        if password1 != password2:
+            errors.append("Senhas não conferem.")
+
+        if not errors:
+            user = User.objects.create_user(username=cpf, password=password1)
+            if property:
+                propertyDB = Imovel.objects.get(id = property)
+            else:
+                propertyDB = None
+            Perfil.objects.create(usuario=user, cpf=cpf, nome_completo=fullname, data_nascimento=birth, telefone=phone, imovel=propertyDB, data_entrada_imovel=dateEntryProperty)
+            saved = True
         else:
-            _imoveis_filtrados = Imovel.objects.filter(disponibilidade = True)
-            _imovel_initial = None
-        self.fields['imovel'] = forms.ModelChoiceField(queryset=_imoveis_filtrados, initial=_imovel_initial, required=False)
+            saved = False
+
+        return saved, errors
+            
 
 
 class LoginForm(forms.Form):
@@ -43,13 +76,14 @@ class LoginForm(forms.Form):
         return result, user, errors
 
 
+
 class AutoCadastroForm(forms.Form):
     cpf = forms.CharField(label_suffix='', required=True, max_length=14, min_length=14, widget=forms.TextInput(attrs={'placeholder': 'Cpf'}))
     password1 = forms.CharField(label='Senha', label_suffix='',required=True, min_length=8, max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Senha'}))
     password2 = forms.CharField(label='Confirmar senha', label_suffix='', required=True, min_length=8, max_length=20, widget=forms.TextInput(attrs={'placeholder': 'Repita a senha'}))
     fullName = forms.CharField(label='Nome completo', label_suffix='', required=True, min_length=4, max_length=80, widget=forms.TextInput(attrs={'placeholder': 'Nome completo'}))
     phone = forms.CharField(label='Telefone', label_suffix='', required=True, min_length=16, max_length=16, widget=forms.TextInput(attrs={'placeholder': 'Telefone para contato'}))
-    birth = forms.DateField(label='Data de nascimento', label_suffix='', widget=forms.DateInput(attrs={'type': 'date'}))
+    birth = forms.DateField(label='Data de nascimento', required=True, label_suffix='', widget=forms.DateInput(attrs={'type': 'date'}))
 
     def save(self):
         saved = False
@@ -81,6 +115,7 @@ class AutoCadastroForm(forms.Form):
             saved = False
 
         return saved, errors
+
 
 
 class ChangePasswordForm(forms.Form):
@@ -120,12 +155,16 @@ class ChangePasswordForm(forms.Form):
         return saved, errors
 
 
-class IncluirNoImovelForm(forms.ModelForm):
-    class Meta:
-        model = Perfil
-        fields = ('imovel',)
 
-    def ajustar_escolhas(self):
-        _imoveis_filtrados = Imovel.objects.filter(disponibilidade = True)
-        _imovel_initial = None
-        self.fields['imovel'] = forms.ModelChoiceField(queryset=_imoveis_filtrados, initial=_imovel_initial)
+class IncluirNoImovelForm(forms.Form):
+    _availableProperties = Imovel.objects.filter(disponibilidade = True)
+    _choices = ((i.id, i) for i in _availableProperties)
+    property = forms.ChoiceField(choices=_choices, label='Imóveis', label_suffix='', required=True)
+
+    def save(self, profile: Perfil):        
+        property = Imovel.objects.get(id = self.cleaned_data['property'])
+        property.disponibilidade = False
+        profile.imovel = property
+
+        property.save()
+        profile.save()

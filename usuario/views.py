@@ -61,42 +61,19 @@ def recoverPassword(request):
 def createUser(request):
     context = {}
 
-    context['senhaGerada'] = generatePassword(0)
+    generatedPassword = generatePassword(0)
+    form = PerfilForm(initial={'password1':generatedPassword, 'password2':generatedPassword})
 
     if request.method == 'POST':
-        userForm = UserCreationForm(request.POST)  
-        profileForm = PerfilForm(request.POST)
+        form = PerfilForm(request.POST)
 
-        if userForm.is_valid() and profileForm.is_valid():
-            user = userForm.save(commit=False)
-            user.username = unmask(user.username, '-.,')
-            
-            # igualar login do usuario com o cpf do perfil
-            profile = profileForm.save(commit=False)
-            profile.telefone = unmask(profile.telefone, ' ()-')
-            profile.cpf = user.username
-            profile.usuario = user
+        if form.is_valid():
+            saved, errors = form.save()
+            context['errors'] = errors
+            if saved:
+                return redirect('listarusuarios')
 
-            # alterar disponibilidade do imovel
-            if profile.imovel:
-                property = Imovel.objects.get(id = profile.imovel.id)
-                property.alterarDisponibilidade(False)
-
-            try:
-                user.save()
-                profile.save()
-            except:
-                raise Exception
-
-            return redirect('listarusuarios')        
-
-    else:
-        userForm = UserCreationForm()
-        profileForm = PerfilForm()
-        profileForm.ajustar_escolhas()
-
-    context['formUsuario'] = userForm
-    context['formPerfil'] = profileForm
+    context['form'] = form
 
     return render(request, 'views/criar-usuario.html', context)
 
@@ -250,17 +227,14 @@ def includeInProperty(request, id):
     context = {}
 
     profile = get_object_or_404(Perfil,pk=id)
+    form = IncluirNoImovelForm()
 
     if request.method == 'POST':
-        form = IncluirNoImovelForm(request.POST, instance=profile)
-        form.ajustar_escolhas()
+        form = IncluirNoImovelForm(request.POST)
+
         if form.is_valid():
-            profile.imovel.alterarDisponibilidade(False)
-            form.save()
+            form.save(profile)
             return redirect('listarusuarios')
-    else:
-        form = IncluirNoImovelForm(instance=profile)
-        form.ajustar_escolhas()
 
     context['perfil'] = profile
     context['form'] = form
