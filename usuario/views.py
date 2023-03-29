@@ -6,13 +6,12 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Imovel
 from usuario.models import Perfil
 from pagamento.models import Pagamento
-from .forms import PerfilForm, ChangePasswordForm, IncluirNoImovelForm, AutoCadastroForm
-from utils.scripts import generatePassword, unmask, cpfIsValid
+from .forms import *
+from utils.scripts import generatePassword, porcentagem
 from django.shortcuts import get_object_or_404
 from notificacao.models import Notificacao
 from django.db.models import Q
 from datetime import datetime, date
-from utils.scripts import unmask, porcentagem
 from utils import pixcodegen
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
@@ -132,41 +131,17 @@ def listUsersWithoutProperty(request):
 def updateProfile(request, id):
     context = {}
 
-    properties = Imovel.objects.all()
-    hasProperty = True if len(properties) > 0 else False
-
     profile = get_object_or_404(Perfil, pk=id,)
-    profileForm = PerfilForm(instance=profile)
+    form = UpdateProfileForm(profile=profile)
 
     if request.method == 'POST':
-        profileForm = PerfilForm(request.POST, instance=profile)
-        if profileForm.is_valid():
-
-            # check this
-            # alterar disponibilidade do imovel
-            try:
-                profileBefore = Perfil.objects.get(id = id)
-                propertyBefore = Imovel.objects.get(id = profileBefore.imovel.id)
-                propertyBefore.alterarDisponibilidade(True)
-            except:
-                # usuario sem imovel antes da atualização
-                pass
-
-            if profile.imovel:
-                profile.atualizar_data_entrada_imovel()
-                property = Imovel.objects.get(id = profile.imovel.id)
-                property.alterarDisponibilidade(False)
-
-            profile = profileForm.save()
+        form = UpdateProfileForm(request=request.POST)
+        saved = form.save(profile)
+        if saved:
             return redirect('listarusuarios')
-        
-    else:
-        profileForm = PerfilForm(instance = profile)
-        profileForm.ajustar_escolhas(profile)
 
-    context['tem_imoveis'] = hasProperty
     context['perfil'] = profile
-    context['formPerfil'] = profileForm
+    context['form'] = form
     
     return render(request, 'views/editar-perfil.html', context)
 
@@ -178,20 +153,17 @@ def updateUser(request, id):
 
     profile = get_object_or_404(Perfil, pk=id)
     user = get_object_or_404(User, pk=profile.usuario.id)
+    form = UpdatePasswordForm(user=user)
 
     if request.method == 'POST':
-        userForm = UserCreationForm(request.POST, instance=user)
-        if userForm.is_valid():
-            user = userForm.save()
+        userForm = UpdatePasswordForm(request=request.POST)
+        saved, errors = userForm.save(user=user)
+        context['errors'] = errors
+        if saved:
             return redirect('listarusuarios')
-    
-    else:
-        userForm = UserCreationForm(instance = user)
 
-    context['formUsuario'] = userForm
-    context['usuario'] = user
+    context['form'] = form
     context['perfil'] = profile
-    context['senhaGerada'] = generatePassword(2)
     return render(request, 'views/editar-usuario.html', context)
 
 

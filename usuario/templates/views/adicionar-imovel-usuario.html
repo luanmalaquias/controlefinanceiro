@@ -7,15 +7,21 @@
     <h3 class="ps-5">Adicionar imóvel ao usuario {{perfil}}</h3>
 </div>
 
-<div class="row text-center">
-    <div class="col-sm-12 col-lg-6 offset-lg-3">
+<div class="row text-start">
+    <div class="col-sm-12 col-lg-4 offset-lg-4">
         <form method="post" autocomplete="off">
-            {% csrf_token %}
-            {{ form }}
-
-            <div class="mt-3">
-                <a href="{% url 'listarusuarios' %}" class="btn btn-light">Cancelar</a>
-                <button type="submit" class="btn btn-success"><strong>Salvar</strong></button>
+            <div class="card">
+                <div class="card-header">Adicionar ao imóvel</div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    {{ form }}
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{% url 'listarusuarios' %}" class="btn btn-light rounded-pill">Cancelar</a>
+                    <button type="submit" class="btn btn-success rounded-pill">
+                        <strong>Salvar</strong>
+                    </button>
+                </div>
             </div>
         </form>
     </div>

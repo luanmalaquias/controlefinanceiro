@@ -1,46 +1,42 @@
 {% extends 'base.html' %}
 {% block title %}Alterar Senha{% endblock %}
 {% block content %}
+{% load static %}
 
 
-<div class="row d-lg-block d-sm-none bg-dark text-light mb-3">
-    <h3 class="ps-5">Alterar senha de {{perfil}}</h3>
+<div class="row d-lg-block d-sm-none bg-primary text-light mb-3">
+    <h3 class="ps-5">{{perfil}}</h3>
 </div>
 
-<div class="row text-center">
-    <div class="col-sm-12 col-lg-6 offset-lg-3">
+<div class="row text-start">
+    <div class="col-sm-12 col-lg-4 offset-lg-2">
         <form method="post" autocomplete="off">
-            {% csrf_token %}
-            <!-- Usuario -->
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control text-muted" name="username" id="id_username" placeholder="Usuário" value="{{usuario.username}}" readonly>
-                <label for="id_username">CPF:</label>
-            </div>
-        
-            <!-- Senha -->
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="password1" required id="id_password1" placeholder="Senha"
-                    value="{{ senhaGerada }}">
-                <label for="id_password1">Nova senha:</label>
-            </div>
-        
-            <!-- Confirmar senha -->
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="password2" required id="id_password2"
-                    placeholder="Confirmar senha" value="{{ senhaGerada }}">
-                <label for="id_password2">Confirmar nova senha:</label>
-            </div>
-        
-            {% if formUsuario.errors %}
-                <div class="alert alert-danger">
-                    {{ formUsuario.errors }}
+            <div class="card rounded-4 sombra">
+                <div class="card-header">Atualizar senha</div>
+                <div class="card-body">
+                    {% csrf_token %}
+                    {{form}} 
                 </div>
-            {% endif %}
-                
-            <a href="{% url 'listarusuarios' %}" class="btn btn-light">Cancelar</a>
-            <button type="submit" class="btn btn-success">Salvar</button>
+                <div class="card-footer text-end">
+                    <a href="{% url 'listarusuarios' %}" class="btn btn-light rounded-pill">Cancelar</a>
+                    <button type="submit" class="btn btn-primary rounded-pill">Salvar</button>
+                </div>
+            </div>
         </form>
     </div>
+    <div class="col-sm-12 col-lg-4">
+        <div class="card rounded-4 sombra">
+            <div class="card-header">Mensagens</div>
+            <div class="card-body">
+                {% for error in errors %}
+                    {{error}}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
+
+<script src="{% static 'js/update-password.js' %}"></script>
+<script src="{% static 'js/bootstrap-inputs.js' %}"></script>
 
 {% endblock %}

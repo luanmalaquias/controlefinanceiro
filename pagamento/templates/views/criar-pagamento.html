@@ -4,7 +4,7 @@
 {% load static %}
 
 
-<div class="row d-sm-none d-lg-block bg-dark text-light mb-3">
+<div class="row d-sm-none d-lg-block bg-primary text-light mb-3">
     {% if pagamento %}
     <h3 class="ps-5">Editar pagamento</h3>
     {% else %}
@@ -12,31 +12,35 @@
     {% endif %}
 </div>
 
-<div class="row text-center">
-    <div class="col-sm-12 col-lg-6 offset-lg-3">
+<div class="row text-start">
+    <div class="col-sm-12 col-lg-4 offset-lg-2">
         <form method="post" autocomplete="off">
-            {% csrf_token %}
-            {{form.as_p}}
-            
-            {% if errop %}
-                <div class="alert alert-danger">
-                    Já existe um pagamento para este mês deste usuário.
+            <div class="card rounded-4 sombra">
+                <div class="card-header">Cadastro de pagamento</div>
+                <div class="card-body"> 
+                    {% csrf_token %}
+                    {{form}}
                 </div>
-            {% endif %}
-
-            {% if not temPerfis %}
-                <div class="alert alert-danger">
-                    <p>Atenção!</p>
-                    <p>Não existem usuários cadastrados no sistema. Por favor, cadastre ao menos um usuário. <a href="{% url 'cadastrarusuario' %}">Cadastrar usuário</a></p>
+                <div class="card-footer text-end">
+                    <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="btn btn-light rounded-pill">Cancelar</a>
+                    <button type="submit" class="btn btn-primary rounded-pill">Salvar</button>
                 </div>
-            {% endif %}
-
-            <a href="{% url 'listar-pagamentos-por-usuarios' %}" class="btn btn-light">Cancelar</a>
-            <button type="submit" class="btn btn-success {{ temPerfis|yesno:',disabled' }}">Salvar</button>
+            </div>          
         </form>
+    </div>
+    <div class="col-sm-12 col-lg-4">
+        <div class="card rounded-4 sombra">
+            <div class="card-header">Mensagens</div>
+            <div class="card-body"> 
+                {% for error in errors %}
+                    {{error}}
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 
+<script src="{% static 'js/create-payment.js' %}"></script>
 <script src="{% static 'js/bootstrap-inputs.js' %}"></script>
 
 {% endblock %}

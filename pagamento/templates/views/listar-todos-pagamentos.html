@@ -77,7 +77,7 @@
                             <i class="bi bi-gear-fill"></i>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" onclick="criar_pagamento('{{pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a></li>
+                            <li><a class="dropdown-item" onclick="editPayment('{{pagamento.id}}')"><i class="bi bi-pencil-fill"></i> Editar pagamento</a></li>
                             <!-- Button trigger modal -->
                             <li><a class="dropdown-item bg-danger text-white" data-bs-toggle="modal" data-bs-target="#staticBackdrop{{pagamento.id}}" href=""><i class="bi bi-trash-fill"></i> Deletar</a></li>
                         </ul>
@@ -109,6 +109,12 @@
         </tbody>
     </table>
 </div>
+
+<script>    
+    function editPayment(id){
+        window.location.href = `/payment/update/${id}/listar-todos-os-pagamentos/None`
+    }
+</script>
 
 <script src="{% static 'js/listar-todos-pagamentos.js' %}"></script>
 

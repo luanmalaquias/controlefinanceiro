@@ -20,6 +20,8 @@ class PerfilForm(forms.Form):
     property = forms.ChoiceField(choices=_choices, label='Imóvel', label_suffix='', required=False)
     dateEntryProperty = forms.DateField(label='Data de entrada no imovel', required=False, label_suffix='', widget=forms.DateInput(attrs={'type': 'date'}))
 
+    
+
     def save(self):
         saved = False
         errors = []
@@ -43,7 +45,7 @@ class PerfilForm(forms.Form):
         if not errors:
             user = User.objects.create_user(username=cpf, password=password1)
             if property:
-                propertyDB = Imovel.objects.get(id = property)
+                propertyDB = property.objects.get(id = property)
             else:
                 propertyDB = None
             Perfil.objects.create(usuario=user, cpf=cpf, nome_completo=fullname, data_nascimento=birth, telefone=phone, imovel=propertyDB, data_entrada_imovel=dateEntryProperty)
@@ -52,7 +54,82 @@ class PerfilForm(forms.Form):
             saved = False
 
         return saved, errors
-            
+
+
+
+class UpdateProfileForm(forms.Form):
+    fullName = forms.CharField(label='Nome completo', label_suffix=' *', required=True, min_length=4, max_length=80, widget=forms.TextInput(attrs={'placeholder': 'Nome completo'}))
+    phone = forms.CharField(label='Telefone', label_suffix=' *', required=True, min_length=16, max_length=16, widget=forms.TextInput(attrs={'placeholder': 'Telefone para contato'}))
+    birth = forms.DateField(label='Data de nascimento', label_suffix=' *', required=True, widget=forms.DateInput(attrs={'type': 'date'}))
+    dateEntryProperty = forms.DateField(label='Data de entrada no imovel', required=False, label_suffix='', widget=forms.DateInput(attrs={'type': 'date'}))
+
+    def __init__(self, request=None, profile:Perfil=None, *args, **kwargs):
+        super(UpdateProfileForm, self).__init__()
+        if request:
+            self.fields['fullName'].initial = request['fullName']
+            self.fields['phone'].initial = request['phone']
+            self.fields['birth'].initial = request['birth']
+            self.fields['dateEntryProperty'].initial = request['dateEntryProperty']
+
+        if profile:
+            self.fields['fullName'].initial = profile.nome_completo
+            self.fields['phone'].initial = profile.telefone
+            if profile.data_nascimento:
+                self.fields['birth'].initial = profile.data_nascimento.strftime("%Y-%m-%d")
+            if profile.data_entrada_imovel:
+                self.fields['dateEntryProperty'].initial = profile.data_entrada_imovel.strftime("%Y-%m-%d")
+
+    def save(self, profile:Perfil):
+        saved = False
+
+        profileDB = Perfil.objects.get(id = profile.id)
+        profileDB.nome_completo = self['fullName'].value()
+        profileDB.telefone = self['phone'].value()
+        profileDB.data_nascimento = self['birth'].value()
+
+        try:
+            profileDB.save()
+            saved = True
+        except:
+            saved = False
+        return saved
+
+
+
+class UpdatePasswordForm(forms.Form):
+    cpf = forms.CharField(label_suffix=' *', required=True, max_length=14, min_length=14, widget=forms.TextInput(attrs={'readonly':True, 'placeholder': 'Cpf'}))
+    password1 = forms.CharField(label='Senha', label_suffix=' *',required=True, min_length=8, max_length=20, widget=forms.PasswordInput(attrs={'placeholder': 'Senha'}))
+    password2 = forms.CharField(label='Confirmar senha', label_suffix=' *', required=True, min_length=8, max_length=20, widget=forms.PasswordInput(attrs={'placeholder': 'Repita a senha'}))
+
+    def __init__(self, request=None, user:User=None, *args, **kwargs):
+        super(UpdatePasswordForm, self).__init__()
+        if request:
+            print(request)
+            self.fields['cpf'].initial = request['cpf']
+            self.fields['password1'].initial = request['password1']
+            self.fields['password2'].initial = request['password2']
+        if user:
+            self.fields['cpf'].initial = user.username
+
+    def save(self, user:User):
+        saved = False
+        errors = []
+
+        password1 = self['password1'].value()
+        password2 = self['password2'].value()
+
+        if password1 != password2:
+            errors.append("Senhas não conferem")
+
+        if not errors:
+            user.set_password(password1)
+            user.save()
+            saved = True
+        else:
+            saved = False
+
+        return saved, errors
+
 
 
 class LoginForm(forms.Form):
@@ -165,6 +242,7 @@ class IncluirNoImovelForm(forms.Form):
         property = Imovel.objects.get(id = self.cleaned_data['property'])
         property.disponibilidade = False
         profile.imovel = property
+        profile.data_entrada_imovel = datetime.now()
 
         property.save()
         profile.save()

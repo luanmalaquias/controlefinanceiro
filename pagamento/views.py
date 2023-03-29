@@ -85,34 +85,16 @@ def createPayment(request):
     context = {}
 
     form = PagamentoForm()
-    context['form'] = form
-
-    profiles = Perfil.objects.all()
 
     if request.method == 'POST':
         form = PagamentoForm(request.POST)
         if form.is_valid():
-            payment = form.save(commit=False)
+            saved, errors = form.save()
+            context['errors'] = errors
+            if saved:
+                return redirect('listar-todos-os-pagamentos')
             
-            # Não permitir mais de um pagamento para o mesmo mês
-            userPayments = Pagamento.objects.filter(perfil=payment.perfil)
-            thisMonthPayment = False
-            for p in userPayments:
-                if p.data.month == payment.data.month :
-                    thisMonthPayment = True
-                    if p.status == "A":
-                        p.status = "P"
-                        p.save()
-                    break
-            
-            if thisMonthPayment:
-                context['errop'] = True
-                context['form'] = form
-            else:
-                payment.save()
-                return redirect('listar-pagamentos-por-usuarios')
-
-    context['temPerfis'] = True if len(profiles) > 0 else False
+    context['form'] = form
     return render(request, 'views/criar-pagamento.html', context)
 
 
@@ -155,27 +137,20 @@ def updatePayment(request, id, pagina:str, data:str = 'None'):
     context = {}
 
     payment = get_object_or_404(Pagamento, pk=id)
-    # hora com timezone local
-    dateTime = datetime(payment.data.year, payment.data.month, payment.data.day, payment.data.hour-3, payment.data.minute)
-    payment.data = dateTime.strftime("%Y-%m-%dT%H:%M")
-
-    form = PagamentoForm(instance = payment)
-    profiles = Perfil.objects.all()
+    form = PagamentoForm(payment=payment)
 
     if request.method == 'POST':
-        form = PagamentoForm(request.POST, instance=payment)
-        if form.is_valid():
-            form.save()
+        form = PagamentoForm(request=request.POST)
+        saved, errors = form.update(payment=payment)
+        context['errors'] = errors
+        if saved:
             if data=='None':
                 return redirect(pagina)
             else:
                 return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)
-        else:
-            print(form.errors)
 
     context['pagamento'] = payment
     context['form'] = form
-    context['temPerfis'] = True if len(profiles) > 0 else False
     return render(request, 'views/criar-pagamento.html', context)
 
 

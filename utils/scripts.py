@@ -61,6 +61,13 @@ def unmask(target: any, chars: str) -> str:
         target = target.replace(char, '')
     return target
 
+def unmaskMoney(target: str) -> str:
+    """Retira a máscara money \nEx: 1.234,99 -> 1234"""
+    if ',' in target:
+        target = target.split(',')[0]
+    target = unmask(target, '.')
+    return target
+
 def gerarDados(quantidade:int) -> None:
     from django.contrib.auth.models import User
     from usuario.models import Perfil

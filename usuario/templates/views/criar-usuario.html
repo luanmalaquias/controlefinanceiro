@@ -3,6 +3,13 @@
 {% block content %}
 {% load static %}
 
+<div class="row d-lg-block d-sm-none bg-primary-subtle text-primary mb-3">
+    {% if usuario %}
+    <h3 class="ps-5">Editar {{ usuario }}</h3>
+    {% else %}
+    <h3 class="ps-5">Novo Usuário</h3>
+    {% endif %}
+</div>
 
 <div class="row text-start">
     <!-- form -->
@@ -17,10 +24,10 @@
                     {{form}}  
                 </div>
                 <div class="card-footer text-end">
-                    <div class="mt-3">
-                        <a href="{% url 'listarusuarios' %}" class="btn btn-light rounded-pill">Cancelar</a>
-                        <button type="submit" class="btn btn-success rounded-pill">Salvar</button>
-                    </div>
+                    <a href="{% url 'listarusuarios' %}" class="btn btn-light rounded-pill">Cancelar</a>
+                    <button type="submit" class="btn btn-primary rounded-pill">
+                        <strong>Salvar</strong>
+                    </button>
                 </div>
             </div>    
             

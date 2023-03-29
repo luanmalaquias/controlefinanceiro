@@ -77,16 +77,16 @@ def homeRealEstate(request):
 @staff_member_required
 def createProperty(request):
     context = {}
+    form = ImovelForm()
+
     if request.method == 'POST':
-        formProperty = ImovelForm(request.POST)
-        if formProperty.is_valid():
-            property = formProperty.save(commit=False)
-            property.mensalidade = unmask(property.mensalidade, '.,')
-            property.save()
+        form = ImovelForm(request.POST)
+
+        if form.is_valid():
+            form.save()
             return redirect('listarimoveis')
-    else:
-        formProperty = ImovelForm()
-    context['formImovel'] = formProperty
+        
+    context['form'] = form
     return render(request, 'views/criar-imovel.html', context)
 
 
@@ -117,7 +117,7 @@ def readProperty(request, id):
         if id != profile.imovel.id:
             return redirect('read-property', profile.imovel.id)
 
-    property = get_object_or_404(Imovel, pk=id)
+    property = get_object_or_404(property, pk=id)
     tenant = Perfil.objects.filter(imovel = property)
     tenant = tenant[0] if len(tenant) > 0 else None
     payments = []
@@ -145,17 +145,15 @@ def updateProperty(request, id):
     context = {}
 
     property = get_object_or_404(Imovel, pk=id)
-    formProperty = ImovelForm(instance=property)
+    form = ImovelForm(property=property)
 
     if request.method == 'POST':
-        formProperty = ImovelForm(request.POST, instance=property)
-        if formProperty.is_valid():
-            property = formProperty.save(commit=False)
-            property.mensalidade = unmask(property.mensalidade, '.,')
-            property.save()
+        form = ImovelForm(request=request.POST)
+        saved = form.update(property)
+        if saved:
             return redirect('listarimoveis')
         
-    context['formImovel'] = formProperty
+    context['form'] = form
     context['imovel'] = property
         
     return render(request, 'views/criar-imovel.html', context)

@@ -12,21 +12,25 @@
 </div>
 
 <div class="row text-center">
-    <div class="col-sm-12 col-lg-6 offset-lg-3">
+    <div class="col-sm-12 col-lg-4 offset-lg-4">
         <form method="post" autocomplete="off">
-            {% csrf_token %}
-            {{ formPerfil.as_p }}
-            {% if formPerfil.errors %}
-                <div class="alert alert-danger">
-                    {{ formPerfil.errors }}
+            <div class="card text-start rounded-4 sombra">
+                <div class="card-header">
+                    Atualizar dados usuário
                 </div>
-            {% endif %}
-            <a href="{% url 'listarusuarios' %}" class="btn btn-light">Cancelar</a>
-            <button type="submit" class="btn btn-success">Salvar</button>
+                <div class="card-body">
+                    {% csrf_token %}
+                    {{ form }}
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{% url 'listarusuarios' %}" class="btn btn-light rounded-pill">Cancelar</a>
+                    <button type="submit" class="btn btn-primary rounded-pill">Salvar</button>
+                </div>
+            </div>
         </form>
     </div>
 </div>
 
-<script src="{% static 'js/bootstrap-inputs.js' %}"></script>
+<script src="{% static 'js/edit-profile.js' %}"></script>
 
 {% endblock %}
