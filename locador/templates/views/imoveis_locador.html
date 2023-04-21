@@ -1,0 +1,142 @@
+{% extends 'base_locador.html' %}
+{% block base_locador %}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <a class="btn btn-outline-orange fw-bold text-orange" href="{% url 'cadastro_imovel_view' %}">Novo +</a>
+        <div>
+            <form>
+                <input type="text" class="form-control" placeholder="Pesquisar" name="busca">
+            </form>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive-lg">
+            <table class="table mt-3 text-center table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            <a class="nav-link" href="{% if order_by != 'id' %} ?order_by=id {% else %} ?order_by=-id {% endif %}">
+                                ID
+                                <i class="bi bi-arrow-down-up"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="nav-link" href="{% if order_by != 'nome' %} ?order_by=nome {% else %} ?order_by=-nome {% endif %}">
+                                Nome
+                                <i class="bi bi-arrow-down-up"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="nav-link" href="{% if order_by != 'endereco' %} ?order_by=endereco {% else %} ?order_by=-endereco {% endif %}">
+                                Endereço
+                                <i class="bi bi-arrow-down-up"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="nav-link" href="{% if order_by != 'mensalidade' %} ?order_by=mensalidade {% else %} ?order_by=-mensalidade {% endif %}">
+                                Mensalidade
+                                <i class="bi bi-arrow-down-up"></i>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="nav-link" href="{% if order_by != 'disponivel' %} ?order_by=disponivel {% else %} ?order_by=-disponivel {% endif %}">
+                                Disponível
+                                <i class="bi bi-arrow-down-up"></i>
+                            </a>
+                        </th>
+                        <th>Opções</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for imovel in imoveis %}
+                    <tr>
+                        <td>{{imovel.id}}</td>
+                        <td><a class="text-dark" href="{% url 'ler_imovel_view' imovel.id %}">{{imovel.nome}}</a></td>
+                        <td>{{imovel.endereco}}, {{imovel.numero}}</td>
+                        <td>{{imovel.mensalidade}}</td>
+                        <td>
+                            {% if imovel.disponivel %}
+                            <span class="badge bg-success">Sim</span>
+                            {% else %}
+                            <span class="badge bg-danger">Não</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <a class="text-dark" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-gear"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{% url 'atualizar_imovel_view' imovel.id %}"><i class="bi bi-pen me-3"></i>Atualizar</a></li>
+                                    <li>
+                                        {% if imovel.disponivel %}
+                                        <a class="dropdown-item" href="{% url 'inquilino_ao_imovel_view' tipo='imovel' id=imovel.id %}"><i class="bi bi-person-up me-3"></i>Adicionar inquilino</a>
+                                        {% else %}
+                                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#modalRemoverInquilino{{imovel.id}}">
+                                            <i class="bi bi-person-down me-3"></i>
+                                            Remover inquilino
+                                        </button>
+                                        {% endif %}
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#modalDeletarImovel{{imovel.id}}">
+                                            <i class="bi bi-trash me-3"></i>
+                                            Deletar
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+    
+                    <!-- Modal -->
+                    <div class="modal fade" id="modalRemoverInquilino{{imovel.id}}" tabindex="-1" aria-labelledby="modalRemoverInquilinoLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="modalRemoverInquilinoLabel">Atenção</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Remover inquilino do imovel {{imovel.nome}} ? <br>
+                                Esta ação não será revertida.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <a class="btn btn-danger" href="{% url 'remover_inquilino_do_imovel_view' tipo='imovel' id=imovel.id %}">Remover</a>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- Modal -->
+                    <div class="modal fade" id="modalDeletarImovel{{imovel.id}}" tabindex="-1" aria-labelledby="modalDeletarImovelLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="modalDeletarImovelLabel">Atenção</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Deletar {{imovel.nome}} ? <br>
+                                Esta ação não será revertida.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <a class="btn btn-danger" href="{% url 'deletar_imovel_view' imovel.id %}">Deletar</a>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+  
+
+
+{% endblock %}

@@ -1,0 +1,12 @@
+body {
+    height: 100%;
+    background-color: #04202e;
+}
+
+.bg-image{
+    background-image: url("../imgs/casas.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: repeat;
+    filter: brightness(50%) contrast(70%);
+}

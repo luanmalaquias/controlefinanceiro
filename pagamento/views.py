@@ -1,173 +1,38 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import get_object_or_404
-from .models import Pagamento
-from usuario.models import Perfil
-from datetime import datetime
-from .forms import PagamentoForm
-from .models import Pagamento
+from django.urls import reverse
+from locatario.models import Locatario
+from django.utils import timezone
+from datetime import datetime, date
+import calendar
+from pagamento.models import PagamentoImovel
+from django.db.models import Q
 
-# Create your views here.
+def criar_pagamento_rapido_view(request, id_locatario, mes_referencia=None):
+    if not mes_referencia or mes_referencia == 'None':
+        mes_referencia = timezone.now()
+    else:
+        mes_referencia = datetime.strptime(mes_referencia, '%Y-%m').date()
 
-@login_required
-@staff_member_required
-def monthlyDebtors(request, dataParam=None):
-    context = {}
-
-    # get objects
-    pagamentos = Pagamento.objects.all().order_by('-status', '-data')
-    perfis = Perfil.objects.all().order_by('imovel')
-
-    # para referencia no calendario
-    data_atual = datetime.now()
+    locatario = Locatario.objects.get(pk=id_locatario)
+    inicio_mes = date(timezone.now().year, timezone.now().month, 1)
+    fim_mes = date(timezone.now().year, timezone.now().month, calendar.monthrange(timezone.now().year, timezone.now().month)[1])
+    pagamento_deste_mes = PagamentoImovel.objects.filter(locatario=locatario).filter(Q(data__gte=inicio_mes, data__lte=fim_mes)).first()
+    if pagamento_deste_mes:
+        if pagamento_deste_mes.status == 'N' or pagamento_deste_mes.status == 'A':
+            pagamento_deste_mes.status = 'P' 
+            pagamento_deste_mes.save()
+            return redirect(f'/locador/devedores/?mes_referencia={mes_referencia.strftime("%Y-%m")}')
+    mes_referencia_new = date(mes_referencia.year, mes_referencia.month, timezone.now().day)
+    PagamentoImovel.objects.create(locatario=locatario, imovel=locatario.imovel, valor=float(locatario.imovel.mensalidade.replace(',','.')), data=mes_referencia_new, status='P')
     
-    # mudar a data
-    if request.method == 'GET' or dataParam:
-        data = None
-        if request.GET.get('data'):
-            data = (request.GET.get('data')).split('-')
-        elif dataParam:
-            data = dataParam.split('-')
-        if data:
-            mes_vigente = datetime(year=int(data[0]), month=int(data[1]), day=1)
-            data_atual = mes_vigente
-
-    # criar novos itens com os valores juntos
-    pagamentosDesteMes = []
-    for perfil in perfis:
-        encontrado = False
-        if not perfil.imovel:
-            continue
-        for pagamento in pagamentos:
-            if pagamento.perfil == perfil and pagamento.data.month == data_atual.month and pagamento.data.year == data_atual.year:
-                pagamentosDesteMes.append({'perfil':perfil, 'pagamento':pagamento})
-                encontrado = True
-                break
-        if not encontrado:
-            pagamentosDesteMes.append({'perfil':perfil, 'pagamento':Pagamento(perfil=perfil, status="N")})
-    
-    # ordenação
-    pagamentosDesteMes.sort(key=_orderList)
-
-    context['data_atual'] = data_atual
-    context['pagamentosDesteMes'] = pagamentosDesteMes
-
-    return render(request, 'views/listar-pagamentos.html', context)
+    return redirect(f'/locador/devedores/?mes_referencia={mes_referencia.strftime("%Y-%m")}')
 
 
-@login_required
-@staff_member_required
-def listPayments(request):
-    context = {}
+def deletar_pagamento_rapido_view(request, id_locatario, mes_referencia=None):
+    if not mes_referencia or mes_referencia == 'None':
+        mes_referencia = timezone.now()
+    else:
+        mes_referencia = datetime.strptime(mes_referencia, '%Y-%m').date()
 
-    pagamentos = Pagamento.objects.all().order_by('-data').order_by('-status', '-data')
-
-    if request.method == "GET":
-        busca = request.GET.get('busca')
-        if busca != None and busca != '':
-            perfis = Perfil.objects.filter(nome_completo__contains = busca)
-            if len(perfis)>0:
-                pagamentos = Pagamento.objects.filter(perfil=perfis[0])
-            else:
-                pagamentos = []
-
-
-    context['pagamentos'] = pagamentos
-
-    return render(request, 'views/listar-todos-pagamentos.html', context)
-
-
-@login_required
-@staff_member_required
-def createPayment(request):
-    context = {}
-
-    form = PagamentoForm()
-
-    if request.method == 'POST':
-        form = PagamentoForm(request.POST)
-        if form.is_valid():
-            saved, errors = form.save()
-            context['errors'] = errors
-            if saved:
-                return redirect('listar-todos-os-pagamentos')
-            
-    context['form'] = form
-    return render(request, 'views/criar-pagamento.html', context)
-
-
-@login_required
-@staff_member_required
-def quickCreatePayment(request, id, data):
-    context = {}
-
-    today = datetime.now()
-    newDate = data.split('-')
-    newDate = datetime(day=today.day, month=int(newDate[1]), year=int(newDate[0]), hour=today.hour, minute=today.minute)
-
-    profile = get_object_or_404(Perfil, pk=id)
-
-    userPayments = Pagamento.objects.filter(perfil=profile)
-
-    # Verificar se existe pagamento para este mês, se tiver ele troca o status de "A (Em analise)" para "P (pago)"
-    # se não, ele criar um pagamento para este mês
-    thisMonthPayment = False
-    for p in userPayments:
-        if p.data.month == newDate.month and p.data.year == newDate.year:
-            thisMonthPayment = True
-            if p.status == "A":
-                p.status = "P"
-                p.save()
-    if not thisMonthPayment:
-        Pagamento.objects.create(
-            perfil = profile, 
-            status = "P", 
-            valor_pago = profile.imovel.mensalidade, 
-            data = newDate
-        ).save()
-    
-    return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)
-
-
-@login_required
-@staff_member_required
-def updatePayment(request, id, pagina:str, data:str = 'None'):
-    context = {}
-
-    payment = get_object_or_404(Pagamento, pk=id)
-    form = PagamentoForm(payment=payment)
-
-    if request.method == 'POST':
-        form = PagamentoForm(request=request.POST)
-        saved, errors = form.update(payment=payment)
-        context['errors'] = errors
-        if saved:
-            if data=='None':
-                return redirect(pagina)
-            else:
-                return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)
-
-    context['pagamento'] = payment
-    context['form'] = form
-    return render(request, 'views/criar-pagamento.html', context)
-
-
-@login_required
-@staff_member_required
-def deletePayment(request, id):
-    get_object_or_404(Pagamento, pk=id).delete()
-    return redirect('listar-todos-os-pagamentos')        
-
-
-@login_required
-@staff_member_required
-def quickDeletePayment(request, id, data):
-    context = {}
-    get_object_or_404(Pagamento, pk=id).delete()
-    return redirect('listar-pagamentos-por-usuarios-com-data', dataParam=data)
-
-
-def _orderList(list):
-    return list["perfil"].imovel.vencimento
+    PagamentoImovel.objects.get(pk=id_locatario).delete()
+    return redirect(f'/locador/devedores/?mes_referencia={mes_referencia.strftime("%Y-%m")}')

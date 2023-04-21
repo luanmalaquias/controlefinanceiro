@@ -1,0 +1,80 @@
+{% load static %}
+
+<header class="border-bottom bg-body-tertiary mb-3">
+    <div class="container-fluid-sm container-lg">
+        
+        <div class="navbar navbar-expand-lg">
+
+            <a class="navbar-brand d-sm-none d-lg-block" href="{% url 'home_locador_view' %}">
+                <img src="{% static 'imgs/imobiliariaicon.png' %}" width="200" alt="Logo">
+            </a>
+            <a class="navbar-brand d-sm-block d-lg-none" href="{% url 'home_locador_view' %}">
+                <h2 class="ms-2 text-orange">Imobiliária</h2>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <div class="col-12 text-center">
+                            <a class="d-flex flex-column nav-link {% if 'home' in request.path %} text-orange {% endif %}" aria-current="page" href="{% url 'home_locador_view' %}">
+                                <i class="bi bi-house"></i>
+                                Página inicial
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="col-12 text-center">                            
+                            <a class="d-flex flex-column nav-link {% if 'meus_imoveis' in request.path %} text-orange {% endif %}" href="{% url 'imoveis_locador_view' %}">
+                                <i class="bi bi-houses"></i>
+                                Meus imóveis
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="col-12 text-center">
+                            <a class="d-flex flex-column nav-link {% if 'meus_inquilinos' in request.path %} text-orange {% endif %}" href="{% url 'inquilinos_locador_view' %}">
+                                <i class="bi bi-people"></i>
+                                Meus Inquilinos
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="col-12 text-center">
+                            <a class="d-flex flex-column nav-link {% if 'devedores' in request.path %} text-orange {% endif %}" href="{% url 'devedores_view' %}">
+                                <i class="bi bi-calendar3"></i>
+                                Devedores
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="col-12 text-center">
+                            <a class="d-flex flex-column nav-link" href="{%url 'pagamentos_locador_view'%}">
+                                <i class="bi bi-wallet"></i>
+                                Pagamentos
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <div class="col-12 text-center">
+                            <a class="d-flex flex-column nav-link {% if 'configuracoes' in request.path %} text-orange {% endif %}" href="{% url 'configuracoes_locador_view' %}">
+                                <i class="bi bi-gear"></i>
+                                Configurações
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <div class="text-center">
+                    <a class="d-flex flex-column nav-link" href="{% url 'logout_view' %}">
+                        <i class="bi bi-x-lg"></i>Sair
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+</header>

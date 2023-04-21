@@ -1,0 +1,60 @@
+html {
+    font-size: 1rem;
+}
+
+html, body {
+    height: 100%;
+}
+
+.bg-orange{
+    background-color: #FF5C23;
+    color: white;
+}
+
+.text-orange{
+    color: #FF5C23;
+}
+
+.text-orange:hover{
+    color: #a73d17;
+}
+
+.btn-orange{
+    background-color: #FF5C23;
+    color: white;
+}
+
+.btn-orange:hover{
+    background-color: #a73d17;
+    color: white;
+}
+
+.btn-outline-orange{
+    color: #FF5C23;
+    border: 1px solid #FF5C23;
+}
+
+.btn-outline-orange:hover{
+    color: white;
+    background-color: #FF5C23;
+}
+
+.text-light-green{
+    color: #73b680;
+}
+
+img{
+    mix-blend-mode: multiply;
+}
+  
+@media only screen and (min-width : 100px){ 
+    html {
+        font-size: 2.5rem;
+    } 
+}
+
+@media only screen and (min-width : 1000px){
+    html {
+        font-size: 1rem;
+    }
+}

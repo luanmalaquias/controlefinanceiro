@@ -1,0 +1,60 @@
+{% extends 'base_locador.html' %}
+{% block base_locador %}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between">
+        <h5>Devedores deste mês</h5>
+        <div>
+            <input type="month" id="mes_referencia" class="form-control" onchange="window.location.href = `?mes_referencia=${this.value}`;" value="{{mes_referencia}}">
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive-lg">
+            <table class="table mt-3 text-center table-hover">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Inquilino</th>
+                        <th>Imovel</th>
+                        <th>Valor</th>
+                        <th>Data</th>
+                        <th>Mudar status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pagamento in pagamentos %}
+                    <tr>
+                        <td>
+                            {% if pagamento.status == 'N' %}
+                                <span class="badge bg-danger">Aguardando</span>
+                            {% elif pagamento.status == 'A' %}
+                                <span class="badge bg-warning">Em análise</span>
+                            {% elif pagamento.status == 'P' %}
+                                <span class="badge bg-success">Pago</span>
+                            {% endif %}
+                        </td>
+                        <td>{{pagamento.locatario}}</td>
+                        <td>{{pagamento.imovel}}</td>
+                        <td>{{pagamento.valor}}</td>
+                        <td>{{pagamento.data|default_if_none:""}}</td>
+                        <td>
+                            {% if pagamento.status == 'N' or pagamento.status == 'A'  %}
+                                <a href="{% url 'criar_pagamento_rapido_view' id_locatario=pagamento.locatario.id mes_referencia=mes_referencia %}" class="text-success">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </a>
+                            {% elif pagamento.status == 'P' %}
+                                <a href="{% url 'deletar_pagamento_rapido_view' id_locatario=pagamento.id mes_referencia=mes_referencia %}" class="text-dark">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot></tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base_locador.html' %}
+{% block base_locador %}
+
+<div class="row">
+    <div class="col-sm-12 col-lg-6">
+        <div class="accordion accordion-flush" id="accordionFlushLocador">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-pagamentoslocador" aria-expanded="false" aria-controls="flush-pagamentoslocador">
+                        <h5>Pagamentos do locador (assinatura)</h5>
+                    </button>
+                </h2>
+                <div id="flush-pagamentoslocador" class="accordion-collapse collapse" data-bs-parent="#accordionFlushLocador">
+                    <div class="accordion-body">
+                        {{pagamentos_locador}}
+                    </div>
+                </div>
+            </div>            
+        </div>
+    </div>
+
+    <div class="col-sm-12 col-lg-6">
+        <div class="accordion accordion-flush" id="accordionFlushInquilinos">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#flush-pagamentosinquilinos" aria-expanded="false" aria-controls="flush-pagamentosinquilinos">
+                        <h5>Pagamentos dos inquilinos</h5>
+                    </button>
+                </h2>
+                <div id="flush-pagamentosinquilinos" class="accordion-collapse collapse" data-bs-parent="#accordionFlushInquilinos">
+                    <div class="accordion-body">
+                        {{pagamentos_inquilinos}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

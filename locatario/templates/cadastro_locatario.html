@@ -1,0 +1,47 @@
+{% extends 'register.html' %}
+{% load static %}
+{% block register %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="col-sm-12 col-lg-6">
+    <h4 class="mb-3 text-orange">Cadastre seus dados</h4>
+    <form method="POST" autocomplete="off">
+        {% csrf_token %}
+
+        {% for field in form1 %}
+            <div class="form-floating mb-3">
+                {{field}}
+                {{field.label_tag}}
+                <span class="text-danger">{{field.errors.0}}</span>
+            </div>
+        {% endfor%}
+
+        {% for field in form2 %}
+            <div class="form-floating mb-3">
+                {{field}}
+                {{field.label_tag}}
+                <span class="text-danger">{{field.errors.0}}</span>
+            </div>
+        {% endfor%}
+        
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-orange btn-block py-2 fw-bold fs-5">Cadastrar</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $('#id_username').on('input', function(){
+        if($(this).val().length <= 11){
+            $(this).next('label').text('CPF')
+        }else{
+            $(this).next('label').text('CNPJ')
+        }
+    })
+    $('#id_username').mask('00000000000000')
+    $('#id_locador').mask('00000000000000')
+    $('#id_telefone').mask('(00) 0 0000-0000')
+    
+</script>
+
+{% endblock %}

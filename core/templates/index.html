@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block base %}
+{% load static %}
+
+<div class="container-fluid bg-body-secondary">
+    <div class="container text-end py-2">
+        <a href="{% url 'login_view' %}" class="text-decoration-none fw-bold text-dark">Entrar</a>
+    </div>
+</div>
+
+<header class="border-bottom">
+    <div class="container d-flex justify-content-between align-items-center py-4">
+        <div>
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'imgs/imobiliariaicon.png' %}" width="200" alt="Logo" style="background-color: transparent;">
+            </a>
+        </div>
+        <div>
+            <a class="btn btn-outline-orange btn-lg rounded-0 fw-bold" href="{% url 'auto_cadastro_locador_view' %}">SOU PROPRIETÁRIO</a>
+            <a class="btn btn-orange btn-lg rounded-0 fw-bold" href="{% url 'auto_cadastro_locatario_view' %}">SOU INQUILINO</a>
+        </div>
+    </div>
+</header>
+
+<div class="jumbotron jumbotron-fluid bg-body-secondary py-5 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <h1 class="display-4 text-light-green">Controle Financeiro Imobiliário</h1>
+                <p class="lead">Sua locação mais prática e segura!</p>
+                <a href="#" class="btn btn-orange btn-lg rounded-0 fw-bold">Saiba mais</a>
+            </div>
+            <div class="col-6">
+                <img src="{% static 'imgs/desktopmobile.png' %}" alt="desktop and mobile" width="100%">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pt-5 text-secondary">
+    <div class="row">
+        <h2>Gestão de pagamentos</h2>
+        <p>Gerenciamento dos pagamentos de aluguel dos seus inquilinos, emissão de boletos bancários e geração de relatórios financeiros.</p>
+    </div>
+    <div class="row text-end">
+        <h2>Atualização de contratos</h2>
+        <p>Atualizar e gerenciar contratos de aluguel, incluindo renovações e alterações de cláusulas.</p>
+    </div>
+    <div class="row">
+        <h2>Solicitação de reparos</h2>
+        <p>Solicitação de reparos e manutenção no imóvel diretamente pelo site, agilizando o processo de solução de problemas.</p>
+    </div>
+    <div class="row text-end">
+        <h2>Comunicação com proprietários e imobiliárias</h2>
+        <p>Plataforma de comunicação para proprietários, inquilinos e imobiliárias, facilitando o contato e a troca de informações.</p>
+    </div>
+</div>    
+
+{% endblock %}

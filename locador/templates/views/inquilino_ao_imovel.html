@@ -1,0 +1,28 @@
+{% extends 'base_locador.html' %}
+{% block base_locador %}
+
+<div class="col-sm-12 col-lg-6 offset-lg-3">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-header text-center">
+                <h5>Adicionar inquilino ao imóvel</h5>
+            </div>
+            <div class="card-body">
+                {% for field in form %}
+                    <div class="form-floating mb-3">
+                        {{field}}
+                        {{field.label_tag}}
+                        <span class="text-danger">{{field.errors.0}}</span>
+                    </div>
+                {% endfor%}
+            </div>
+            <div class="card-footer text-end">
+                <a class="btn btn-light" href="{% url 'imoveis_locador_view' %}">Cancelar</a>
+                <button type="submit" class="btn btn-orange">Salvar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

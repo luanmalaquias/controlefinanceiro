@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block base %}
+{% load static %}
+
+<style>
+    .bg-image{
+        background-image: url("{% static 'imgs/casas.jpg' %}");
+        background-position: center;
+        background-size: cover;
+        background-repeat: repeat;
+        filter: brightness(50%) contrast(70%);
+    }
+</style>
+
+<div class="container-fluid h-100">
+    
+    <div class="container d-flex justify-content-between align-items-center py-2">
+        <div>
+            <a class="navbar-brand d-sm-none d-lg-block" href="#">
+                <img src="{% static 'imgs/imobiliariaicon.png' %}" width="200" alt="Logo" style="background-color: transparent;">
+            </a>
+        </div>
+        <div class="d-flex align-items-center">
+            <a class="btn text-orange fw-bold me-4" href="{% url 'login_view' %}">Entrar</a>
+            
+            <div class="dropdown align-items-center">
+                <button class="btn btn-orange fw-bold dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Cadastrar-se
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item fw-bold text-orange" href="{% url 'auto_cadastro_locador_view' %}">Sou proprietário</a></li>
+                    <li><a class="dropdown-item fw-bold text-orange" href="{% url 'auto_cadastro_locatario_view' %}">Sou inquilino</a></li>
+                </ul>
+            </div>
+        </div>        
+    </div>
+
+    <div class="row h-50 bg-image">
+
+    </div>
+
+    <div class="jumbotron jumbotron-fluid py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-6">
+                    <h1 class="display-4 text-light-green">Controle Financeiro Imobiliário</h1>
+                    <p class="lead">Sua locação mais prática e segura!</p>
+                    <a href="#" class="btn btn-orange fw-bold">Saiba mais</a>
+                </div>
+                <div class="col-6">
+                    <img src="{% static 'imgs/desktopmobile.png' %}" alt="desktop and mobile" width="100%">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container pt-5 text-secondary">
+        <div class="row">
+            <h2>Gestão de pagamentos</h2>
+            <p>Gerenciamento dos pagamentos de aluguel dos seus inquilinos, emissão de boletos bancários e geração de relatórios financeiros.</p>
+        </div>
+        <div class="row text-end">
+            <h2>Atualização de contratos</h2>
+            <p>Atualizar e gerenciar contratos de aluguel, incluindo renovações e alterações de cláusulas.</p>
+        </div>
+        <div class="row">
+            <h2>Solicitação de reparos</h2>
+            <p>Solicitação de reparos e manutenção no imóvel diretamente pelo site, agilizando o processo de solução de problemas.</p>
+        </div>
+        <div class="row text-end">
+            <h2>Comunicação com proprietários e imobiliárias</h2>
+            <p>Plataforma de comunicação para proprietários, inquilinos e imobiliárias, facilitando o contato e a troca de informações.</p>
+        </div>
+    </div>    
+</div>
+
+{% endblock %}

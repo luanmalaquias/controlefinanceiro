@@ -1,0 +1,97 @@
+{% extends 'base_locador.html' %}
+{% block base_locador %}
+
+<div class="col-sm-12 col-lg-6 offset-lg-3">
+    <div class="card">
+        <div class="card-header">
+            <h5>Imóvel</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <h5 class="card-title">{{imovel.nome}}</h5>
+            </li>
+            <li class="list-group-item">Cep: {{imovel.cep}}</li>
+            <li class="list-group-item">{{imovel.endereco}}, {{imovel.numero}}</li>
+            <li class="list-group-item">{{imovel.bairro}}, {{imovel.cidade}} - {{imovel.uf}}</li>
+            <li class="list-group-item">Mensalidade: R$ {{imovel.mensalidade}}</li>
+            <li class="list-group-item d-flex justify-content-between">
+                {% if imovel.disponivel %}
+                    <span>Disponível: Sim</span>
+                    <a class="text-dark" href="{% url 'inquilino_ao_imovel_view' tipo='imovel' id=imovel.id %}">
+                        <i class="bi bi-person-up me-2"></i>
+                        Adicionar inquilino
+                    </a>
+                {% else %}
+                    <span>Disponível: Não</span>
+                    <a type="button" class="text-danger" data-bs-toggle="modal" data-bs-target="#modalRemoverInquilino{{imovel.id}}">
+                        <i class="bi bi-person-down me-2"></i>
+                        Remover inquilino
+                    </a>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="modalRemoverInquilino{{imovel.id}}" tabindex="-1" aria-labelledby="modalRemoverInquilinoLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="modalRemoverInquilinoLabel">Atenção</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Remover inquilino do imovel {{imovel.nome}} ? <br>
+                                Esta ação não será revertida.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <a class="btn btn-danger" href="{% url 'remover_inquilino_do_imovel_view' tipo='imovel' id=imovel.id %}">Remover</a>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </li>
+            <li class="list-group-item">Proprietário: {{imovel.locador}}</li>
+            <li class="list-group-item d-flex justify-content-between">
+                <a href="{% url 'atualizar_imovel_view' imovel.id %}" class="text-dark">
+                    <i class="bi bi-pen me-2"></i>
+                    Editar
+                </a>
+                <a type="button" class="text-danger" data-bs-toggle="modal" data-bs-target="#modalDeletarImovel{{imovel.id}}">
+                    <i class="bi bi-trash me-2"></i>
+                    Deletar
+                </a>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modalDeletarImovel{{imovel.id}}" tabindex="-1" aria-labelledby="modalDeletarImovelLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="modalDeletarImovelLabel">Atenção</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Deletar {{imovel.nome}} ? <br>
+                            Esta ação não será revertida.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <a class="btn btn-danger" href="{% url 'deletar_imovel_view' imovel.id %}">Deletar</a>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>    
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-header">
+            <h5>Pagamentos</h5>
+        </div>
+        <div class="card-body">
+            #TODO
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base_locador.html' %}
+{% block base_locador %}
+
+<div class="col-sm-12 col-lg-6 offset-lg-3">
+    <div class="card">
+        <div class="card-header">
+            <h5>Configurações</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item"><a class="text-dark" href="{%url 'alterar_senha_view'%}">Alterar senha</a></li>
+            <li class="list-group-item"><a class="text-dark" href="{% url 'alterar_informacoes_da_conta_view' %}">Alterar informações da conta</a></li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

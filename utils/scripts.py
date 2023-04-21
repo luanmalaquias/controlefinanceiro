@@ -1,6 +1,6 @@
 import secrets
 import string
-from datetime import datetime, date
+import re
 
 
 def generatePassword(safety: int) -> str:
@@ -53,32 +53,33 @@ def verifyPasswordIntergity(password: str, numeric=True, lower=True, upper=True)
 
     return passwordIntergity
 
-def unmask(target: any, chars: str) -> str:
-    """Remove todos os caracteres que forem passados no parametro chars"""
-    if type(target) != str:
-        target = str(target)
-    for char in chars:
-        target = target.replace(char, '')
-    return target
+def unmask(target) -> str:
+    """Remove todos os caracteres especiais"""
+    return re.sub(r'[^a-zA-Z0-9]', '', str(target))
 
-def unmaskMoney(target: str) -> str:
+def unmaskMoney(target: str) -> int:
     """Retira a máscara money \nEx: 1.234,99 -> 1234"""
+    if target == '':
+        return 0
     if ',' in target:
         target = target.split(',')[0]
-    target = unmask(target, '.')
-    return target
+    target = unmask(target)
+    return int(target)
 
 def gerarDados(quantidade:int) -> None:
     from django.contrib.auth.models import User
     from usuario.models import Perfil
     from imobiliaria.models import Imovel
     from pagamento.models import Pagamento
+    from notificacao.models import Notificacao
     from random import randint
     from datetime import datetime
 
-    usuarios = User.objects.all().filter(is_staff=False).delete()
-    imoveis = Imovel.objects.all().delete()
-    pagamentos = Pagamento.objects.all().delete()
+    # limpar banco
+    User.objects.all().filter(is_staff=False).delete()
+    Imovel.objects.all().delete()
+    Pagamento.objects.all().delete()
+    Notificacao.objects.all().delete()
 
     nomes = ["Miguel","Arthur","Gael","Théo","Heitor","Ravi","Davi","Bernardo","Noah","Gabriel","Helena","Alice","Laura","Maria Alice","Sophia","Manuela","Maitê","Liz","Cecília","Isabella"]
     sobrenomes = ['Silva','Santos','Oliveira','Sousa','Rodrigues','Ferreira','Alves','Pereira','Lima','Gomes','Costa','Ribeiro','Martins','Carvalho','Almeira','Lopes','Soares','Fernandes','Vieira','Barbosa','Rocha','Dias','Nascimento','Andrade','Moreira','Nunes','Marques','Machado','Mendes','Freitas','Cardoso','Ramos','Gonçalves','Santana','Teixeira']
@@ -96,8 +97,7 @@ def gerarDados(quantidade:int) -> None:
         imovel.cidade = f'cidade teste {x}'
         imovel.uf = "".join([secrets.choice(string.ascii_uppercase) for i in range(2)])
         imovel.mensalidade = f'{randint(500, 1000)}'
-        imovel.vencimento = randint(1,29)
-        imovel.disponibilidade = False
+        imovel.disponivel = False
 
         perfil = Perfil.objects.create(usuario = usuario)
         perfil.cpf = usuario.username
@@ -105,10 +105,9 @@ def gerarDados(quantidade:int) -> None:
         perfil.telefone = "".join([str(randint(0, 9)) for i in range(11)])
         perfil.imovel = imovel
 
-        pagamento = Pagamento.objects.create(perfil = perfil)
+        pagamento = Pagamento.objects.create(perfil = perfil, data = datetime.now())
         pagamento.status = "P"
-        pagamento.valor_pago = imovel.mensalidade
-        pagamento.data = datetime.now()
+        pagamento.valor = imovel.mensalidade
 
         usuario.save()
         imovel.save()
@@ -131,7 +130,7 @@ def cpfIsValid(cpf: str|int) -> bool:
     if type(cpf) == int:
         cpf = str(cpf)
 
-    cpf = unmask(cpf, '.-')
+    cpf = unmask(cpf)
 
     if len(cpf) != 11:
         return False
@@ -176,6 +175,60 @@ def cpfIsValid(cpf: str|int) -> bool:
     
     return False
 
+def validar_cpf_cnpj(doc):
+    """
+    Função para validar um CPF ou CNPJ.
+    Retorna True se for válido e False se for inválido.
+    """
+    # Remove caracteres não numéricos
+    doc = re.sub('[^0-9]', '', str(doc))
+    
+    # Verifica se é CPF (11 dígitos) ou CNPJ (14 dígitos)
+    if len(doc) == 11:
+        # Verifica se todos os dígitos são iguais
+        if len(set(doc)) == 1:
+            return False
+        
+        # Calcula o primeiro dígito verificador
+        soma = sum([int(doc[i]) * (10-i) for i in range(9)])
+        dv1 = 11 - (soma % 11)
+        if dv1 > 9:
+            dv1 = 0
+        
+        # Calcula o segundo dígito verificador
+        soma = sum([int(doc[i]) * (11-i) for i in range(10)])
+        dv2 = 11 - (soma % 11)
+        if dv2 > 9:
+            dv2 = 0
+        
+        # Verifica se os dígitos verificadores são iguais aos do documento
+        return dv1 == int(doc[9]) and dv2 == int(doc[10])
+    
+    elif len(doc) == 14:
+        # Verifica se todos os dígitos são iguais
+        if len(set(doc)) == 1:
+            return False
+        
+        # Calcula o primeiro dígito verificador
+        soma = sum([int(doc[i]) * (5+i) for i in range(4)]) + \
+               sum([int(doc[i]) * (9-i) for i in range(8,12)])
+        dv1 = 11 - (soma % 11)
+        if dv1 > 9:
+            dv1 = 0
+        
+        # Calcula o segundo dígito verificador
+        soma = sum([int(doc[i]) * (6+i) for i in range(5)]) + \
+               sum([int(doc[i]) * (9-i) for i in range(8,13)])
+        dv2 = 11 - (soma % 11)
+        if dv2 > 9:
+            dv2 = 0
+        
+        # Verifica se os dígitos verificadores são iguais aos do documento
+        return dv1 == int(doc[12]) and dv2 == int(doc[13])
+    
+    else:
+        return False
+
 def maskCpf(target: str|int) -> str:
     target = str(target)
 
@@ -193,3 +246,11 @@ def maskPhone(target: str|int) -> str:
     
     target = f'({target[:2]}) {target[2]} {target[3:7]}-{target[7:]}'
     return target
+
+def brDateToHtmlDate(date: str):
+    d = date.split('/')
+    return f'{d[2]}-{d[1]}-{d[0]}'
+
+def htmlDateToBrDate(date: str):
+    d = date.split('-')
+    return f'{d[2]}/{d[1]}/{d[0]}'

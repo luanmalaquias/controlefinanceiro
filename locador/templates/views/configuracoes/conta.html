@@ -1,0 +1,50 @@
+{% extends 'base_locador.html' %}
+{% block base_locador %}
+
+<div class="col-sm-12 col-lg-6 offset-lg-3">
+    <form method="POST">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-header">
+                <h5>Informações da conta</h5>
+            </div>
+            <div class="card-body text-center">
+                {% for field in form1 %}
+                    <div class="form-floating mb-3">
+                        {{field}}
+                        {{field.label_tag}}
+                        <span class="text-danger">{{field.errors.0}}</span>
+                    </div>
+                {% endfor%}
+
+                {% for field in form2 %}
+                    <div class="form-floating mb-3">
+                        {{field}}
+                        {{field.label_tag}}
+                        <span class="text-danger">{{field.errors.0}}</span>
+                    </div>
+                {% endfor%}
+
+                <small>Atenção, a data de nascimento/criação serve para recuperar a senha da conta</small> 
+            </div>
+            <div class="card-footer text-end">
+                <a class="btn btn-light" href="{% url 'configuracoes_locador_view' %}">Cancelar</a>
+                <button type="submit" class="btn btn-orange">Salvar</button>
+            </div>
+        </div>
+    </form>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success mt-3">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script>
+    $('#id_telefone').mask('(00) 0 0000-0000')
+</script>
+
+{% endblock %}
